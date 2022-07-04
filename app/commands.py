@@ -42,6 +42,8 @@ import app.state
 import app.usecases.performance
 import app.utils
 from app.discord import Webhook
+from app.logging import Ansi
+from app.logging import log
 from app.constants import regexes
 from app.constants.gamemodes import GameMode
 from app.constants.gamemodes import GAMEMODE_REPR_LIST
@@ -638,6 +640,13 @@ async def request(ctx: Context) -> Optional[str]:
         },
     )
 
+    log_msg = f"{ctx.player.name} request {bmap} to rank/love."
+
+    log(log_msg, Ansi.LRED)
+
+    if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
+        webhook = Webhook(webhook_url, content=log_msg)
+        await webhook.post(app.state.services.http)
 
     return "Request submitted."
 
