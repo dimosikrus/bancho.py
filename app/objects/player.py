@@ -659,6 +659,25 @@ class Player:
 
         log(f"Silenced {self}.", Ansi.LCYAN)
 
+        log_msg = f"{admin} silenced {self} for: {reason}."
+
+        log(log_msg, Ansi.LRED)
+
+        if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
+            webhook = Webhook(webhook_url, content=log_msg)
+            await webhook.post(app.state.services.http)
+
+    async def wipeuser(self, admin: Player) -> None:
+
+        await app.state.services.database.execute(
+            "DELETE FROM scores WHERE userid = :userid",
+            {"userid": self.id},
+        )
+        await app.state.services.database.execute(
+            "UPDATE stats SET tscore = 0, rscore = 0, pp = 0, plays = 0, playtime = 0, acc = 0, max_combo = 0, total_hits = 0, replay_views = 0, xh_count = 0, x_count = 0, sh_count = 0, s_count = 0, a_count = 0 WHERE id = :id",
+            {"id": self.id},
+        )
+
     async def unsilence(self, admin: Player) -> None:
         """Unsilence `self`, and log to sql."""
         self.silence_end = int(time.time())
@@ -679,6 +698,14 @@ class Player:
         self.enqueue(app.packets.silence_end(0))
 
         log(f"Unsilenced {self}.", Ansi.LCYAN)
+
+        log_msg = f"{admin} UnSilenced {self}."
+
+        log(log_msg, Ansi.LRED)
+
+        if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
+            webhook = Webhook(webhook_url, content=log_msg)
+            await webhook.post(app.state.services.http)
 
     def join_match(self, m: Match, passwd: str) -> bool:
         """Attempt to add `self` to `m`."""

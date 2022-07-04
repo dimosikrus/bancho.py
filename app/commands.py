@@ -41,6 +41,7 @@ import app.settings
 import app.state
 import app.usecases.performance
 import app.utils
+from app.discord import Webhook
 from app.constants import regexes
 from app.constants.gamemodes import GameMode
 from app.constants.gamemodes import GAMEMODE_REPR_LIST
@@ -303,6 +304,38 @@ async def changename(ctx: Context) -> Optional[str]:
 
     return None
 
+@command(Privileges.DONATOR)
+async def country(ctx: Context) -> Optional[str]:
+    if len > 2:
+            return "Invalid syntax: !country <acronym>"
+
+    # all checks passed, update 
+    await app.state.services.database.execute(
+        "UPDATE users SET country = :country WHERE id = :user_id",
+        {"user_id": ctx.player.id},
+    )
+
+    ctx.player.enqueue(
+        app.packets.notification(f"Your country has been changed to {name}!"),
+    )
+
+    return None
+
+
+@command(Privileges.DEVELOPER)
+async def rankrecalc(ctx: Context) -> Optional[str]:
+    """I guess you can understood what this comma do.."""
+    scores = await app.state.services.database.fetch_all("SELECT stats.id,users.priv,country,stats.pp,stats.mode FROM `users` INNER JOIN stats on users.id = stats.id")
+    for i in scores:
+     
+        if i[1] & Privileges.NORMAL:
+            user_id = i[0]
+            await app.state.services.redis.zadd(
+                f"bancho:leaderboard:{i[4]}",
+                {str(user_id): i[3]},
+            )
+
+    return "Sucessfully recalced!"
 
 @command(Privileges.NORMAL, aliases=["bloodcat", "beatconnect", "chimu", "q"])
 async def maplink(ctx: Context) -> Optional[str]:
@@ -592,6 +625,19 @@ async def request(ctx: Context) -> Optional[str]:
         "VALUES (:map_id, :user_id, NOW(), 1)",
         {"map_id": bmap.id, "user_id": ctx.player.id},
     )
+
+    await app.state.services.database.execute(
+        "INSERT INTO logs "
+        "(`from`, `to`, `action`, `msg`, `time`) "
+        "VALUES (:from, :to, :action, :msg, NOW())",
+        {
+            "from": ctx.player.id,
+            "to": "3",
+            "action": "request",
+            "msg": bmap.id,
+        },
+    )
+
 
     return "Request submitted."
 
@@ -943,6 +989,22 @@ async def restrict(ctx: Context) -> Optional[str]:
     await t.restrict(admin=ctx.player, reason=reason)
 
     return f"{t} was restricted."
+
+
+@command(Privileges.ADMINISTRATOR, hidden=True)
+async def wipeuser(ctx: Context) -> Optional[str]:
+    if len(ctx.args) < 1:
+            return "Invalid syntax: !wipeuser <name>"
+
+    if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
+        return "Could not find user."
+
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
+        return "Only administrator can do this comma."
+
+    await t.wipeuser(ctx.player)
+
+    return f"{t} was wiped."
 
 
 @command(Privileges.ADMINISTRATOR, hidden=True)

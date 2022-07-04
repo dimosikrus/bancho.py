@@ -53,6 +53,7 @@ from app.constants import regexes
 from app.constants.clientflags import ClientFlags
 from app.constants.gamemodes import GameMode
 from app.constants.mods import Mods
+from app.discord import Webhook
 from app.logging import Ansi
 from app.logging import log
 from app.logging import printc
@@ -437,7 +438,7 @@ async def osuSearchHandler(
     else:
         search_url = f"{app.settings.MIRROR_URL}/api/search"
 
-    params: dict[str, object] = {"amount": 100, "offset": page_num * 100}
+    params: dict[str, object] = {"amount": 100, "offset": page_num}
 
     # eventually we could try supporting these,
     # but it mostly depends on the mirror.
@@ -834,6 +835,14 @@ async def osuSubmitModularSelector(
                         )
 
                 announce_chan.send(" ".join(ann), sender=score.player, to_self=True)
+
+                log_msg = f"https://osu.{app.settings.DOMAIN}/u/{score.player.id} submitted #1 on: {score.bmap.embed} with {score.acc:.2f}% for {performance}."
+
+                log(log_msg, Ansi.LRED)
+
+                if webhook_url := app.settings.DISCORD_AUDIT_SCORE_WEBHOOK:
+                    webhook = Webhook(webhook_url, content=log_msg)
+                    await webhook.post(app.state.services.http)
 
         # this score is our best score.
         # update any preexisting personal best

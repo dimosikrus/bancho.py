@@ -146,16 +146,16 @@ async def api_get_player_info(
     # get user info from username or user id
     if username:
         user_info = await app.state.services.database.fetch_one(
-            "SELECT id, name, safe_name, "
-            "priv, clan_id, country, silence_end, donor_end "
-            "FROM users WHERE safe_name = :username",
+            "SELECT users.id, users.name, users.safe_name, "
+            "users.priv, users.username_aka, users.clan_id,users.country, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content ,users.donor_end, users.creation_time, users.latest_activity, users.clan_id "
+            "FROM users WHERE users.safe_name = :username",
             {"username": username.lower()},
         )
     else:  # if user_id
         user_info = await app.state.services.database.fetch_one(
-            "SELECT id, name, safe_name, "
-            "priv, clan_id, country, silence_end, donor_end "
-            "FROM users WHERE id = :userid",
+            "SELECT users.id, users.name, users.safe_name, "
+            "users.priv, users.username_aka,users.clan_id, users.country, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content , users.donor_end, users.creation_time, users.latest_activity, users.clan_id "
+            "FROM users WHERE users.id = :userid",
             {"userid": user_id},
         )
 
@@ -172,7 +172,22 @@ async def api_get_player_info(
 
     # fetch user's info if requested
     if scope in ("info", "all"):
+
+
         api_data["info"] = dict(user_info)
+
+       
+       
+        clan_id = user_info["clan_id"]
+        clan_info = await app.state.services.database.fetch_one("SELECT * FROM clans WHERE id = :clan_id",{"clan_id":clan_id})
+
+        if clan_info is not None:
+
+            clan_members = await app.state.services.database.fetch_one("SELECT count(*) FROM users WHERE users.clan_id = :clan_id",{"clan_id":clan_id})
+            clan_info_id = clan_info[0]
+            clan_info_name = clan_info[1]
+            clan_info_tag = clan_info[2]
+            api_data["info"]["clan"] = {"id":clan_info_id,"name":clan_info_name,"tag": clan_info_tag,"members":clan_members[0]}
 
     # fetch user's stats if requested
     if scope in ("stats", "all"):
@@ -180,7 +195,7 @@ async def api_get_player_info(
 
         # get all stats
         rows = await app.state.services.database.fetch_all(
-            "SELECT mode, tscore, rscore, pp, plays, playtime, acc, max_combo, "
+            "SELECT mode, tscore, rscore, pp, plays, playtime, acc, max_combo, replay_views, "
             "xh_count, x_count, sh_count, s_count, a_count FROM stats "
             "WHERE id = :userid",
             {"userid": resolved_user_id},
@@ -936,6 +951,25 @@ async def api_get_pool(
             },
         },
     )
+
+#@router.get("/get_badges")
+#async def api_get_badges(
+#    db_conn: databases.core.Connection = Depends(acquire_db_conn),
+#):
+#
+#    rows = await db_conn.fetch_all(
+#        "SELECT id, name, icon "
+#       "FROM badges "
+#   )
+#
+#    return ORJSONResponse(
+#        {
+#            "status": "success",
+#           "id": id,
+#            "name": name,
+#            "icon": icon,
+#        },
+#    )
 
 
 # def requires_api_key(f: Callable) -> Callable:

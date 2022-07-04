@@ -59,6 +59,7 @@ from app.packets import BanchoPacketReader
 from app.packets import BasePacket
 from app.packets import ClientPackets
 from app.usecases.performance import ScoreDifficultyParams
+from time import perf_counter_ns as clock_ns
 
 
 BEATMAPS_PATH = Path.cwd() / ".data/osu"
@@ -359,6 +360,9 @@ class StatsUpdateRequest(BasePacket):
 
 # Some messages to send on welcome/restricted/etc.
 # TODO: these should probably be moved to the config.
+start_time = clock_ns()
+elapsed = app.logging.magnitude_fmt_time(clock_ns() - start_time)
+
 WELCOME_MSG = "\n".join(
     (
         f"Welcome to {BASE_DOMAIN}.",
@@ -370,12 +374,11 @@ WELCOME_MSG = "\n".join(
 
 RESTRICTED_MSG = (
     "Your account is currently in restricted mode. "
-    "If you believe this is a mistake, or have waited a period "
-    "greater than 3 months, you may appeal via the form on the site."
+    "If you believe this is a mistake, you may appeal via the form on the site."
 )
 
 WELCOME_NOTIFICATION = app.packets.notification(
-    f"Welcome back to {BASE_DOMAIN}!\nRunning bancho.py v{app.settings.VERSION}.",
+    f"Welcome back to {BASE_DOMAIN}!\nRunning bancho.py v{app.settings.VERSION}.\nLogin time: {elapsed}"
 )
 
 OFFLINE_NOTIFICATION = app.packets.notification(
