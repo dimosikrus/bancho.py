@@ -327,7 +327,10 @@ async def country(ctx: Context) -> Optional[str]:
 @command(Privileges.DEVELOPER)
 async def rankrecalc(ctx: Context) -> Optional[str]:
     """I guess you can understood what this comma do.."""
+    alert_msg = "All user ranks has been recalculated! :rolling_eyes: "
     scores = await app.state.services.database.fetch_all("SELECT stats.id,users.priv,country,stats.pp,stats.mode FROM `users` INNER JOIN stats on users.id = stats.id")
+    app.state.sessions.players.enqueue(app.packets.notification(alert_msg))
+
     for i in scores:
      
         if i[1] & Privileges.NORMAL:
@@ -337,7 +340,13 @@ async def rankrecalc(ctx: Context) -> Optional[str]:
                 {str(user_id): i[3]},
             )
 
-    return "Sucessfully recalced!"
+            # country rank
+            await app.state.services.redis.zadd(
+                f"bancho:leaderboard:{i[4]}:{i[2]}",
+                {str(user_id): i[3]},
+            )
+
+    return "Sucessfully recalculated!" 
 
 @command(Privileges.NORMAL, aliases=["bloodcat", "beatconnect", "chimu", "q"])
 async def maplink(ctx: Context) -> Optional[str]:

@@ -175,7 +175,6 @@ class Ping(BasePacket):
     async def handle(self, p: Player) -> None:
         pass  # ping be like
 
-
 @register(ClientPackets.CHANGE_ACTION, restricted=True)
 class ChangeAction(BasePacket):
     def __init__(self, reader: BanchoPacketReader) -> None:
@@ -909,6 +908,7 @@ async def login(
     p.update_latest_activity_soon()
 
     return {"osu_token": p.token, "response_body": bytes(data)}
+
 
 
 @register(ClientPackets.START_SPECTATING)

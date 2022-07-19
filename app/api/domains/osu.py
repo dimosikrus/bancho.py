@@ -606,12 +606,12 @@ async def osuSubmitModularSelector(
     # through but ac'd if not found?
     # TODO: validate token format
     # TODO: save token in the database
-    token: str = Header(...),
+    #token: str = Header(...),
     # TODO: do ft & st contain pauses?
     exited_out: bool = Form(..., alias="x"),
     fail_time: int = Form(..., alias="ft"),
     visual_settings_b64: bytes = Form(..., alias="fs"),
-    updated_beatmap_hash: str = Form(..., alias="bmk"),
+    #updated_beatmap_hash: str = Form(..., alias="bmk"),
     storyboard_md5: Optional[str] = Form(None, alias="sbk"),
     iv_b64: bytes = Form(..., alias="iv"),
     unique_ids: str = Form(..., alias="c1"),  # TODO: more validaton
@@ -695,9 +695,9 @@ async def osuSubmitModularSelector(
         ), f"online score checksum mismatch ({server_score_checksum} != {score.client_checksum})"
 
         # assert beatmap hashes match
-        assert (
-            updated_beatmap_hash == bmap_md5
-        ), f"beatmap md5 checksum mismatch ({updated_beatmap_hash} != {bmap_md5}"
+        #assert (
+        #    updated_beatmap_hash == bmap_md5
+        #), f"beatmap md5 checksum mismatch ({updated_beatmap_hash} != {bmap_md5}"
 
     except AssertionError as exc:
         # NOTE: this is undergoing a temporary trial period,
