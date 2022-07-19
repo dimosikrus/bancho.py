@@ -148,7 +148,7 @@ def download_achievement_images(achievements_path: Path) -> None:
 
 def download_default_avatar(default_avatar_path: Path) -> None:
     """Download an avatar to use as the server's default."""
-    resp = requests.get("https://i.cmyui.xyz/U24XBZw-4wjVME-JaEz3.png")
+    resp = requests.get("https://a.ppy.sh")
 
     if resp.status_code != 200:
         log("Failed to fetch default avatar.", Ansi.LRED)
