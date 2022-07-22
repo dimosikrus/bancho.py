@@ -792,6 +792,14 @@ async def _map(ctx: Context) -> Optional[str]:
             {"map_ids": map_ids},
         )
 
+    log_msg = f"{ctx.player.name} updated to {new_status!s} {bmap}\n https://osu.osiri.us/b/{bmap.id}."
+
+    log(log_msg, Ansi.LRED)
+
+    if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
+        webhook = Webhook(webhook_url, content=log_msg)
+        await webhook.post(app.state.services.http)
+
     return f"{bmap.embed} updated to {new_status!s}."
 
 

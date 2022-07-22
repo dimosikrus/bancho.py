@@ -680,6 +680,10 @@ async def api_get_replay(
     # read replay frames from file
     raw_replay_data = replay_file.read_bytes()
 
+    
+    with open(replay_file, "rb+") as file:
+        raw_replay_data= file.read()
+
     if include_headers:
         return StreamingResponse(
             raw_replay_data,
@@ -736,7 +740,7 @@ async def api_get_replay(
     replay_data = bytearray()
 
     # pack first section of headers.
-    replay_data += struct.pack("<Bi", row["mode"], 20200207)  # TODO: osuver
+    replay_data += struct.pack("<Bi", row["mode"], 20150414)  # TODO: osuver
     replay_data += app.packets.write_string(row["map_md5"])
     replay_data += app.packets.write_string(row["username"])
     replay_data += app.packets.write_string(replay_md5)
@@ -753,7 +757,8 @@ async def api_get_replay(
         row["perfect"],
         row["mods"],
     )
-    replay_data += b"\x00"  # TODO: hp graph
+
+    #replay_data += b"\x00"  # TODO: hp graph
 
     timestamp = int(row["play_time"].timestamp() * 1e7)
     replay_data += struct.pack("<q", timestamp + DATETIME_OFFSET)
