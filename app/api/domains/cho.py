@@ -53,6 +53,7 @@ from app.objects.menu import MenuFunction
 from app.objects.player import Action
 from app.objects.player import ClientDetails
 from app.objects.player import OsuVersion
+from app.objects.player import OsuStream
 from app.objects.player import Player
 from app.objects.player import PresenceFilter
 from app.packets import BanchoPacketReader
@@ -494,7 +495,7 @@ async def login(
             day=int(match["date"][6:8]),
         ),
         revision=int(match["revision"]) if match["revision"] else None,
-        stream=match["stream"] or "stable",
+        stream=OsuStream(match["stream"] or "stable"),
     )
 
     # disallow login for clients older than 90 days

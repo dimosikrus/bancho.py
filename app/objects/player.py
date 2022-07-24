@@ -4,6 +4,7 @@ import time
 import uuid
 from dataclasses import dataclass
 from datetime import date
+from enum import Enum
 from enum import IntEnum
 from enum import unique
 from functools import cached_property
@@ -144,6 +145,12 @@ class LastNp(TypedDict):
     mode_vn: int
     timeout: float
 
+class OsuStream(str, Enum):
+    STABLE = "stable"
+    BETA = "beta"
+    CUTTINGEDGE = "cuttingedge"
+    TOURNEY = "tourney"
+    DEV = "dev"
 
 class OsuVersion:
     # b20200201.2cuttingedge
@@ -154,7 +161,7 @@ class OsuVersion:
         self,
         date: date,
         revision: Optional[int],  # TODO: should this be optional?
-        stream: Literal["stable", "beta", "cuttingedge", "tourney", "dev"],
+        stream: OsuStream,
     ) -> None:
         self.date = date
         self.revision = revision
