@@ -776,6 +776,15 @@ async def osuSubmitModularSelector(
             )
         """
 
+    if score.pp > 500 and not score.player.priv & Privileges.WHITELISTED and not score.mods & Mods.RELAX:
+        log_msg = f"https://osu.{app.settings.DOMAIN}/u/{score.player.id} submitted {score.pp:,.2f}pp on: {score.bmap.embed}."
+
+        log(log_msg, Ansi.LRED)
+
+        if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
+            webhook = Webhook(webhook_url, content=log_msg)
+            await webhook.post(app.state.services.http)
+
     """ Score submission checks completed; submit the score. """
 
     if app.state.services.datadog:

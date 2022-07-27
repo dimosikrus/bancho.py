@@ -643,7 +643,7 @@ async def request(ctx: Context) -> Optional[str]:
         "VALUES (:from, :to, :action, :msg, NOW())",
         {
             "from": ctx.player.id,
-            "to": "3",
+            "to": "1",
             "action": "request",
             "msg": bmap.id,
         },
@@ -796,7 +796,7 @@ async def _map(ctx: Context) -> Optional[str]:
 
     log(log_msg, Ansi.LRED)
 
-    if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
+    if webhook_url := app.settings.DISCORD_AUDIT_NEW_RANKED_WEBHOOK:
         webhook = Webhook(webhook_url, content=log_msg)
         await webhook.post(app.state.services.http)
 

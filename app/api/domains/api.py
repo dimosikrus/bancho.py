@@ -593,6 +593,7 @@ async def api_get_map_scores(
         "s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, s.status, "
         "s.mode, s.play_time, s.time_elapsed, s.userid, s.perfect, "
         "u.name player_name, "
+        "u.country, country, "
         "c.id clan_id, c.name clan_name, c.tag clan_tag "
         "FROM scores s "
         "INNER JOIN users u ON u.id = s.userid "

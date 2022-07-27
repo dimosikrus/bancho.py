@@ -498,6 +498,7 @@ async def login(
         stream=OsuStream(match["stream"] or "stable"),
     )
 
+    """
     # disallow login for clients older than 90 days
     if osu_version.date < (date.today() - DELTA_90_DAYS):
         return {
@@ -507,6 +508,8 @@ async def login(
             ),
         }
 
+    """
+    
     running_under_wine = login_data["adapters_str"] == "runningunderwine"
     adapters = [a for a in login_data["adapters_str"][:-1].split(".")]
 
