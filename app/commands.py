@@ -42,6 +42,7 @@ import app.state
 import app.usecases.performance
 import app.utils
 from app.discord import Webhook
+from discord_webhook import DiscordWebhook, DiscordEmbed
 from app.logging import Ansi
 from app.logging import log
 from app.constants import regexes
@@ -649,13 +650,15 @@ async def request(ctx: Context) -> Optional[str]:
         },
     )
 
-    log_msg = f"{ctx.player.name} request {bmap} to rank/love."
-
-    log(log_msg, Ansi.LRED)
-
-    if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
-        webhook = Webhook(webhook_url, content=log_msg)
-        await webhook.post(app.state.services.http)
+    webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+    embed = DiscordEmbed(title='New request from {}!'.format(ctx.player.name), description='{} request {} for rank/love.\nhttps://osu.ppy.sh/b/{}'.format(ctx.player.name, bmap, bmap.id), color='2cc77c')
+    embed.set_author(name='{}'.format(ctx.player.name), url='https://osu.okayu.me/u/{}'.format(ctx.player.id), icon_url='https://a.okayu.me/{}'.format(ctx.player.id))
+    embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(bmap.set_id))
+    embed.set_thumbnail(url='https://a.okayu.me/{}'.format(ctx.player.id))
+    embed.set_footer(text='New request on osu!okayu', icon_url='https://osu.okayu.me/static/favicon/logo.png')
+    embed.set_timestamp()
+    webhook.add_embed(embed)
+    response = webhook.execute()
 
     return "Request submitted."
 
@@ -792,13 +795,15 @@ async def _map(ctx: Context) -> Optional[str]:
             {"map_ids": map_ids},
         )
 
-    log_msg = f"{ctx.player.name} updated to {new_status!s} {bmap}\n https://osu.osiri.us/b/{bmap.id}."
-
-    log(log_msg, Ansi.LRED)
-
-    if webhook_url := app.settings.DISCORD_AUDIT_NEW_RANKED_WEBHOOK:
-        webhook = Webhook(webhook_url, content=log_msg)
-        await webhook.post(app.state.services.http)
+        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_NEW_RANKED_WEBHOOK)
+        embed = DiscordEmbed(title='New {}!'.format(new_status), description='{} updated to {} {}.'.format(ctx.player.name, new_status, bmap), color='2cc77c')
+        embed.set_author(name='{}'.format(ctx.player.name), url='https://osu.okayu.me/u/{}'.format(ctx.player.id), icon_url='https://a.okayu.me/{}'.format(ctx.player.id))
+        embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(bmap.set_id))
+        embed.set_thumbnail(url='https://a.okayu.me/{}'.format(ctx.player.id))
+        embed.set_footer(text='{} on osu!okayu'.format(new_status), icon_url='https://osu.okayu.me/static/favicon/logo.png')
+        embed.set_timestamp()
+        webhook.add_embed(embed)
+        response = webhook.execute()
 
     return f"{bmap.embed} updated to {new_status!s}."
 
@@ -1400,6 +1405,13 @@ async def recalc(ctx: Context) -> Optional[str]:
 
         app.state.loop.create_task(recalc_all())
 
+        log_msg = f"{ctx.player.name} started full recalculation."
+
+        log(log_msg, Ansi.LRED)
+
+        if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
+            webhook = Webhook(webhook_url, content=log_msg)
+        await webhook.post(app.state.services.http)
         return "Starting a full recalculation."
 
 
