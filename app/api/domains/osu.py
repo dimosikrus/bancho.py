@@ -111,6 +111,17 @@ def authenticate_player_session(
 
     return wrapper
 
+async def beatmaps(request: Request):
+    return RedirectResponse(
+        url=f"https://{app.settings.DOMAIN}/b/{request['path'][2]}",
+        status_code=status.HTTP_301_MOVED_PERMANENTLY,
+    )
+
+
+router.route("/beatmaps/{rest_of_path:path}", beatmaps)
+router.route("/beatmapsets/{rest_of_path:path}", beatmaps)
+router.route("/b/{rest_of_path:path}", beatmaps)
+
 
 """ /web/ handlers """
 
@@ -780,7 +791,7 @@ async def osuSubmitModularSelector(
 
     if score.pp > 500 and not score.player.priv & Privileges.WHITELISTED and not score.mods & Mods.RELAX:
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='Suspicion score by {}!!!'.format(score.player), description='submitted on: {}+{} with {}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
+        embed = DiscordEmbed(title='Sus score by {}!!!'.format(score.player), description='submitted on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
         embed.set_author(name='{}'.format(score.player), url='https://osu.okayu.me/u/{}'.format(score.player.id), icon_url='https://a.okayu.me/{}'.format(score.player.id))
         embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
         embed.set_thumbnail(url='https://a.okayu.me/{}'.format(score.player.id))
@@ -791,7 +802,7 @@ async def osuSubmitModularSelector(
 
     if score.pp > 1000 and not score.player.priv & Privileges.WHITELISTED and score.mods & Mods.RELAX:
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='Suspicion score by {}!!!'.format(score.player), description='submitted on: {}+{} with {}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
+        embed = DiscordEmbed(title='Sus score by {}!!!'.format(score.player), description='submitted on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
         embed.set_author(name='{}'.format(score.player), url='https://osu.okayu.me/u/{}'.format(score.player.id), icon_url='https://a.okayu.me/{}'.format(score.player.id))
         embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
         embed.set_thumbnail(url='https://a.okayu.me/{}'.format(score.player.id))
@@ -861,7 +872,7 @@ async def osuSubmitModularSelector(
                 announce_chan.send(" ".join(ann), sender=score.player, to_self=True)
 
                 webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_SCORE_WEBHOOK)
-                embed = DiscordEmbed(title='New score by {}!'.format(score.player), description='submitted #1 on: {}+{} with {}% for {}.'.format(score.bmap.embed, score.mods, score.acc, performance), color='03b2f8')
+                embed = DiscordEmbed(title='New score by {}!'.format(score.player), description='submitted #1 on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, performance), color='03b2f8')
                 embed.set_author(name='{}'.format(score.player), url='https://osu.okayu.me/u/{}'.format(score.player.id), icon_url='https://a.okayu.me/{}'.format(score.player.id))
                 embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
                 embed.set_thumbnail(url='https://a.okayu.me/{}'.format(score.player.id))
@@ -1700,7 +1711,6 @@ if app.settings.REDIRECT_OSU_URLS:
 
     for pattern in (
         "/beatmapsets/{_}",
-        "/beatmaps/{_}",
         "/community/forums/topics/{_}",
     ):
         router.get(pattern)(osu_redirect)
