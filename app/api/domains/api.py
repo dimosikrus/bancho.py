@@ -665,7 +665,7 @@ async def api_get_score_info(
 @router.get("/get_replay")
 async def api_get_replay(
     score_id: int = Query(..., alias="id", ge=0, le=9_223_372_036_854_775_807),
-    include_headers: bool = False,
+    include_headers: bool = True,
     db_conn: databases.core.Connection = Depends(acquire_db_conn),
 ):
     """Return a given replay (including headers)."""
@@ -681,12 +681,8 @@ async def api_get_replay(
     # read replay frames from file
     raw_replay_data = replay_file.read_bytes()
 
-    
-    with open(replay_file, "rb+") as file:
-        raw_replay_data= file.read()
-
-    if include_headers:
-        return StreamingResponse(
+    if not include_headers:
+        return Response(
             raw_replay_data,
             media_type="application/octet-stream",
             headers={
@@ -741,7 +737,11 @@ async def api_get_replay(
     replay_data = bytearray()
 
     # pack first section of headers.
-    replay_data += struct.pack("<Bi", row["mode"], 20150414)  # TODO: osuver
+    replay_data += struct.pack(
+        "<Bi",
+        GameMode(row["mode"]).as_vanilla,
+        20200207,
+    )  # TODO: osuver
     replay_data += app.packets.write_string(row["map_md5"])
     replay_data += app.packets.write_string(row["username"])
     replay_data += app.packets.write_string(replay_md5)
@@ -758,8 +758,7 @@ async def api_get_replay(
         row["perfect"],
         row["mods"],
     )
-
-    #replay_data += b"\x00"  # TODO: hp graph
+    replay_data += b"\x00"  # TODO: hp graph
 
     timestamp = int(row["play_time"].timestamp() * 1e7)
     replay_data += struct.pack("<q", timestamp + DATETIME_OFFSET)
@@ -775,8 +774,8 @@ async def api_get_replay(
     # can't submit scores so should not be a problem.
 
     # stream data back to the client
-    return StreamingResponse(
-        replay_data,
+    return Response(
+        bytes(replay_data),
         media_type="application/octet-stream",
         headers={
             "Content-Description": "File Transfer",
