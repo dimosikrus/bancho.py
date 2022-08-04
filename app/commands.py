@@ -272,7 +272,7 @@ async def reconnect(ctx: Context) -> Optional[str]:
     return None
 
 
-@command(Privileges.DONATOR)
+@command(Privileges.SUPPORTER)
 async def changename(ctx: Context) -> Optional[str]:
     """Change your username."""
     name = " ".join(ctx.args).strip()
@@ -304,23 +304,6 @@ async def changename(ctx: Context) -> Optional[str]:
         app.packets.notification(f"Your username has been changed to {name}!"),
     )
     ctx.player.logout()
-
-    return None
-
-@command(Privileges.DONATOR)
-async def country(ctx: Context) -> Optional[str]:
-    if len > 2:
-            return "Invalid syntax: !country <acronym>"
-
-    # all checks passed, update 
-    await app.state.services.database.execute(
-        "UPDATE users SET country = :country WHERE id = :user_id",
-        {"user_id": ctx.player.id},
-    )
-
-    ctx.player.enqueue(
-        app.packets.notification(f"Your country has been changed to {name}!"),
-    )
 
     return None
 
@@ -1405,13 +1388,15 @@ async def recalc(ctx: Context) -> Optional[str]:
 
         app.state.loop.create_task(recalc_all())
 
-        log_msg = f"{ctx.player.name} started full recalculation."
-
-        log(log_msg, Ansi.LRED)
-
-        if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
-            webhook = Webhook(webhook_url, content=log_msg)
-        await webhook.post(app.state.services.http)
+        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+        embed = DiscordEmbed(title='Started recalculation {}!'.format(ctx.player.name), description='{} started full recalculation!'.format(ctx.player.name), color='ff0000')
+        embed.set_author(name='{}'.format(ctx.player.name), url='https://osu.okayu.me/u/{}'.format(ctx.player.id), icon_url='https://a.okayu.me/{}'.format(ctx.player.id))
+        embed.set_image(url='https://a.okayu.me/{}'.format(ctx.player.id))
+        embed.set_thumbnail(url='https://a.okayu.me/{}'.format(ctx.player.id))
+        embed.set_footer(text='recalculation on osu!okayu', icon_url='https://osu.okayu.me/static/favicon/logo.png')
+        embed.set_timestamp()
+        webhook.add_embed(embed)
+        response = webhook.execute()
         return "Starting a full recalculation."
 
 

@@ -789,28 +789,6 @@ async def osuSubmitModularSelector(
             )
         """
 
-    if score.pp > 500 and not score.player.priv & Privileges.WHITELISTED and not score.mods & Mods.RELAX:
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='Sus score by {}!!!'.format(score.player), description='submitted on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
-        embed.set_author(name='{}'.format(score.player), url='https://osu.okayu.me/u/{}'.format(score.player.id), icon_url='https://a.okayu.me/{}'.format(score.player.id))
-        embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
-        embed.set_thumbnail(url='https://a.okayu.me/{}'.format(score.player.id))
-        embed.set_footer(text='played on osu!okayu', icon_url='https://osu.okayu.me/static/favicon/logo.png')
-        embed.set_timestamp()
-        webhook.add_embed(embed)
-        response = webhook.execute()
-
-    if score.pp > 1000 and not score.player.priv & Privileges.WHITELISTED and score.mods & Mods.RELAX:
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='Sus score by {}!!!'.format(score.player), description='submitted on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
-        embed.set_author(name='{}'.format(score.player), url='https://osu.okayu.me/u/{}'.format(score.player.id), icon_url='https://a.okayu.me/{}'.format(score.player.id))
-        embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
-        embed.set_thumbnail(url='https://a.okayu.me/{}'.format(score.player.id))
-        embed.set_footer(text='played on osu!okayu', icon_url='https://osu.okayu.me/static/favicon/logo.png')
-        embed.set_timestamp()
-        webhook.add_embed(embed)
-        response = webhook.execute()
-
     """ Score submission checks completed; submit the score. """
 
     if app.state.services.datadog:
@@ -880,6 +858,28 @@ async def osuSubmitModularSelector(
                 embed.set_timestamp()
                 webhook.add_embed(embed)
                 response = webhook.execute()
+
+                if score.pp > 500 and not score.player.priv & Privileges.WHITELISTED and not score.mods & Mods.RELAX:
+                    webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+                    embed = DiscordEmbed(title='Sus score by {}!!!'.format(score.player), description='submitted on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
+                    embed.set_author(name='{}'.format(score.player), url='https://osu.okayu.me/u/{}'.format(score.player.id), icon_url='https://a.okayu.me/{}'.format(score.player.id))
+                    embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
+                    embed.set_thumbnail(url='https://a.okayu.me/{}'.format(score.player.id))
+                    embed.set_footer(text='played on osu!okayu', icon_url='https://osu.okayu.me/static/favicon/logo.png')
+                    embed.set_timestamp()
+                    webhook.add_embed(embed)
+                    response = webhook.execute()
+
+                if score.pp > 1000 and not score.player.priv & Privileges.WHITELISTED and score.mods & Mods.RELAX:
+                    webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+                    embed = DiscordEmbed(title='Sus score by {}!!!'.format(score.player), description='submitted on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
+                    embed.set_author(name='{}'.format(score.player), url='https://osu.okayu.me/u/{}'.format(score.player.id), icon_url='https://a.okayu.me/{}'.format(score.player.id))
+                    embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
+                    embed.set_thumbnail(url='https://a.okayu.me/{}'.format(score.player.id))
+                    embed.set_footer(text='played on osu!okayu', icon_url='https://osu.okayu.me/static/favicon/logo.png')
+                    embed.set_timestamp()
+                    webhook.add_embed(embed)
+                    response = webhook.execute()
 
         # this score is our best score.
         # update any preexisting personal best

@@ -960,71 +960,139 @@ async def api_get_pool(
         },
     )
 
-#@router.get("/get_badges")
-#async def api_get_badges(
-#    db_conn: databases.core.Connection = Depends(acquire_db_conn),
-#):
-#
-#    rows = await db_conn.fetch_all(
-#        "SELECT id, name, icon "
-#       "FROM badges "
-#   )
-#
-#    return ORJSONResponse(
-#        {
-#            "status": "success",
-#           "id": id,
-#            "name": name,
-#            "icon": icon,
-#        },
-#    )
+def requires_authorization(
+    param_function: Callable[..., Any],
+    key_alias: str = "Authorization",
+) -> Callable[[str, str], Awaitable[Player]]:
+    async def wrapper(header_val: str = param_function(..., alias=key_alias)) -> Player:
+        if "Bearer " not in header_val:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="You should use Bearer token!",
+            )
+
+        key = header_val.split("Bearer ").pop()
+
+        if (
+            player := await app.state.sessions.players.from_cache_or_sql(token=key)
+        ) is None and (
+            player := await app.state.sessions.players.from_cache_or_sql(api_key=key)
+        ) is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authorization token.",
+            )
+
+        return player
+
+    return wrapper
 
 
-# def requires_api_key(f: Callable) -> Callable:
-#     @wraps(f)
-#     async def wrapper(conn: Connection) -> HTTPResponse:
-#         conn.resp_headers["Content-Type"] = "application/json"
-#         if "Authorization" not in conn.headers:
-#             return (400, JSON({"status": "Must provide authorization token."}))
+@router.post("/add_friend")
+async def api_add_friend(
+    player: "Player" = Depends(requires_authorization(Header, "Authorization")),
+    friend_id: int = Query(..., alias="friend_id", ge=1, le=9_223_372_036_854_775_807),
+    db_conn: databases.core.Connection = Depends(acquire_db_conn),
+):
 
-#         api_key = conn.headers["Authorization"]
+    friend = await app.state.sessions.players.from_cache_or_sql(id=friend_id)
 
-#         if api_key not in app.state.sessions.api_keys:
-#             return (401, JSON({"status": "Unknown authorization token."}))
+    if not friend:
+        return ORJSONResponse(
+            {"status": "Friend not found."},
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
 
-#         # get player from api token
-#         player_id = app.state.sessions.api_keys[api_key]
-#         p = await app.state.sessions.players.from_cache_or_sql(id=player_id)
+    if not friend.friends:
+        await friend.relationships_from_sql(db_conn)
+    if not player.friends:
+        await player.relationships_from_sql(db_conn)
 
-#         return await f(conn, p)
+    if friend_id in player.friends:
+        return ORJSONResponse(
+            {"status": "Players are already friends!"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
 
-#     return wrapper
+    await player.add_friend(friend)
+
+    return ORJSONResponse({"status": "success", "mutual": player.id in friend.friends})
 
 
-# NOTE: `Content-Type = application/json` is applied in the above decorator
-#                                         for the following api handlers.
+@router.post("/remove_friend")
+async def api_remove_friend(
+    player: "Player" = Depends(requires_authorization(Header, "Authorization")),
+    friend_id: int = Query(..., alias="friend_id", ge=1, le=9_223_372_036_854_775_807),
+    db_conn: databases.core.Connection = Depends(acquire_db_conn),
+):
+
+    friend = await app.state.sessions.players.from_cache_or_sql(id=friend_id)
+
+    if not friend:
+        return ORJSONResponse(
+            {"status": "Friend not found."},
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    if not friend.friends:
+        await friend.relationships_from_sql(db_conn)
+    if not player.friends:
+        await player.relationships_from_sql(db_conn)
+
+    if friend_id not in player.friends:
+        return ORJSONResponse(
+            {"status": "Players are not friends!"},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    await player.remove_friend(friend)
+
+    return ORJSONResponse({"status": "success"})
 
 
-# @domain.route("/set_avatar", methods=["POST", "PUT"])
-# @requires_api_key
-# async def api_set_avatar(conn: Connection, p: Player) -> HTTPResponse:
-#     """Update the tokenholder's avatar to a given file."""
-#     if "avatar" not in conn.files:
-#         return (400, JSON({"status": "must provide avatar file."}))
+@router.get("/get_friends")
+async def api_get_friends(
+    player: "Player" = Depends(requires_authorization(Header, "Authorization")),
+    action: Literal["friends", "followers"] = "friends",
+    db_conn: databases.core.Connection = Depends(acquire_db_conn),
+):
+    res = []
 
-#     ava_file = conn.files["avatar"]
+    if not player.friends:
+        await player.relationships_from_sql(db_conn)
 
-#     # block files over 4MB
-#     if len(ava_file) > (4 * 1024 * 1024):
-#         return (400, JSON({"status": "avatar file too large (max 4MB)."}))
+    if action == "friends":
+        for user in player.friends:
+            friend = await app.state.sessions.players.from_cache_or_sql(id=user)
 
-#     if ava_file[6:10] in (b"JFIF", b"Exif"):
-#         ext = "jpeg"
-#     elif ava_file.startswith(b"\211PNG\r\n\032\n"):
-#         ext = "png"
-#     else:
-#         return (400, JSON({"status": "invalid file type."}))
+            if not friend.friends:
+                await friend.relationships_from_sql(db_conn)
 
-#     # write to the avatar file
-#     (AVATARS_PATH / f"{p.id}.{ext}").write_bytes(ava_file)
-#     return JSON({"status": "success."})
+            res.append(
+                {
+                    "id": friend.id,
+                    "name": friend.name,
+                    "country": friend.geoloc["country"]["acronym"],
+                    "mutual": player.id in friend.friends,
+                },
+            )
+
+    elif action == "followers":
+        if not player.priv & Privileges.DONATOR:
+            return ORJSONResponse(
+                {"status": "You must be Donator to use this feature."},
+                status_code=status.HTTP_403_FORBIDDEN,
+            )
+
+        for user in player.followers:
+            follower = await app.state.sessions.players.from_cache_or_sql(id=user)
+
+            res.append(
+                {
+                    "id": follower.id,
+                    "name": follower.name,
+                    "country": follower.geoloc["country"]["acronym"],
+                },
+            )
+
+    return ORJSONResponse({"status": "success", action: res})
