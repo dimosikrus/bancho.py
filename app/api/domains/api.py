@@ -150,14 +150,14 @@ async def api_get_player_info(
     if username:
         user_info = await app.state.services.database.fetch_one(
             "SELECT users.id, users.name, users.safe_name, "
-            "users.priv, users.username_aka, users.clan_id,users.country, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content ,users.donor_end, users.creation_time, users.latest_activity, users.clan_id "
+            "users.priv, users.username_aka, users.clan_id, users.country, users.old_name, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content ,users.donor_end, users.creation_time, users.latest_activity, users.clan_id "
             "FROM users WHERE users.safe_name = :username",
             {"username": username.lower()},
         )
     else:  # if user_id
         user_info = await app.state.services.database.fetch_one(
             "SELECT users.id, users.name, users.safe_name, "
-            "users.priv, users.username_aka,users.clan_id, users.country, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content , users.donor_end, users.creation_time, users.latest_activity, users.clan_id "
+            "users.priv, users.username_aka, users.clan_id, users.country, users.old_name, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content, users.donor_end, users.creation_time, users.latest_activity, users.clan_id "
             "FROM users WHERE users.id = :userid",
             {"userid": user_id},
         )
@@ -637,7 +637,7 @@ async def api_get_map_scores(
             "scores": [dict(row) for row in rows],
         },
     )
-
+    
 
 @router.get("/get_score_info")
 async def api_get_score_info(

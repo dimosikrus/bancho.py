@@ -978,6 +978,18 @@ async def user(ctx: Context) -> Optional[str]:
         ),
     )
 
+@command(Privileges.ADMINISTRATOR, hidden=True)
+async def kickuser(ctx: Context) -> Optional[str]:
+    """Restrict a specified player's account, with a reason."""
+    if len(ctx.args) < 1:
+        return "Invalid syntax: !kickuser <name>"
+
+    if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
+        return "Could not find user."
+
+    await t.kickuser(ctx.player)
+
+    return f"{t} was kicked."
 
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def restrict(ctx: Context) -> Optional[str]:

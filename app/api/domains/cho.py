@@ -91,6 +91,8 @@ async def bancho_http_handler():
                 f"Players online: {len(app.state.sessions.players) - 1}",
                 '<a href="https://github.com/osuAkatsuki/bancho.py">Source code</a>',
                 "",
+                '<a href="https://github.com/divinity1437/bancho.py">Mine fork</a>',
+                "",
                 f"<b>packets handled ({len(packets)})</b>",
                 "<br>".join([f"{p.name} ({p.value})" for p in packets]),
             ),

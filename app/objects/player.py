@@ -561,6 +561,12 @@ class Player:
             # to update their client-side privileges
             self.enqueue(app.packets.bancho_privileges(self.bancho_priv))
 
+    async def kickuser(self, admin: Player) -> None:
+        if self.online:
+            # log the user out if they're offline, this
+            # will simply relog them and refresh their app.state
+            self.logout()
+
     async def restrict(self, admin: Player, reason: str) -> None:
         """Restrict `self` for `reason`, and log to sql."""
         await self.remove_privs(Privileges.NORMAL)
