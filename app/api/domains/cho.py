@@ -9,6 +9,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from pathlib import Path
+from time import perf_counter_ns as clock_ns
 from typing import Callable
 from typing import Literal
 from typing import Optional
@@ -52,15 +53,14 @@ from app.objects.menu import MenuCommands
 from app.objects.menu import MenuFunction
 from app.objects.player import Action
 from app.objects.player import ClientDetails
-from app.objects.player import OsuVersion
 from app.objects.player import OsuStream
+from app.objects.player import OsuVersion
 from app.objects.player import Player
 from app.objects.player import PresenceFilter
 from app.packets import BanchoPacketReader
 from app.packets import BasePacket
 from app.packets import ClientPackets
 from app.usecases.performance import ScoreDifficultyParams
-from time import perf_counter_ns as clock_ns
 
 
 BEATMAPS_PATH = Path.cwd() / ".data/osu"
@@ -177,6 +177,7 @@ def register(
 class Ping(BasePacket):
     async def handle(self, p: Player) -> None:
         pass  # ping be like
+
 
 @register(ClientPackets.CHANGE_ACTION, restricted=True)
 class ChangeAction(BasePacket):
@@ -380,7 +381,7 @@ RESTRICTED_MSG = (
 )
 
 WELCOME_NOTIFICATION = app.packets.notification(
-    f"Welcome back to {BASE_DOMAIN}!\nRunning bancho.py v{app.settings.VERSION}.\nLogin time: {elapsed}"
+    f"Welcome back to {BASE_DOMAIN}!\nRunning bancho.py v{app.settings.VERSION}.\nLogin time: {elapsed}",
 )
 
 OFFLINE_NOTIFICATION = app.packets.notification(
@@ -511,7 +512,7 @@ async def login(
         }
 
     """
-    
+
     running_under_wine = login_data["adapters_str"] == "runningunderwine"
     adapters = [a for a in login_data["adapters_str"][:-1].split(".")]
 
@@ -914,7 +915,6 @@ async def login(
     p.update_latest_activity_soon()
 
     return {"osu_token": p.token, "response_body": bytes(data)}
-
 
 
 @register(ClientPackets.START_SPECTATING)
