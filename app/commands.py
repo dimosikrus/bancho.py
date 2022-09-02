@@ -615,9 +615,6 @@ async def request(ctx: Context) -> Optional[str]:
 
     bmap = ctx.player.last_np["bmap"]
 
-    if bmap.status != RankedStatus.Pending:
-        return "Only pending maps may be requested for status change."
-
     await app.state.services.database.execute(
         "INSERT INTO map_requests "
         "(map_id, player_id, datetime, active) "
@@ -639,8 +636,8 @@ async def request(ctx: Context) -> Optional[str]:
 
     webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
     embed = DiscordEmbed(
-        title=f"New request from {ctx.player.name}!",
-        description="{} request {} for rank/love.\nhttps://osu.ppy.sh/b/{}".format(
+        title=f"New request from **{ctx.player.name}**!",
+        description="**{}** request **{}** for rank/love.\nhttps://osu.ppy.sh/b/{}".format(
             ctx.player.name, bmap, bmap.id,
         ),
         color="2cc77c",
@@ -799,8 +796,8 @@ async def _map(ctx: Context) -> Optional[str]:
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_NEW_RANKED_WEBHOOK)
         embed = DiscordEmbed(
-            title=f"New {new_status}!",
-            description="{} updated to {} {}.".format(
+            title=f"New **{new_status}**!",
+            description="**{}** updated to **{}** **{}**.".format(
                 ctx.player.name, new_status, bmap,
             ),
             color="2cc77c",
@@ -1430,14 +1427,34 @@ async def recalc(ctx: Context) -> Optional[str]:
                     await asyncio.sleep(0.01)
 
             elapsed = app.utils.seconds_readable(int(time.time() - st))
+            webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+            embed = DiscordEmbed(
+                title=f"Recalculation completed!",
+                description=f"Elapsed: **{elapsed}**",
+                color="ff0000",
+            )
+            embed.set_author(
+                name=f"{ctx.player.name}",
+                url=f"https://osu.okayu.me/u/{ctx.player.id}",
+                icon_url=f"https://a.okayu.me/{ctx.player.id}",
+            )
+            embed.set_image(url=f"https://a.okayu.me/{ctx.player.id}")
+            embed.set_thumbnail(url=f"https://a.okayu.me/{ctx.player.id}")
+            embed.set_footer(
+                text="recalculation on osu!okayu",
+                icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            )
+            embed.set_timestamp()
+            webhook.add_embed(embed)
+            response = webhook.execute()
             staff_chan.send_bot(f"Recalculation complete. | Elapsed: {elapsed}")
 
         app.state.loop.create_task(recalc_all())
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
         embed = DiscordEmbed(
-            title=f"Started recalculation {ctx.player.name}!",
-            description=f"{ctx.player.name} started full recalculation!",
+            title=f"Started recalculation **{ctx.player.name}**!",
+            description=f"**{ctx.player.name}** started full recalculation!",
             color="ff0000",
         )
         embed.set_author(
