@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import os
 import pprint
+import time
 from typing import Any
 
 import aiohttp
@@ -18,6 +19,7 @@ from fastapi.requests import Request
 from fastapi.responses import ORJSONResponse
 from fastapi.responses import Response
 from starlette.middleware.base import RequestResponseEndpoint
+from discord import SyncWebhook
 
 import app.bg_loops
 import app.settings
@@ -28,6 +30,7 @@ from app.api import middlewares
 from app.logging import Ansi
 from app.logging import log
 from app.objects import collections
+from time import perf_counter_ns as clock_ns
 
 
 class BanchoAPI(FastAPI):
@@ -119,6 +122,8 @@ def init_events(asgi_app: BanchoAPI) -> None:
                 Ansi.LRED,
             )
 
+        start_time = clock_ns()
+
         app.state.services.http = aiohttp.ClientSession(
             json_serialize=lambda x: orjson.dumps(x).decode(),
         )
@@ -142,6 +147,9 @@ def init_events(asgi_app: BanchoAPI) -> None:
         await app.bg_loops.initialize_housekeeping_tasks()
 
         log("Startup process complete.", Ansi.LGREEN)
+        elapsed = app.logging.magnitude_fmt_time(clock_ns() - start_time)
+        webhook = SyncWebhook.from_url(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+        webhook.send(f":white_check_mark: **bancho.py** runned successfully. Elapsed: **{ elapsed }**")
         log(f"Listening @ {app.settings.SERVER_ADDR}", Ansi.LMAGENTA)
 
     @asgi_app.on_event("shutdown")
