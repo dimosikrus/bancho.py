@@ -180,7 +180,8 @@ async def api_get_player_info(
 
         clan_id = user_info["clan_id"]
         clan_info = await app.state.services.database.fetch_one(
-            "SELECT * FROM clans WHERE id = :clan_id", {"clan_id": clan_id},
+            "SELECT * FROM clans WHERE id = :clan_id",
+            {"clan_id": clan_id},
         )
 
         if clan_info is not None:
@@ -644,7 +645,7 @@ async def api_get_map_scores(
             "scores": [dict(row) for row in rows],
         },
     )
-    
+
 
 @router.get("/get_score_info")
 async def api_get_score_info(
