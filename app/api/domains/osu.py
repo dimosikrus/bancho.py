@@ -855,7 +855,10 @@ async def osuSubmitModularSelector(
                 embed = DiscordEmbed(
                     title=f"New score by {score.player}!",
                     description="submitted #1 on: {}+{!r} with {:.2f}% for {}.".format(
-                        score.bmap.embed, score.mods, score.acc, performance,
+                        score.bmap.embed,
+                        score.mods,
+                        score.acc,
+                        performance,
                     ),
                     color="03b2f8",
                 )
@@ -887,7 +890,10 @@ async def osuSubmitModularSelector(
                     embed = DiscordEmbed(
                         title=f"Sus score by {score.player}!!!",
                         description="submitted on: {}+{!r} with {:.2f}% for {}.".format(
-                            score.bmap.embed, score.mods, score.acc, score.pp,
+                            score.bmap.embed,
+                            score.mods,
+                            score.acc,
+                            score.pp,
                         ),
                         color="ff0000",
                     )
@@ -921,7 +927,10 @@ async def osuSubmitModularSelector(
                     embed = DiscordEmbed(
                         title=f"Sus score by {score.player}!!!",
                         description="submitted on: {}+{!r} with {:.2f}% for {}.".format(
-                            score.bmap.embed, score.mods, score.acc, score.pp,
+                            score.bmap.embed,
+                            score.mods,
+                            score.acc,
+                            score.pp,
                         ),
                         color="ff0000",
                     )

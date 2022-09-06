@@ -638,7 +638,9 @@ async def request(ctx: Context) -> Optional[str]:
     embed = DiscordEmbed(
         title=f"New request from **{ctx.player.name}**!",
         description="**{}** request **{}** for rank/love.\nhttps://osu.ppy.sh/b/{}".format(
-            ctx.player.name, bmap, bmap.id,
+            ctx.player.name,
+            bmap,
+            bmap.id,
         ),
         color="2cc77c",
     )
@@ -798,7 +800,9 @@ async def _map(ctx: Context) -> Optional[str]:
         embed = DiscordEmbed(
             title=f"New **{new_status}**!",
             description="**{}** updated to **{}** **{}**.".format(
-                ctx.player.name, new_status, bmap,
+                ctx.player.name,
+                new_status,
+                bmap,
             ),
             color="2cc77c",
         )
@@ -1009,6 +1013,7 @@ async def user(ctx: Context) -> Optional[str]:
         ),
     )
 
+
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def kickuser(ctx: Context) -> Optional[str]:
     """Restrict a specified player's account, with a reason."""
@@ -1021,6 +1026,7 @@ async def kickuser(ctx: Context) -> Optional[str]:
     await t.kickuser(ctx.player)
 
     return f"{t} was kicked."
+
 
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def restrict(ctx: Context) -> Optional[str]:
