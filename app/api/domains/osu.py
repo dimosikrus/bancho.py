@@ -285,7 +285,7 @@ async def osuGetBeatmapInfo(
             {
                 "map_md5": row["md5"],
                 "user_id": player.id,
-                "mode": player.status.mode,
+                "mode": player.status.mode.as_vanilla,
             },
         )
 
@@ -296,7 +296,7 @@ async def osuGetBeatmapInfo(
             {
                 "map_md5": row["md5"],
                 "user_id": player.id,
-                "mode": player.status.mode,
+                "mode": player.status.mode.as_vanilla,
             },
         ):
             grades[score["mode"]] = score["grade"]
