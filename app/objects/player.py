@@ -720,7 +720,25 @@ class Player:
 
         log(f"Silenced {self}.", Ansi.LCYAN)
 
-    async def wipeuser(self, admin: Player) -> None:
+    async def wipeuser(self, admin: Player, reason: str) -> None:
+        """Wipe `self` for `reason`, and log to sql."""
+
+        await app.state.services.database.execute(
+            "INSERT INTO logs "
+            "(`from`, `to`, `action`, `msg`, `time`) "
+            "VALUES (:from, :to, :action, :msg, NOW())",
+            {"from": admin.id, "to": self.id, "action": "wipe", "msg": reason},
+        )
+        
+        for mode in (0, 1, 2, 3, 4, 5, 6, 8):
+            await app.state.services.redis.zrem(
+                f"bancho:leaderboard:{mode}",
+                self.id,
+            )
+            await app.state.services.redis.zrem(
+                f'bancho:leaderboard:{mode}:{self.geoloc["country"]["acronym"]}',
+                self.id,
+            )
 
         await app.state.services.database.execute(
             "DELETE FROM scores WHERE userid = :userid",
@@ -731,9 +749,11 @@ class Player:
             {"id": self.id},
         )
 
+        await app.state.services.database.execute("DELETE FROM scores WHERE userid = :user_id", {"user_id": self.id})
+
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
         embed = DiscordEmbed(
-            title=f"{admin} wipe {self.name}!",
+            title=f"{admin} wipe {self.name} for {reason}!",
             description=f"{admin} wipe {self.name}.",
             color="ff0000",
         )

@@ -311,6 +311,11 @@ class Beatmap:
         return f"{self.artist} - {self.title} [{self.version}]"
 
     @property
+    def full_name_no_diff(self) -> str:
+        """The full osu! formatted name `self`."""
+        return f"{self.artist} - {self.title}"
+
+    @property
     def url(self) -> str:
         """The osu! beatmap url for `self`."""
         return f"https://osu.{app.settings.DOMAIN}/beatmapsets/{self.set.id}/{self.id}"

@@ -1016,7 +1016,7 @@ async def user(ctx: Context) -> Optional[str]:
 
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def kickuser(ctx: Context) -> Optional[str]:
-    """Restrict a specified player's account, with a reason."""
+    """Kick user."""
     if len(ctx.args) < 1:
         return "Invalid syntax: !kickuser <name>"
 
@@ -1056,8 +1056,8 @@ async def restrict(ctx: Context) -> Optional[str]:
 
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def wipeuser(ctx: Context) -> Optional[str]:
-    if len(ctx.args) < 1:
-        return "Invalid syntax: !wipeuser <name>"
+    if len(ctx.args) < 2:
+        return "Invalid syntax: !wipeuser <name> <reason>"
 
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return "Could not find user."
@@ -1065,7 +1065,12 @@ async def wipeuser(ctx: Context) -> Optional[str]:
     if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
         return "Only administrator can do this comma."
 
-    await t.wipeuser(ctx.player)
+    reason = " ".join(ctx.args[1:])
+
+    if reason in SHORTHAND_REASONS:
+        reason = SHORTHAND_REASONS[reason]
+
+    await t.wipeuser(ctx.player, reason)
 
     return f"{t} was wiped."
 
