@@ -851,16 +851,25 @@ async def osuSubmitModularSelector(
 
                 announce_chan.send(" ".join(ann), sender=score.player, to_self=True)
 
-                webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_SCORE_WEBHOOK)
+                webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
                 embed = DiscordEmbed(
-                    title=f"New score by {score.player}!",
-                    description="submitted #1 on: {}+{!r} with {:.2f}% for {}.".format(
-                        score.bmap.embed,
-                        score.mods,
-                        score.acc,
-                        performance,
+                    title=f"New #1 score by {score.player}!!!",
+                    description="**submitted on: https://osu.ppy.sh/b/{}**".format(
+                        score.bmap.id
                     ),
-                    color="03b2f8",
+                    color="00FFFF",
+                )
+                embed.add_embed_field(
+                    name='Score mods:', 
+                    value='**{!r}**'.format(score.mods),
+                )
+                embed.add_embed_field(
+                    name='Accuracy:', 
+                    value='**{:.2f}%**'.format(score.acc),
+                )
+                embed.add_embed_field(
+                    name='Score PP:', 
+                    value='**{:.2f}PP**'.format(score.pp),
                 )
                 embed.set_author(
                     name=f"{score.player}",
@@ -889,13 +898,22 @@ async def osuSubmitModularSelector(
                     webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
                     embed = DiscordEmbed(
                         title=f"Sus score by {score.player}!!!",
-                        description="submitted on: {}+{!r} with {:.2f}% for {}.".format(
-                            score.bmap.embed,
-                            score.mods,
-                            score.acc,
-                            score.pp,
+                        description="**submitted on: https://osu.ppy.sh/b/{}**".format(
+                            score.bmap.id
                         ),
                         color="ff0000",
+                    )
+                    embed.add_embed_field(
+                        name='Score mods:', 
+                        value='**{!r}**'.format(score.mods),
+                    )
+                    embed.add_embed_field(
+                        name='Accuracy:', 
+                        value='**{:.2f}%**'.format(score.acc),
+                    )
+                    embed.add_embed_field(
+                        name='Score PP:', 
+                        value='**{:.2f}PP**'.format(score.pp),
                     )
                     embed.set_author(
                         name=f"{score.player}",
@@ -919,20 +937,29 @@ async def osuSubmitModularSelector(
                     response = webhook.execute()
 
                 if (
-                    score.pp > 1000
+                    score.pp > 800
                     and not score.player.priv & Privileges.WHITELISTED
                     and score.mods & Mods.RELAX
                 ):
                     webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
                     embed = DiscordEmbed(
                         title=f"Sus score by {score.player}!!!",
-                        description="submitted on: {}+{!r} with {:.2f}% for {}.".format(
-                            score.bmap.embed,
-                            score.mods,
-                            score.acc,
-                            score.pp,
+                        description="**submitted on: https://osu.ppy.sh/b/{}**".format(
+                            score.bmap.id
                         ),
                         color="ff0000",
+                    )
+                    embed.add_embed_field(
+                        name='Score mods:', 
+                        value='**{!r}**'.format(score.mods),
+                    )
+                    embed.add_embed_field(
+                        name='Accuracy:', 
+                        value='**{:.2f}%**'.format(score.acc),
+                    )
+                    embed.add_embed_field(
+                        name='Score PP:', 
+                        value='**{:.2f}PP**'.format(score.pp),
                     )
                     embed.set_author(
                         name=f"{score.player}",
