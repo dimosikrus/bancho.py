@@ -851,7 +851,7 @@ async def osuSubmitModularSelector(
 
                 announce_chan.send(" ".join(ann), sender=score.player, to_self=True)
 
-                webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+                webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_SCORE_WEBHOOK)
                 embed = DiscordEmbed(
                     title=f"New #1 score by {score.player}!!!",
                     description="**submitted on: https://osu.ppy.sh/b/{}**".format(
