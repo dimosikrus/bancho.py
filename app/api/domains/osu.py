@@ -871,6 +871,10 @@ async def osuSubmitModularSelector(
                     name='Score PP:', 
                     value='**{:.2f}PP**'.format(score.pp),
                 )
+                embed.add_embed_field(
+                        name='Gamemode:', 
+                        value='**{}**'.format(score.mode!r),
+                    )
                 embed.set_author(
                     name=f"{score.player}",
                     url=f"https://osu.okayu.me/u/{score.player.id}",
@@ -914,6 +918,10 @@ async def osuSubmitModularSelector(
                     embed.add_embed_field(
                         name='Score PP:', 
                         value='**{:.2f}PP**'.format(score.pp),
+                    )
+                    embed.add_embed_field(
+                        name='Gamemode:', 
+                        value='**{}**'.format(score.mode!r),
                     )
                     embed.set_author(
                         name=f"{score.player}",
@@ -960,6 +968,10 @@ async def osuSubmitModularSelector(
                     embed.add_embed_field(
                         name='Score PP:', 
                         value='**{:.2f}PP**'.format(score.pp),
+                    )
+                    embed.add_embed_field(
+                        name='Gamemode:', 
+                        value='**{}**'.format(score.mode!r),
                     )
                     embed.set_author(
                         name=f"{score.player}",
