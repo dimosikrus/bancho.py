@@ -873,7 +873,7 @@ async def osuSubmitModularSelector(
                 )
                 embed.add_embed_field(
                         name='Gamemode:', 
-                        value='**{}**'.format(score.mode!r),
+                        value='**{!r}**'.format(score.mode),
                     )
                 embed.set_author(
                     name=f"{score.player}",
@@ -921,7 +921,7 @@ async def osuSubmitModularSelector(
                     )
                     embed.add_embed_field(
                         name='Gamemode:', 
-                        value='**{}**'.format(score.mode!r),
+                        value='**{!r}**'.format(score.mode),
                     )
                     embed.set_author(
                         name=f"{score.player}",
@@ -971,7 +971,7 @@ async def osuSubmitModularSelector(
                     )
                     embed.add_embed_field(
                         name='Gamemode:', 
-                        value='**{}**'.format(score.mode!r),
+                        value='**{!r}**'.format(score.mode),
                     )
                     embed.set_author(
                         name=f"{score.player}",
