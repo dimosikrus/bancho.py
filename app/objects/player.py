@@ -597,9 +597,20 @@ class Player:
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
         embed = DiscordEmbed(
             title=f"{admin} restricted {self.name}!",
-            description=f"{admin} restricted {self.name} for {reason}.",
             color="ff0000",
         )
+        embed.add_embed_field(
+                    name='User:', 
+                    value='**{}**'.format(self.name),
+                )
+        embed.add_embed_field(
+                    name='Admin:', 
+                    value='**{}**'.format(admin),
+                )
+        embed.add_embed_field(
+                    name='Reason:', 
+                    value='**{}**'.format(reason),
+                )
         embed.set_author(
             name=f"{self} has been restricted",
             url=f"https://osu.okayu.me/u/{self.id}",
@@ -650,7 +661,6 @@ class Player:
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
         embed = DiscordEmbed(
             title=f"{admin} unrestricted {self.name}!",
-            description=f"{admin} unrestricted {self.name} for {reason}.",
             color="00ff0d",
         )
         embed.set_author(
@@ -658,6 +668,18 @@ class Player:
             url=f"https://osu.okayu.me/u/{self.id}",
             icon_url=f"https://a.okayu.me/{self.id}",
         )
+        embed.add_embed_field(
+                    name='User:', 
+                    value='**{}**'.format(self.name),
+                )
+        embed.add_embed_field(
+                    name='Admin:', 
+                    value='**{}**'.format(admin),
+                )
+        embed.add_embed_field(
+                    name='Reason:', 
+                    value='**{}**'.format(reason),
+                )
         embed.set_thumbnail(url=f"https://a.okayu.me/{self.id}")
         embed.set_footer(
             text=f"{self.name} unrestricted on osu!okayu",
@@ -701,9 +723,24 @@ class Player:
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
         embed = DiscordEmbed(
             title=f"{admin} silence {self.name}!",
-            description=f"{admin} silence {self.name} for {reason}.",
             color="ff0000",
         )
+        embed.add_embed_field(
+                    name='User:', 
+                    value='**{}**'.format(self.name),
+                )
+        embed.add_embed_field(
+                    name='Admin:', 
+                    value='**{}**'.format(admin),
+                )
+        embed.add_embed_field(
+                    name='Reason:', 
+                    value='**{}**'.format(reason),
+                )
+        embed.add_embed_field(
+                    name='duration:', 
+                    value='**{}**'.format(self.silence_end),
+                )
         embed.set_author(
             name=f"{self.name} has been silenced",
             url=f"https://osu.okayu.me/u/{self.id}",
@@ -753,10 +790,22 @@ class Player:
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
         embed = DiscordEmbed(
-            title=f"{admin} wipe {self.name} for {reason}!",
+            title=f"**{admin}** wipe **{self.name}** for **{reason}**!",
             description=f"{admin} wipe {self.name}.",
             color="ff0000",
         )
+        embed.add_embed_field(
+                    name='User:', 
+                    value='**{}**'.format(self.name),
+                )
+        embed.add_embed_field(
+                    name='Admin:', 
+                    value='**{}**'.format(admin),
+                )
+        embed.add_embed_field(
+                    name='Reason:', 
+                    value='**{}**'.format(reason),
+                )
         embed.set_author(
             name=f"{self.name} has been wiped",
             url=f"https://osu.okayu.me/u/{self.id}",
@@ -793,9 +842,20 @@ class Player:
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
         embed = DiscordEmbed(
             title=f"{admin} UnSilence {self.name}!",
-            description=f"{admin} UnSilence {self.name} for {reason}.",
             color="00ff0d",
         )
+        embed.add_embed_field(
+                    name='User:', 
+                    value='**{}**'.format(self.name),
+                )
+        embed.add_embed_field(
+                    name='Admin:', 
+                    value='**{}**'.format(admin),
+                )
+        embed.add_embed_field(
+                    name='Reason:', 
+                    value='**{}**'.format(reason),
+                )
         embed.set_author(
             name=f"{self.id} has been unsilenced",
             url=f"https://osu.okayu.me/u/{self.id}",
