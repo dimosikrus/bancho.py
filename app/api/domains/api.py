@@ -310,11 +310,13 @@ async def api_get_player_status(
 
 @router.get("/get_player_scores")
 async def api_get_player_scores(
-    scope: Literal["recent", "best"],
+    scope: Literal["recent", "best", "first"],
     user_id: Optional[int] = Query(None, alias="id", ge=3, le=2_147_483_647),
     username: Optional[str] = Query(None, alias="name", regex=regexes.USERNAME.pattern),
     mods_arg: Optional[str] = Query(None, alias="mods"),
     mode_arg: int = Query(0, alias="mode", ge=0, le=11),
+    bmap_md5: str = Query(None, alias="md5"),
+    bmap_id: int = Query(None, alias="map_id", ge=1, le=2_147_483_647),
     limit: int = Query(25, ge=1, le=100),
     include_loved: bool = False,
     include_failed: bool = True,
@@ -378,7 +380,7 @@ async def api_get_player_scores(
     query = [
         "SELECT t.id, t.map_md5, t.score, t.pp, t.acc, t.max_combo, "
         "t.mods, t.n300, t.n100, t.n50, t.nmiss, t.ngeki, t.nkatu, t.grade, "
-        "t.status, t.mode, t.play_time, t.time_elapsed, t.perfect "
+        "t.status, t.mode, t.play_time, t.perfect "
         "FROM scores t "
         "INNER JOIN maps b ON t.map_md5 = b.md5 "
         "WHERE t.userid = :user_id AND t.mode = :mode",
@@ -406,14 +408,34 @@ async def api_get_player_scores(
         query.append("AND t.status = 2 AND b.status IN :statuses")
         params["statuses"] = allowed_statuses
         sort = "t.pp"
-    else:
+    elif scope == "recent":
         if not include_failed:
             query.append("AND t.status != 0")
 
         sort = "t.play_time"
+    else:
+        allowed_statuses = [2, 3, 5]
+        query.append("AND t.status = 2 AND b.status IN :statuses")
+        query[0].replace("FROM scores", "FROM first_places")
+        params["statuses"] = allowed_statuses
+
+        if mode < 4:
+            sort = "t.score"
+        else:
+            sort = "t.pp"
+
+    if bmap_md5 is not None or bmap_id is not None:
+        if bmap_md5 is not None:
+            query.append("AND b.md5 = :bmap_md5")
+            params["bmap_md5"] = bmap_md5
+        else:
+            query.append("AND b.id = :bmap_id")
+            params["bmap_id"] = bmap_id
+
 
     query.append(f"ORDER BY {sort} DESC LIMIT :limit")
     params["limit"] = limit
+
 
     rows = [
         dict(row)
@@ -422,6 +444,7 @@ async def api_get_player_scores(
 
     # fetch & return info from sql
     for row in rows:
+        row["mods_readable"] = Mods(row["mods"]).__repr__()
         bmap = await Beatmap.from_md5(row.pop("map_md5"))
         row["beatmap"] = bmap.as_dict if bmap else None
 
