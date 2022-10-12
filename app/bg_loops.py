@@ -28,6 +28,7 @@ async def initialize_housekeeping_tasks() -> None:
                 _remove_expired_donation_privileges(interval=30 * 60),
                 _update_bot_status(interval=5 * 60),
                 _disconnect_ghosts(interval=OSU_CLIENT_MIN_PING_INTERVAL // 3),
+                _rankrecalc(interval=60 * 60),
             )
         },
     )
@@ -88,3 +89,30 @@ async def _update_bot_status(interval: int) -> None:
     while True:
         await asyncio.sleep(interval)
         app.packets.bot_stats.cache_clear()
+
+async def _rankrecalc(interval: int) -> None:
+    """Update users rank every `interval`."""
+    while True:
+        await asyncio.sleep(interval)
+
+        scores = await app.state.services.database.fetch_all(
+        "SELECT stats.id,users.priv,country,stats.pp,stats.mode FROM `users` INNER JOIN stats on users.id = stats.id",
+        )
+
+        staff_chan = app.state.sessions.channels["#staff"]  # log any errs here
+        staff_chan.send_bot(f"Auto rank recalculation started.")
+
+        for i in scores:
+
+            if i[1] & Privileges.NORMAL:
+                user_id = i[0]
+                await app.state.services.redis.zadd(
+                    f"bancho:leaderboard:{i[4]}",
+                    {str(user_id): i[3]},
+                )
+
+                # country rank
+                await app.state.services.redis.zadd(
+                    f"bancho:leaderboard:{i[4]}:{i[2]}",
+                    {str(user_id): i[3]},
+                )
