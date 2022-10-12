@@ -854,9 +854,7 @@ async def osuSubmitModularSelector(
                 webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_SCORE_WEBHOOK)
                 embed = DiscordEmbed(
                     title=f"New #1 score by {score.player}!!!",
-                    description="**submitted on: https://osu.ppy.sh/b/{}**".format(
-                        score.bmap.id
-                    ),
+                    description=f"**submitted on: [{bmap}](https://osu.ppy.sh/b/{bmap.id})**",
                     color="00FFFF",
                 )
                 embed.add_embed_field(
@@ -874,7 +872,11 @@ async def osuSubmitModularSelector(
                 embed.add_embed_field(
                         name='Gamemode:', 
                         value='**{!r}**'.format(score.mode),
-                    )
+                )
+                embed.add_embed_field(
+                    name='Download:', 
+                    value=f"[🐱](https://catboy.best/d/{bmap.id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
+                )
                 embed.set_author(
                     name=f"{score.player}",
                     url=f"https://osu.okayu.me/u/{score.player.id}",
@@ -902,9 +904,7 @@ async def osuSubmitModularSelector(
                     webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
                     embed = DiscordEmbed(
                         title=f"Sus score by {score.player}!!!",
-                        description="**submitted on: https://osu.ppy.sh/b/{}**".format(
-                            score.bmap.id
-                        ),
+                        description=f"**submitted on: [{bmap}](https://osu.ppy.sh/b/{bmap.id})**",
                         color="ff0000",
                     )
                     embed.add_embed_field(
@@ -952,9 +952,7 @@ async def osuSubmitModularSelector(
                     webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
                     embed = DiscordEmbed(
                         title=f"Sus score by {score.player}!!!",
-                        description="**submitted on: https://osu.ppy.sh/b/{}**".format(
-                            score.bmap.id
-                        ),
+                        description=f"**submitted on: [{bmap}](https://osu.ppy.sh/b/{bmap.id})**",
                         color="ff0000",
                     )
                     embed.add_embed_field(

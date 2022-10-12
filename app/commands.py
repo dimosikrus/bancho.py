@@ -272,6 +272,28 @@ async def reconnect(ctx: Context) -> Optional[str]:
 
     return None
 
+@command(Privileges.SUPPORTER)
+async def changecountry(ctx: Context) -> Optional[str]:
+    """Change your country."""
+    country = " ".join(ctx.args).lower()
+
+    if country in app.state.services.country_codes:
+        # all checks passed, update their country
+        await app.state.services.database.execute(
+        "UPDATE users SET country = :country WHERE id = :user_id",
+        {"country": country, "user_id": ctx.player.id},
+    )
+        ctx.player.enqueue(
+            app.packets.notification(f"Your country has been changed to {country}!"),
+    )
+        ctx.player.logout()
+    else:
+        ctx.player.enqueue(
+            app.packets.notification(f"Wrong country!"),
+        )
+
+    return None
+
 
 @command(Privileges.SUPPORTER)
 async def changename(ctx: Context) -> Optional[str]:
@@ -634,20 +656,20 @@ async def request(ctx: Context) -> Optional[str]:
         },
     )
 
-    webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+    webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_NEW_REQUEST_WEBHOOK)
     embed = DiscordEmbed(
         title=f"New request from **{ctx.player.name}**!",
-        description="**{}** request **{}** for rank/love.\nhttps://osu.ppy.sh/b/{}".format(
-            ctx.player.name,
-            bmap,
-            bmap.id,
-        ),
+        description=f"**{ctx.player.name}** request **[{bmap}](https://osu.ppy.sh/b/{bmap.id})** for rank/love.",
         color="2cc77c",
     )
     embed.set_author(
         name=f"{ctx.player.name}",
         url=f"https://osu.okayu.me/u/{ctx.player.id}",
         icon_url=f"https://a.okayu.me/{ctx.player.id}",
+    )
+    embed.add_embed_field(
+        name='Download:', 
+        value=f"[🐱](https://catboy.best/d/{bmap.id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
     )
     embed.set_image(
         url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
@@ -799,17 +821,17 @@ async def _map(ctx: Context) -> Optional[str]:
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_NEW_RANKED_WEBHOOK)
         embed = DiscordEmbed(
             title=f"New **{new_status}**!",
-            description="**{}** updated to **{}** **{}**.".format(
-                ctx.player.name,
-                new_status,
-                bmap,
-            ),
+            description=f"**{ctx.player.name}** updated to **{new_status}** **{bmap}**.",
             color="2cc77c",
         )
         embed.set_author(
             name=f"{ctx.player.name}",
             url=f"https://osu.okayu.me/u/{ctx.player.id}",
             icon_url=f"https://a.okayu.me/{ctx.player.id}",
+        )
+        embed.add_embed_field(
+            name='Download:', 
+            value=f"[🐱](https://catboy.best/d/{bmap.id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
         )
         embed.set_image(
             url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
