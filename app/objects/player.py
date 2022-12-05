@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import time
 import uuid
+import hashlib
+import bcrypt
 from dataclasses import dataclass
 from datetime import date
 from enum import Enum
@@ -569,6 +571,54 @@ class Player:
             # log the user out if they're offline, this
             # will simply relog them and refresh their app.state
             self.logout()
+
+    async def changeuserpass(self, admin: Player, reason: str) -> None:
+        pw_plaintext = "123456"
+        pw_md5 = hashlib.md5(pw_plaintext.encode()).hexdigest().encode()
+        pw_bcrypt = bcrypt.hashpw(pw_md5, bcrypt.gensalt())
+
+        await app.state.services.database.execute(
+            "UPDATE users SET pw_bcrypt = :pw_bcrypt WHERE id = :user_id",
+            {"pw_bcrypt": pw_bcrypt, "user_id": self.id},
+        )
+
+        await app.state.services.database.execute(
+            "INSERT INTO logs "
+            "(`from`, `to`, `action`, `msg`, `time`) "
+            "VALUES (:from, :to, :action, :msg, NOW())",
+            {"from": admin.id, "to": self.id, "action": "restrict", "msg": reason},
+        )
+
+        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+        embed = DiscordEmbed(
+            title=f"{admin} changed passwod for {self.name}!",
+            color="ff0000",
+        )
+        embed.add_embed_field(
+                    name='User:', 
+                    value='**{}**'.format(self.name),
+                )
+        embed.add_embed_field(
+                    name='Admin:', 
+                    value='**{}**'.format(admin),
+                )
+        embed.add_embed_field(
+                    name='Reason:', 
+                    value='**{}**'.format(reason),
+                )
+        embed.set_author(
+            name=f"{admin} changed passwod for {self.name}!",
+            url=f"https://osu.okayu.me/u/{self.id}",
+            icon_url=f"https://a.okayu.me/{self.id}",
+        )
+        embed.set_thumbnail(url=f"https://a.okayu.me/{self.id}")
+        embed.set_footer(
+            text=f"{self.name} have new password on osu!okayu",
+            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+        )
+        embed.set_timestamp()
+        webhook.add_embed(embed)
+        response = webhook.execute()
 
     async def restrict(self, admin: Player, reason: str) -> None:
         """Restrict `self` for `reason`, and log to sql."""

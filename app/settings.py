@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from typing import Optional
 
 from databases import DatabaseURL
@@ -75,6 +81,9 @@ DISCORD_AUDIT_LOG_WEBHOOK: str = config("DISCORD_AUDIT_LOG_WEBHOOK")
 DISCORD_AUDIT_SCORE_WEBHOOK: str = config("DISCORD_AUDIT_SCORE_WEBHOOK")
 DISCORD_AUDIT_NEW_RANKED_WEBHOOK: str = config("DISCORD_AUDIT_NEW_RANKED_WEBHOOK")
 DISCORD_AUDIT_NEW_REQUEST_WEBHOOK: str = config("DISCORD_AUDIT_NEW_REQUEST_WEBHOOK")
+
+STD_PP_CAP = int(os.environ["STD_PP_CAP"])
+RX_PP_CAP = int(os.environ["RX_PP_CAP"])
 
 AUTOMATICALLY_REPORT_PROBLEMS: bool = config(
     "AUTOMATICALLY_REPORT_PROBLEMS",

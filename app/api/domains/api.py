@@ -27,6 +27,8 @@ from app.objects.beatmap import Beatmap
 from app.objects.clan import Clan
 from app.objects.player import Player
 from app.state.services import acquire_db_conn
+from app.utils import get_level
+from app.utils import get_level_progress
 
 AVATARS_PATH = SystemPath.cwd() / ".data/avatars"
 BEATMAPS_PATH = SystemPath.cwd() / ".data/osu"
@@ -226,6 +228,12 @@ async def api_get_player_info(
             mode_stats["country_rank"] = (
                 country_rank + 1 if country_rank is not None else 0
             )
+
+            curr_level = get_level(mode_stats["tscore"])
+            mode_stats["levels"] = {
+                "current_level": curr_level,
+                "progress": get_level_progress(curr_level, mode_stats["tscore"]),
+            }
 
             mode = str(mode_stats.pop("mode"))
             api_data["stats"][mode] = mode_stats

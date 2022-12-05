@@ -785,17 +785,55 @@ async def osuSubmitModularSelector(
     if (  # check for pp caps on ranked & approved maps for appropriate players.
         score.bmap.awards_ranked_pp
         and not (score.player.priv & Privileges.WHITELISTED or score.player.restricted)
+        and score.mode.as_vanilla == 0
     ):
         # Get the PP cap for the current context.
-        """# TODO: find where to put autoban pp
-        pp_cap = app.app.settings.AUTOBAN_PP[score.mode][score.mods & Mods.FLASHLIGHT != 0]
-
+        pp_cap = app.settings.STD_PP_CAP
+        if score.mode == GameMode.RELAX_OSU:
+            pp_cap = app.settings.RX_PP_CAP
+        if score.mode == GameMode.AUTOPILOT_OSU:
+            pp_cap = app.settings.RX_PP_CAP
+            
         if score.pp > pp_cap:
             await score.player.restrict(
                 admin=app.state.sessions.bot,
                 reason=f"[{score.mode!r} {score.mods!r}] autoban @ {score.pp:.2f}pp",
             )
-        """
+
+            webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+            embed = DiscordEmbed(
+                title=f"{admin} restricted {score.player}!",
+                color="ff0000",
+            )
+            embed.add_embed_field(
+                        name='User:', 
+                        value='**{}**'.format(score.player),
+                    )
+            embed.add_embed_field(
+                        name='Admin:', 
+                        value='**{}**'.format(admin),
+                    )
+            embed.add_embed_field(
+                        name='Reason:', 
+                        value='**{}**'.format(reason),
+                    )
+            embed.set_author(
+                name=f"{score.player} has been restricted",
+                url=f"https://osu.okayu.me/u/{score.player}",
+                icon_url=f"https://a.okayu.me/{score.player}",
+            )
+            embed.set_thumbnail(url=f"https://a.okayu.me/{score.player}")
+            embed.set_footer(
+                text=f"{score.player} banned on osu!risunasa",
+                icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            )
+            embed.set_timestamp()
+            webhook.add_embed(embed)
+            response = webhook.execute()
+
+            # refresh their client state
+            if score.player.online:
+                score.player.logout()
 
     """ Score submission checks completed; submit the score. """
 
