@@ -2769,7 +2769,6 @@ async def clan_help(ctx: Context) -> Optional[str]:
 
     return "\n".join(cmds)
 
-
 @clan_commands.add(Privileges.NORMAL, aliases=["c"])
 async def clan_create(ctx: Context) -> Optional[str]:
     """Create a clan with a given tag & name."""
