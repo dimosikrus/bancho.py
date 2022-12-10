@@ -608,13 +608,13 @@ class Player:
                 )
         embed.set_author(
             name=f"{admin} changed passwod for {self.name}!",
-            url=f"https://osu.okayu.me/u/{self.id}",
-            icon_url=f"https://a.okayu.me/{self.id}",
+            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
+            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
         )
-        embed.set_thumbnail(url=f"https://a.okayu.me/{self.id}")
+        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
         embed.set_footer(
             text=f"{self.name} have new password on osu!okayu",
-            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
         embed.set_timestamp()
         webhook.add_embed(embed)
@@ -663,13 +663,13 @@ class Player:
                 )
         embed.set_author(
             name=f"{self} has been restricted",
-            url=f"https://osu.okayu.me/u/{self.id}",
-            icon_url=f"https://a.okayu.me/{self.id}",
+            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
+            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
         )
-        embed.set_thumbnail(url=f"https://a.okayu.me/{self.id}")
+        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
         embed.set_footer(
             text=f"{self.name} banned on osu!okayu",
-            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
         embed.set_timestamp()
         webhook.add_embed(embed)
@@ -715,8 +715,8 @@ class Player:
         )
         embed.set_author(
             name=f"{self.name} has been unrestricted",
-            url=f"https://osu.okayu.me/u/{self.id}",
-            icon_url=f"https://a.okayu.me/{self.id}",
+            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
+            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
         )
         embed.add_embed_field(
                     name='User:', 
@@ -730,10 +730,10 @@ class Player:
                     name='Reason:', 
                     value='**{}**'.format(reason),
                 )
-        embed.set_thumbnail(url=f"https://a.okayu.me/{self.id}")
+        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
         embed.set_footer(
             text=f"{self.name} unrestricted on osu!okayu",
-            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
         embed.set_timestamp()
         webhook.add_embed(embed)
@@ -793,13 +793,13 @@ class Player:
                 )
         embed.set_author(
             name=f"{self.name} has been silenced",
-            url=f"https://osu.okayu.me/u/{self.id}",
-            icon_url=f"https://a.okayu.me/{self.id}",
+            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
+            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
         )
-        embed.set_thumbnail(url=f"https://a.okayu.me/{self.id}")
+        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
         embed.set_footer(
             text=f"{self.name} silenced on osu!okayu",
-            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
         embed.set_timestamp()
         webhook.add_embed(embed)
@@ -858,13 +858,13 @@ class Player:
                 )
         embed.set_author(
             name=f"{self.name} has been wiped",
-            url=f"https://osu.okayu.me/u/{self.id}",
-            icon_url=f"https://a.okayu.me/{self.id}",
+            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
+            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
         )
-        embed.set_thumbnail(url=f"https://a.okayu.me/{self.id}")
+        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
         embed.set_footer(
             text=f"{self.name} wiped on osu!okayu",
-            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
         embed.set_timestamp()
         webhook.add_embed(embed)
@@ -908,13 +908,13 @@ class Player:
                 )
         embed.set_author(
             name=f"{self.id} has been unsilenced",
-            url=f"https://osu.okayu.me/u/{self.id}",
-            icon_url=f"https://a.okayu.me/{self.id}",
+            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
+            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
         )
-        embed.set_thumbnail(url=f"https://a.okayu.me/{admin.id}")
+        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{admin.id}")
         embed.set_footer(
             text=f"{self.name} UnSilenced on osu!okayu",
-            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
         embed.set_timestamp()
         webhook.add_embed(embed)

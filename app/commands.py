@@ -704,8 +704,8 @@ async def request(ctx: Context) -> Optional[str]:
     )
     embed.set_author(
         name=f"{ctx.player.name}",
-        url=f"https://osu.okayu.me/u/{ctx.player.id}",
-        icon_url=f"https://a.okayu.me/{ctx.player.id}",
+        url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
+        icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
     )
     embed.add_embed_field(
         name='Download:', 
@@ -714,10 +714,10 @@ async def request(ctx: Context) -> Optional[str]:
     embed.set_image(
         url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
     )
-    embed.set_thumbnail(url=f"https://a.okayu.me/{ctx.player.id}")
+    embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
     embed.set_footer(
         text="New request on osu!okayu",
-        icon_url="https://osu.okayu.me/static/favicon/logo.png",
+        icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
     )
     embed.set_timestamp()
     webhook.add_embed(embed)
@@ -866,8 +866,8 @@ async def _map(ctx: Context) -> Optional[str]:
         )
         embed.set_author(
             name=f"{ctx.player.name}",
-            url=f"https://osu.okayu.me/u/{ctx.player.id}",
-            icon_url=f"https://a.okayu.me/{ctx.player.id}",
+            url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
+            icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
         )
         embed.add_embed_field(
             name='Download:', 
@@ -876,10 +876,10 @@ async def _map(ctx: Context) -> Optional[str]:
         embed.set_image(
             url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
         )
-        embed.set_thumbnail(url=f"https://a.okayu.me/{ctx.player.id}")
+        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
         embed.set_footer(
             text=f"{new_status} on osu!okayu",
-            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
         embed.set_timestamp()
         webhook.add_embed(embed)
@@ -1528,14 +1528,14 @@ async def recalc(ctx: Context) -> Optional[str]:
             )
             embed.set_author(
                 name=f"{ctx.player.name}",
-                url=f"https://osu.okayu.me/u/{ctx.player.id}",
-                icon_url=f"https://a.okayu.me/{ctx.player.id}",
+                url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
+                icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
             )
-            embed.set_image(url=f"https://a.okayu.me/{ctx.player.id}")
-            embed.set_thumbnail(url=f"https://a.okayu.me/{ctx.player.id}")
+            embed.set_image(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
+            embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
             embed.set_footer(
                 text="recalculation on osu!okayu",
-                icon_url="https://osu.okayu.me/static/favicon/logo.png",
+                icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
             )
             embed.set_timestamp()
             webhook.add_embed(embed)
@@ -1552,14 +1552,14 @@ async def recalc(ctx: Context) -> Optional[str]:
         )
         embed.set_author(
             name=f"{ctx.player.name}",
-            url=f"https://osu.okayu.me/u/{ctx.player.id}",
-            icon_url=f"https://a.okayu.me/{ctx.player.id}",
+            url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
+            icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
         )
-        embed.set_image(url=f"https://a.okayu.me/{ctx.player.id}")
-        embed.set_thumbnail(url=f"https://a.okayu.me/{ctx.player.id}")
+        embed.set_image(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
+        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
         embed.set_footer(
             text="recalculation on osu!okayu",
-            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
         embed.set_timestamp()
         webhook.add_embed(embed)

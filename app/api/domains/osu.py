@@ -819,13 +819,13 @@ async def osuSubmitModularSelector(
                     )
             embed.set_author(
                 name=f"{score.player} has been restricted",
-                url=f"https://osu.okayu.me/u/{score.player}",
-                icon_url=f"https://a.okayu.me/{score.player}",
+                url=f"https://osu.{app.settings.DOMAIN}/u/{score.player}",
+                icon_url=f"https://a.{app.settings.DOMAIN}/{score.player}",
             )
-            embed.set_thumbnail(url=f"https://a.okayu.me/{score.player}")
+            embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{score.player}")
             embed.set_footer(
                 text=f"{score.player} banned on osu!risunasa",
-                icon_url="https://osu.okayu.me/static/favicon/logo.png",
+                icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
             )
             embed.set_timestamp()
             webhook.add_embed(embed)
@@ -923,18 +923,18 @@ async def osuSubmitModularSelector(
                 )
                 embed.set_author(
                     name=f"{score.player}",
-                    url=f"https://osu.okayu.me/u/{score.player.id}",
-                    icon_url=f"https://a.okayu.me/{score.player.id}",
+                    url=f"https://osu.{app.settings.DOMAIN}/u/{score.player.id}",
+                    icon_url=f"https://a.{app.settings.DOMAIN}/{score.player.id}",
                 )
                 embed.set_image(
                     url="https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg".format(
                         score.bmap.set_id,
                     ),
                 )
-                embed.set_thumbnail(url=f"https://a.okayu.me/{score.player.id}")
+                embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{score.player.id}")
                 embed.set_footer(
                     text="played on osu!okayu",
-                    icon_url="https://osu.okayu.me/static/favicon/logo.png",
+                    icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
                 )
                 embed.set_timestamp()
                 webhook.add_embed(embed)
@@ -969,8 +969,8 @@ async def osuSubmitModularSelector(
                     )
                     embed.set_author(
                         name=f"{score.player}",
-                        url=f"https://osu.okayu.me/u/{score.player.id}",
-                        icon_url=f"https://a.okayu.me/{score.player.id}",
+                        url=f"https://osu.{app.settings.DOMAIN}/u/{score.player.id}",
+                        icon_url=f"https://a.{app.settings.DOMAIN}/{score.player.id}",
                     )
                     embed.set_image(
                         url="https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg".format(
@@ -978,11 +978,11 @@ async def osuSubmitModularSelector(
                         ),
                     )
                     embed.set_thumbnail(
-                        url=f"https://a.okayu.me/{score.player.id}",
+                        url=f"https://a.{app.settings.DOMAIN}/{score.player.id}",
                     )
                     embed.set_footer(
                         text="played on osu!okayu",
-                        icon_url="https://osu.okayu.me/static/favicon/logo.png",
+                        icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
                     )
                     embed.set_timestamp()
                     webhook.add_embed(embed)
@@ -1017,8 +1017,8 @@ async def osuSubmitModularSelector(
                     )
                     embed.set_author(
                         name=f"{score.player}",
-                        url=f"https://osu.okayu.me/u/{score.player.id}",
-                        icon_url=f"https://a.okayu.me/{score.player.id}",
+                        url=f"https://osu.{app.settings.DOMAIN}/u/{score.player.id}",
+                        icon_url=f"https://a.{app.settings.DOMAIN}/{score.player.id}",
                     )
                     embed.set_image(
                         url="https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg".format(
@@ -1026,11 +1026,11 @@ async def osuSubmitModularSelector(
                         ),
                     )
                     embed.set_thumbnail(
-                        url=f"https://a.okayu.me/{score.player.id}",
+                        url=f"https://a.{app.settings.DOMAIN}/{score.player.id}",
                     )
                     embed.set_footer(
                         text="played on osu!okayu",
-                        icon_url="https://osu.okayu.me/static/favicon/logo.png",
+                        icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
                     )
                     embed.set_timestamp()
                     webhook.add_embed(embed)
