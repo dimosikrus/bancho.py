@@ -8,6 +8,7 @@ import secrets
 import time
 from base64 import b64decode
 from collections import defaultdict
+from datetime import datetime
 from enum import IntEnum
 from enum import unique
 from functools import cache
@@ -28,6 +29,8 @@ import databases.core
 import discord
 from discord_webhook import DiscordEmbed
 from discord_webhook import DiscordWebhook
+from app.discord import Embed   
+from app.discord import Webhook
 from fastapi import status
 from fastapi.datastructures import FormData
 from fastapi.datastructures import UploadFile
@@ -895,51 +898,6 @@ async def osuSubmitModularSelector(
 
                 announce_chan.send(" ".join(ann), sender=score.player, to_self=True)
 
-                webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_SCORE_WEBHOOK)
-                embed = DiscordEmbed(
-                    title=f"New #1 score by {score.player}!!!",
-                    description=f"**submitted on: [{bmap}](https://osu.ppy.sh/b/{bmap.id})**",
-                    color="00FFFF",
-                )
-                embed.add_embed_field(
-                    name='Score mods:', 
-                    value='**{!r}**'.format(score.mods),
-                )
-                embed.add_embed_field(
-                    name='Accuracy:', 
-                    value='**{:.2f}%**'.format(score.acc),
-                )
-                embed.add_embed_field(
-                    name='Score PP:', 
-                    value='**{:.2f}PP**'.format(score.pp),
-                )
-                embed.add_embed_field(
-                        name='Gamemode:', 
-                        value='**{!r}**'.format(score.mode),
-                )
-                embed.add_embed_field(
-                    name='Download:', 
-                    value=f"[🐱](https://catboy.best/d/{bmap.id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
-                )
-                embed.set_author(
-                    name=f"{score.player}",
-                    url=f"https://osu.{app.settings.DOMAIN}/u/{score.player.id}",
-                    icon_url=f"https://a.{app.settings.DOMAIN}/{score.player.id}",
-                )
-                embed.set_image(
-                    url="https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg".format(
-                        score.bmap.set_id,
-                    ),
-                )
-                embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{score.player.id}")
-                embed.set_footer(
-                    text="played on osu!okayu",
-                    icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
-                )
-                embed.set_timestamp()
-                webhook.add_embed(embed)
-                response = webhook.execute()
-
                 if (
                     score.pp > 500
                     and not score.player.priv & Privileges.WHITELISTED
@@ -1083,6 +1041,9 @@ async def osuSubmitModularSelector(
             "checksum": score.client_checksum,
         },
     )
+
+    # Queue our sensetive data to handle.   
+    await app.state.sessions.score_queue.put(score)
 
     if score.passed:
         replay_data = await replay_file.read()
@@ -1375,6 +1336,39 @@ async def osuSubmitModularSelector(
         f"({score.status!r}, {score.pp:,.2f}pp / {stats.pp:,}pp)",
         Ansi.LGREEN,
     )
+
+    if (    
+        score.bmap.awards_ranked_pp 
+        and score.status == SubmissionStatus.BEST   
+        and not score.player.restricted 
+    ):  
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_SCORE_WEBHOOK)   
+        if not score.max_combo <= score.max_combo - 10 and score.nmiss == 0:    
+            status = "FC"   
+        else:   
+            if score.nmiss > 0: 
+                status = f"{score.max_combo}/{score.bmap.max_combo} {score.nmiss}xMiss" 
+            else:   
+                status = f"{score.max_combo}/{score.bmap.max_combo} SB" 
+        embed = Embed(  
+            title=f"__New {score.status!r} Score! **{score.pp:.2f}pp**__",  
+            description=f"▸ [{score.mode!r}] • #{stats.rank} • {stats.pp}pp • {stats.acc:.2f}%\n▸ {status} • {score.grade!r} • {score.mods!r} • {score.acc:.2f}%\n[{score.bmap.full_name}](https://osu.okayu.me/b/{score.bmap.id})",   
+            color=0xBB0EBE, 
+            timestamp=datetime.utcnow(),    
+        )   
+        embed.set_author(   
+            url=score.player.url,   
+            name=score.player.name, 
+            icon_url=score.player.avatar_url,   
+        )   
+        embed.set_image(    
+            url=f"https://assets.ppy.sh/beatmaps/{score.bmap.set_id}/covers/cover.jpg", 
+        )   
+        embed.set_footer(text=f"played on okayu.me")
+        webhook.add_embed(embed)    
+        await webhook.post(app.state.services.http) 
+    if score.passed:    
+        await app.state.sessions.queue.put(score)
 
     return ret
 

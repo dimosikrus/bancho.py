@@ -16,6 +16,7 @@ from app.constants.clientflags import ClientFlags
 from app.constants.gamemodes import GameMode
 from app.constants.mods import Mods
 from app.objects.beatmap import Beatmap
+from app.objects.beatmap import RankedStatus
 from app.usecases.performance import ScoreDifficultyParams
 from app.utils import escape_enum
 from app.utils import pymysql_encode
@@ -336,6 +337,66 @@ class Score:
         ).hexdigest()
 
     """Methods to calculate internal data for a score."""
+
+    async def handle_sensetive_data(self) -> None:  
+        async with app.state.services.database.connection() as db_conn: 
+            if self.bmap.status != RankedStatus.Pending:    
+                self.rank = await self.calculate_placement()    
+            if self.status == SubmissionStatus.BEST:    
+                if app.state.services.datadog:  
+                    app.state.services.datadog.increment("bancho.submitted_scores_best") 
+                if self.bmap.has_leaderboard:   
+                    if (    
+                        self.mode < GameMode.RELAX_OSU  
+                        and self.bmap.status == RankedStatus.Loved  
+                    ):  
+                        # use self for vanilla loved only   
+                        performance = f"{self.score:,} score"   
+                    else:   
+                        performance = f"{self.pp:,.2f}pp"   
+                    self.player.enqueue(    
+                        app.packets.notification(   
+                            f"You achieved #{self.rank}! ({performance})",  
+                        ),  
+                    )   
+                    if self.rank == 1 and not self.player.restricted:   
+                        # this is the new #1, post the play to #announce.   
+                        announce_chan = app.state.sessions.channels["#announce"]    
+                        # Announce the user's #1 score. 
+                        # TODO: truncate artist/title/version to fit on screen  
+                        ann = [ 
+                            f"\x01ACTION achieved #1 on {self.bmap.embed}", 
+                            f"with {self.acc:.2f}% for {performance}.", 
+                        ]   
+                        if self.mods:   
+                            ann.insert(1, f"+{self.mods!r}")    
+                        await app.state.services.redis.lpush(   
+                            f"bancho:firstplaces:{self.mode!r}:{self.player.id}",   
+                            self.bmap.md5,  
+                        )   
+                        scoring_metric = (  
+                            "pp" if self.mode >= GameMode.RELAX_OSU else "score"    
+                        )   
+                        # If there was previously a score on the map, add old #1.   
+                        prev_n1 = await db_conn.fetch_one(  
+                            "SELECT s.id AS scoreid, u.id, name FROM users u "  
+                            "INNER JOIN scores s ON u.id = s.userid "   
+                            "WHERE s.map_md5 = :map_md5 AND s.mode = :mode "    
+                            "AND s.status = 2 AND u.priv & 1 "  
+                            f"ORDER BY s.{scoring_metric} DESC LIMIT 1",    
+                            {"map_md5": self.bmap.md5, "mode": self.mode},  
+                        )   
+                        if prev_n1: 
+                            if self.player.id != prev_n1["id"]: 
+                                ann.append( 
+                                    f"(Previous #1: [https://osu.{app.settings.DOMAIN}/u/"  
+                                    "{id} {name}])".format(**prev_n1),  
+                                )   
+                                await app.state.services.redis.lrem(    
+                                    f"bancho:firstplaces:{self.mode!r}:{prev_n1['id']}",    
+                                    0,  
+                                    self.bmap.md5,  
+                                )
 
     async def calculate_placement(self) -> int:
         if self.mode >= GameMode.RELAX_OSU:

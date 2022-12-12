@@ -7,11 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from typing import Optional
+from pathlib import Path
 
 from databases import DatabaseURL
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings
 from starlette.datastructures import Secret
+
+from app.constants.gamemodes import GameMode
 
 config = Config(".env")
 
@@ -24,6 +27,8 @@ DB_DSN: DatabaseURL = config("DB_DSN", cast=DatabaseURL)
 REDIS_DSN: str = config("REDIS_DSN")
 
 OSU_API_KEY: Secret = config("OSU_API_KEY", cast=Secret)
+DISCORD_SECRET: Secret = config("DISCORD_SECRET", cast=Secret)
+GULAG_WEB_PATH: Path = config("GULAG_WEB_PATH", cast=Path)
 
 DOMAIN: str = config("DOMAIN", default="cmyui.xyz")
 MIRROR_URL: str = config("MIRROR_URL", default="https://api.chimu.moe/v1")
@@ -84,6 +89,16 @@ DISCORD_AUDIT_NEW_REQUEST_WEBHOOK: str = config("DISCORD_AUDIT_NEW_REQUEST_WEBHO
 
 STD_PP_CAP = int(os.environ["STD_PP_CAP"])
 RX_PP_CAP = int(os.environ["RX_PP_CAP"])
+
+HITOBJ_LOW_PRESSTIMES_VALUE: int = config("HITOBJ_LOW_PRESSTIMES_VALUE", cast=int)
+HITOBJ_LOW_PRESSTIMES_PRESSES: int = config("HITOBJ_LOW_PRESSTIMES_PRESSES", cast=int)
+
+UNSTABLE_RATE_CAP: int = config("UNSTABLE_RATE_CAP", cast=int)
+
+FRAME_TIME_CAP: int = config("FRAME_TIME_CAP", cast=int)
+RX_FRAME_TIME_MP: float = config("RX_FRAME_TIME_MP", cast=float)
+
+SNAPS_CAP: int = config("SNAPS_CAP", cast=int)
 
 AUTOMATICALLY_REPORT_PROBLEMS: bool = config(
     "AUTOMATICALLY_REPORT_PROBLEMS",

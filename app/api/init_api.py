@@ -120,6 +120,8 @@ def init_events(asgi_app: BanchoAPI) -> None:
     @asgi_app.on_event("startup")
     async def on_startup() -> None:
         app.state.loop = asyncio.get_running_loop()
+        app.state.sessions.queue = asyncio.Queue(loop=app.state.loop)
+        app.state.sessions.score_queue = asyncio.Queue(loop=app.state.loop)
 
         if os.geteuid() == 0:
             log(
