@@ -353,12 +353,7 @@ class Score:
                         # use self for vanilla loved only   
                         performance = f"{self.score:,} score"   
                     else:   
-                        performance = f"{self.pp:,.2f}pp"   
-                    self.player.enqueue(    
-                        app.packets.notification(   
-                            f"You achieved #{self.rank}! ({performance})",  
-                        ),  
-                    )   
+                        performance = f"{self.pp:,.2f}pp"    
                     if self.rank == 1 and not self.player.restricted:   
                         # this is the new #1, post the play to #announce.   
                         announce_chan = app.state.sessions.channels["#announce"]    

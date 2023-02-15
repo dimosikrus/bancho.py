@@ -6,6 +6,7 @@ import struct
 from pathlib import Path as SystemPath
 from typing import Literal
 from typing import Optional
+from sqlalchemy import text
 
 import databases.core
 from fastapi import APIRouter
@@ -54,6 +55,7 @@ router = APIRouter(tags=["bancho.py API"])
 # GET /get_replay: return the file for a given replay (with or without headers).
 # GET /get_match: return information for a given multiplayer match.
 # GET /get_leaderboard: return the top players for a given mode & sort condition
+# GET /search: returns a list of matching users, based on a passed string, sorted by ascending ID.
 
 # Authorized (requires valid api key, passed as 'Authorization' header)
 # NOTE: authenticated handlers may have privilege requirements.
@@ -631,7 +633,7 @@ async def api_get_map_scores(
     # NOTE: userid will eventually become player_id,
     # along with everywhere else in the codebase.
     query = [
-        "SELECT s.map_md5, s.score, s.pp, s.acc, s.max_combo, s.mods, "
+        "SELECT s.map_md5, s.id, s.score, s.pp, s.acc, s.max_combo, s.mods, "
         "s.n300, s.n100, s.n50, s.nmiss, s.ngeki, s.nkatu, s.grade, s.status, "
         "s.mode, s.play_time, s.time_elapsed, s.userid, s.perfect, "
         "u.name player_name, "
@@ -1136,3 +1138,42 @@ async def api_get_friends(
             )
 
     return ORJSONResponse({"status": "success", action: res})
+
+@router.get("/search")
+async def api_search(
+    search: Optional[str] = Query(None, alias="src"),
+    db_conn: databases.core.Connection = Depends(acquire_db_conn),
+):
+    """Search for users on the server by name."""
+
+    # we're using text() here because we are going to
+    # assign placeholders (bindparams()) to these queries,
+    # and this will let us bind those safely and efficiently.
+    results_query = text(
+        "SELECT COUNT(id) FROM users WHERE name LIKE :search_clause AND priv >= 3",
+    )  # we will only need to lookup users who have Privileges.VERIFIED
+    rows_query = text(
+        "SELECT id, name FROM users WHERE name LIKE :search_clause AND priv >= 3 ORDER BY id ASC",
+    )  # to save on host resources and prevent useless requests
+
+    # using parameterised queries helps prevent against sql injections
+    # and will also allow the database engine to cache our queries,
+    # making these lookups faster in the future
+    search_clause = f"%{search}%" if search else None
+    results_query = results_query.bindparams(search_clause=search_clause)
+    rows_query = rows_query.bindparams(search_clause=search_clause)
+
+    # execute the queries using the database connection
+    results = await db_conn.fetch_val(results_query)
+    rows = await db_conn.fetch_all(rows_query)
+
+    # if the search returns nothing, we tell that to the user.
+    if results < 1:
+        return ORJSONResponse(
+            {"status": "error", "message": "nothing was found matching those parameters!"},
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+    else: # else, we return whatever matches we found
+        return ORJSONResponse(
+            {"status": "success", "results": results, "result": [dict(row) for row in rows]},
+        )

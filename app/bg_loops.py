@@ -19,6 +19,7 @@ from discord_webhook import DiscordWebhook
 from app.logging import Ansi
 from app.logging import log
 from app.objects.score import Score
+from app.constants.gamemodes import GameMode
 
 __all__ = ("initialize_housekeeping_tasks",)
 
@@ -144,7 +145,7 @@ async def _analyze_score(score: "Score") -> None:
 
     # Frametime check
     frametime = circle_guard.frametime(replay)
-    if score.mode.value != 4:
+    if score.mode != GameMode.RELAX_OSU:
         if frametime <= app.settings.FRAME_TIME_CAP:
             embed = Embed(
                 title=f"[{score.mode!r}] Possibly Timewarped score. ({frametime} avg. frametime)",

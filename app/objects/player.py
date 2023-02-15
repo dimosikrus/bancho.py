@@ -18,12 +18,14 @@ from typing import TypedDict
 from typing import Union
 
 import databases.core
-from discord_webhook import DiscordEmbed
-from discord_webhook import DiscordWebhook
+from app.discord import Embed
+from app.discord import Webhook
 
 import app.packets
 import app.settings
 import app.state
+from datetime import datetime
+from datetime import timedelta
 from app._typing import IPAddress
 from app.constants.gamemodes import GameMode
 from app.constants.mods import Mods
@@ -394,7 +396,7 @@ class Player:
         # NOTE: this is currently never wiped because
         # domain & id cannot be changed in-game; if this
         # ever changes, it will need to be wiped.
-        return f"https://{app.settings.DOMAIN}/u/{self.id}"
+        return f"https://osu.{app.settings.DOMAIN}/u/{self.id}"
 
     @cached_property
     def embed(self) -> str:
@@ -589,36 +591,30 @@ class Player:
             {"from": admin.id, "to": self.id, "action": "restrict", "msg": reason},
         )
 
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(
-            title=f"{admin} changed passwod for {self.name}!",
-            color="ff0000",
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+
+        embed = Embed(
+            title="Player password has been changed!",
+            color=0xBB0EBE,
+            timestamp=datetime.utcnow(),
         )
-        embed.add_embed_field(
-                    name='User:', 
-                    value='**{}**'.format(self.name),
-                )
-        embed.add_embed_field(
-                    name='Admin:', 
-                    value='**{}**'.format(admin),
-                )
-        embed.add_embed_field(
-                    name='Reason:', 
-                    value='**{}**'.format(reason),
-                )
+
         embed.set_author(
-            name=f"{admin} changed passwod for {self.name}!",
-            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
-            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
-        )
-        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
-        embed.set_footer(
-            text=f"{self.name} have new password on osu!okayu",
+            url=admin.url,
+            name=self.name,
             icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
-        embed.set_timestamp()
+
+        embed.set_thumbnail(url=self.avatar_url)
+
+        embed.add_field(name="Reason", value=reason, inline=True)
+
+        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+
+        embed.set_footer(text=f"{self.name} have new password on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+
         webhook.add_embed(embed)
-        response = webhook.execute()
+        await webhook.post(app.state.services.http)
 
     async def restrict(self, admin: Player, reason: str) -> None:
         """Restrict `self` for `reason`, and log to sql."""
@@ -644,36 +640,30 @@ class Player:
         if "restricted" in self.__dict__:
             del self.restricted  # wipe cached_property
 
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(
-            title=f"{admin} restricted {self.name}!",
-            color="ff0000",
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+
+        embed = Embed(
+            title="Player has been restricted!",
+            color=0xBB0EBE,
+            timestamp=datetime.utcnow(),
         )
-        embed.add_embed_field(
-                    name='User:', 
-                    value='**{}**'.format(self.name),
-                )
-        embed.add_embed_field(
-                    name='Admin:', 
-                    value='**{}**'.format(admin),
-                )
-        embed.add_embed_field(
-                    name='Reason:', 
-                    value='**{}**'.format(reason),
-                )
+
         embed.set_author(
-            name=f"{self} has been restricted",
-            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
-            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
-        )
-        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
-        embed.set_footer(
-            text=f"{self.name} banned on osu!okayu",
+            url=self.url,
+            name=self.name,
             icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
-        embed.set_timestamp()
+
+        embed.set_thumbnail(url=self.avatar_url)
+
+        embed.add_field(name="Reason", value=reason, inline=True)
+
+        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+
+        embed.set_footer(text=f"{self.name} banned on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+
         webhook.add_embed(embed)
-        response = webhook.execute()
+        await webhook.post(app.state.services.http)
 
         if self.online:
             # log the user out if they're offline, this
@@ -708,36 +698,30 @@ class Player:
         if "restricted" in self.__dict__:
             del self.restricted  # wipe cached_property
 
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(
-            title=f"{admin} unrestricted {self.name}!",
-            color="00ff0d",
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+
+        embed = Embed(
+            title="Player has been unrestricted!",
+            color=0xBB0EBE,
+            timestamp=datetime.utcnow(),
         )
+
         embed.set_author(
-            name=f"{self.name} has been unrestricted",
-            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
-            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
-        )
-        embed.add_embed_field(
-                    name='User:', 
-                    value='**{}**'.format(self.name),
-                )
-        embed.add_embed_field(
-                    name='Admin:', 
-                    value='**{}**'.format(admin),
-                )
-        embed.add_embed_field(
-                    name='Reason:', 
-                    value='**{}**'.format(reason),
-                )
-        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
-        embed.set_footer(
-            text=f"{self.name} unrestricted on osu!okayu",
+            url=self.url,
+            name=self.name,
             icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
-        embed.set_timestamp()
+
+        embed.set_thumbnail(url=self.avatar_url)
+
+        embed.add_field(name="Reason", value=reason, inline=True)
+
+        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+
+        embed.set_footer(text=f"{self.name} unrestricted on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+
         webhook.add_embed(embed)
-        response = webhook.execute()
+        await webhook.post(app.state.services.http)
 
         if self.online:
             # log the user out if they're offline, this
@@ -770,9 +754,70 @@ class Player:
         if self.match:
             self.leave_match()
 
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+
+        embed = Embed(
+            title="Player has been silenced!",
+            color=0xBB0EBE,
+            timestamp=datetime.utcnow(),
+        )
+
+        embed.set_author(
+            url=admin.url,
+            name=self.name,
+            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
+        )
+
+        embed.set_thumbnail(url=self.avatar_url)
+
+        embed.add_field(name="Reason", value=reason, inline=True)
+
+        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+
+        embed.set_footer(text=f"{self.name} silenced on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+
+        webhook.add_embed(embed)
+        await webhook.post(app.state.services.http)
+
+        log(f"Silenced {self}.", Ansi.LCYAN)
+
+    async def wiperestrict(self, admin: Player, reason: str) -> None:
+        """Wipe `self` for `reason` and restrict him."""
+        
+        await self.remove_privs(Privileges.NORMAL)
+
+        await app.state.services.database.execute(
+            "INSERT INTO logs "
+            "(`from`, `to`, `action`, `msg`, `time`) "
+            "VALUES (:from, :to, :action, :msg, NOW())",
+            {"from": admin.id, "to": self.id, "action": "wipe", "msg": reason},
+        )
+        
+        for mode in (0, 1, 2, 3, 4, 5, 6, 8):
+            await app.state.services.redis.zrem(
+                f"bancho:leaderboard:{mode}",
+                self.id,
+            )
+            await app.state.services.redis.zrem(
+                f'bancho:leaderboard:{mode}:{self.geoloc["country"]["acronym"]}',
+                self.id,
+            )
+
+        await app.state.services.database.execute(
+            "DELETE FROM scores WHERE userid = :userid",
+            {"userid": self.id},
+        )
+        await app.state.services.database.execute(
+            "UPDATE stats SET tscore = 0, rscore = 0, pp = 0, plays = 0, playtime = 0, acc = 0, max_combo = 0, total_hits = 0, replay_views = 0, xh_count = 0, x_count = 0, sh_count = 0, s_count = 0, a_count = 0 WHERE id = :id",
+            {"id": self.id},
+        )
+
+        if "restricted" in self.__dict__:
+            del self.restricted  # wipe cached_property
+
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
         embed = DiscordEmbed(
-            title=f"{admin} silence {self.name}!",
+            title=f"{admin} restricted and wiped {self.name}!",
             color="ff0000",
         )
         embed.add_embed_field(
@@ -787,25 +832,24 @@ class Player:
                     name='Reason:', 
                     value='**{}**'.format(reason),
                 )
-        embed.add_embed_field(
-                    name='duration:', 
-                    value='**{}**'.format(self.silence_end),
-                )
         embed.set_author(
-            name=f"{self.name} has been silenced",
+            name=f"{self} has been restricted and wiped",
             url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
             icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
         )
         embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
         embed.set_footer(
-            text=f"{self.name} silenced on osu!okayu",
+            text=f"{self.name} banned on osu!okayu",
             icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
         embed.set_timestamp()
         webhook.add_embed(embed)
         response = webhook.execute()
 
-        log(f"Silenced {self}.", Ansi.LCYAN)
+        if self.online:
+            # log the user out if they're offline, this
+            # will simply relog them and refresh their app.state
+            self.logout()
 
     async def wipeuser(self, admin: Player, reason: str) -> None:
         """Wipe `self` for `reason`, and log to sql."""
@@ -838,37 +882,30 @@ class Player:
 
         await app.state.services.database.execute("DELETE FROM scores WHERE userid = :user_id", {"user_id": self.id})
 
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(
-            title=f"**{admin}** wipe **{self.name}** for **{reason}**!",
-            description=f"{admin} wipe {self.name}.",
-            color="ff0000",
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+
+        embed = Embed(
+            title="Player has been wiped!",
+            color=0xBB0EBE,
+            timestamp=datetime.utcnow(),
         )
-        embed.add_embed_field(
-                    name='User:', 
-                    value='**{}**'.format(self.name),
-                )
-        embed.add_embed_field(
-                    name='Admin:', 
-                    value='**{}**'.format(admin),
-                )
-        embed.add_embed_field(
-                    name='Reason:', 
-                    value='**{}**'.format(reason),
-                )
+
         embed.set_author(
-            name=f"{self.name} has been wiped",
-            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
-            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
-        )
-        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
-        embed.set_footer(
-            text=f"{self.name} wiped on osu!okayu",
+            url=admin.url,
+            name=self.name,
             icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
-        embed.set_timestamp()
+
+        embed.set_thumbnail(url=self.avatar_url)
+
+        embed.add_field(name="Reason", value=reason, inline=True)
+
+        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+
+        embed.set_footer(text=f"{self.name} wiped on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+
         webhook.add_embed(embed)
-        response = webhook.execute()
+        await webhook.post(app.state.services.http)
 
     async def unsilence(self, admin: Player) -> None:
         """Unsilence `self`, and log to sql."""
@@ -889,36 +926,30 @@ class Player:
         # inform the user's client
         self.enqueue(app.packets.silence_end(0))
 
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(
-            title=f"{admin} UnSilence {self.name}!",
-            color="00ff0d",
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+
+        embed = Embed(
+            title="Player has been unsilenced!",
+            color=0xBB0EBE,
+            timestamp=datetime.utcnow(),
         )
-        embed.add_embed_field(
-                    name='User:', 
-                    value='**{}**'.format(self.name),
-                )
-        embed.add_embed_field(
-                    name='Admin:', 
-                    value='**{}**'.format(admin),
-                )
-        embed.add_embed_field(
-                    name='Reason:', 
-                    value='**{}**'.format(reason),
-                )
+
         embed.set_author(
-            name=f"{self.id} has been unsilenced",
-            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
-            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
-        )
-        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{admin.id}")
-        embed.set_footer(
-            text=f"{self.name} UnSilenced on osu!okayu",
+            url=admin.url,
+            name=self.name,
             icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
-        embed.set_timestamp()
+
+        embed.set_thumbnail(url=self.avatar_url)
+
+        embed.add_field(name="Reason", value=reason, inline=True)
+
+        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+
+        embed.set_footer(text=f"{self.name} unsilence on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+
         webhook.add_embed(embed)
-        response = webhook.execute()
+        await webhook.post(app.state.services.http)
 
         log(f"Unsilenced {self}.", Ansi.LCYAN)
 

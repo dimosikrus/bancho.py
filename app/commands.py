@@ -16,6 +16,7 @@ import uuid
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime
+from datetime import timedelta
 from functools import wraps
 from pathlib import Path
 from time import perf_counter_ns as clock_ns
@@ -677,6 +678,9 @@ async def request(ctx: Context) -> Optional[str]:
 
     bmap = ctx.player.last_np["bmap"]
 
+    if bmap.status != RankedStatus.Pending:
+        return "Only pending maps may be requested for status change."
+
     await app.state.services.database.execute(
         "INSERT INTO map_requests "
         "(map_id, player_id, datetime, active) "
@@ -824,8 +828,8 @@ async def _map(ctx: Context) -> Optional[str]:
         if ctx.args[1] == "set":
             # update whole set
             await db_conn.execute(
-                "UPDATE maps SET status = :status, frozen = 1 WHERE set_id = :set_id",
-                {"status": new_status, "set_id": bmap.set_id},
+                "UPDATE maps SET status = :status, frozen = 1, ranked = :ranked WHERE set_id = :set_id",
+                {"status": new_status, "set_id": bmap.set_id, "ranked": ctx.player.name},
             )
 
             # select all map ids for clearing map requests.
@@ -843,8 +847,8 @@ async def _map(ctx: Context) -> Optional[str]:
         else:
             # update only map
             await db_conn.execute(
-                "UPDATE maps SET status = :status, frozen = 1 WHERE id = :map_id",
-                {"status": new_status, "map_id": bmap.id},
+                "UPDATE maps SET status = :status, frozen = 1, ranked = :ranked WHERE id = :map_id",
+                {"status": new_status, "map_id": bmap.id, "ranked": ctx.player.name},
             )
 
             map_ids = [bmap.id]
@@ -1112,6 +1116,31 @@ async def changeuserpass(ctx: Context) -> Optional[str]:
     return f"{t} have new password for now."
 
 @command(Privileges.ADMINISTRATOR, hidden=True)
+async def wiperestrict(ctx: Context) -> Optional[str]:
+    """Restrict a specified player's account, with a reason."""
+    if len(ctx.args) < 2:
+        return "Invalid syntax: !wiperestrict <name> <reason>"
+
+    # find any user matching (including offline).
+    if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
+        return f'"{ctx.args[0]}" not found.'
+
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
+        return "Only developers can manage staff members."
+
+    if t.restricted:
+        return f"{t} is already restricted!"
+
+    reason = " ".join(ctx.args[1:])
+
+    if reason in SHORTHAND_REASONS:
+        reason = SHORTHAND_REASONS[reason]
+
+    await t.wiperestrict(admin=ctx.player, reason=reason)
+
+    return f"{t} was restricted."
+
+@command(Privileges.ADMINISTRATOR, hidden=True)
 async def restrict(ctx: Context) -> Optional[str]:
     """Restrict a specified player's account, with a reason."""
     if len(ctx.args) < 2:
@@ -1144,7 +1173,7 @@ async def wipeuser(ctx: Context) -> Optional[str]:
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return "Could not find user."
 
-    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.ADMINISTRATOR:
         return "Only administrator can do this comma."
 
     reason = " ".join(ctx.args[1:])

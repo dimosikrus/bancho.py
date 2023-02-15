@@ -795,7 +795,7 @@ async def osuSubmitModularSelector(
         if score.mode == GameMode.RELAX_OSU:
             pp_cap = app.settings.RX_PP_CAP
         if score.mode == GameMode.AUTOPILOT_OSU:
-            pp_cap = app.settings.RX_PP_CAP
+            pp_cap = app.settings.AP_PP_CAP
             
         if score.pp > pp_cap:
             await score.player.restrict(
