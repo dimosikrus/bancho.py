@@ -525,6 +525,7 @@ def get_media_type(extension: str) -> Optional[str]:
     # return none, fastapi will attempt to figure it out
     return None
 
+
 def get_required_score_for_level(level: int) -> int:
     if level <= 100:
         return 5_000 / 3 * (
@@ -548,6 +549,7 @@ def get_level(total_score: int) -> int:
 
 def get_level_progress(current_level: int, total_score: int) -> float:
     return total_score / get_required_score_for_level(current_level + 1) * 100
+
 
 def has_jpeg_headers_and_trailers(data_view: memoryview) -> bool:
     return data_view[:4] == b"\xff\xd8\xff\xe0" and data_view[6:11] == b"JFIF\x00"

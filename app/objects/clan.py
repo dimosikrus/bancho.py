@@ -39,7 +39,7 @@ class Clan:
 
         if member_ids is None:
             member_ids = set()
-        
+
         self.member_ids = member_ids  # userids
 
     async def add_member(self, p: Player) -> None:

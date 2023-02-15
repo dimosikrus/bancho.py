@@ -5,11 +5,13 @@ import asyncio
 import os
 import pprint
 import time
+from time import perf_counter_ns as clock_ns
 from typing import Any
 
 import aiohttp
 import orjson
 import starlette.routing
+from discord import SyncWebhook
 from fastapi import FastAPI
 from fastapi import status
 from fastapi.encoders import jsonable_encoder
@@ -20,7 +22,6 @@ from fastapi.responses import ORJSONResponse
 from fastapi.responses import Response
 from starlette.middleware.base import RequestResponseEndpoint
 from starlette.requests import ClientDisconnect
-from discord import SyncWebhook
 
 import app.bg_loops
 import app.settings
@@ -31,7 +32,6 @@ from app.api import middlewares
 from app.logging import Ansi
 from app.logging import log
 from app.objects import collections
-from time import perf_counter_ns as clock_ns
 
 
 class BanchoAPI(FastAPI):
@@ -156,7 +156,9 @@ def init_events(asgi_app: BanchoAPI) -> None:
         log("Startup process complete.", Ansi.LGREEN)
         elapsed = app.logging.magnitude_fmt_time(clock_ns() - start_time)
         webhook = SyncWebhook.from_url(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        webhook.send(f":white_check_mark: **bancho.py** runned successfully. Elapsed: **{ elapsed }**")
+        webhook.send(
+            f":white_check_mark: **bancho.py** runned successfully. Elapsed: **{ elapsed }**",
+        )
         log(f"Listening @ {app.settings.SERVER_ADDR}", Ansi.LMAGENTA)
 
     @asgi_app.on_event("shutdown")
