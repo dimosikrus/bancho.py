@@ -273,6 +273,7 @@ async def reconnect(ctx: Context) -> Optional[str]:
 
     return None
 
+
 @command(Privileges.SUPPORTER)
 async def changecountry(ctx: Context) -> Optional[str]:
     """Change your country."""
@@ -281,12 +282,12 @@ async def changecountry(ctx: Context) -> Optional[str]:
     if country in app.state.services.country_codes:
         # all checks passed, update their country
         await app.state.services.database.execute(
-        "UPDATE users SET country = :country WHERE id = :user_id",
-        {"country": country, "user_id": ctx.player.id},
-    )
+            "UPDATE users SET country = :country WHERE id = :user_id",
+            {"country": country, "user_id": ctx.player.id},
+        )
         ctx.player.enqueue(
             app.packets.notification(f"Your country has been changed to {country}!"),
-    )
+        )
         ctx.player.logout()
     else:
         ctx.player.enqueue(
@@ -331,29 +332,28 @@ async def changename(ctx: Context) -> Optional[str]:
 
     return None
 
+
 @command(Privileges.DEVELOPER)
 async def recalcstats(ctx: Context) -> Optional[str]:
 
-    if ctx.args[0] == ("all","test"):
+    if ctx.args[0] == ("all", "test"):
         return "Invalid syntax: !recalcstats <all>"
 
- 
     all_scores = await app.state.services.database.fetch_all(
-        "SELECT id,mode FROM stats"
+        "SELECT id,mode FROM stats",
     )
- 
 
     for i in all_scores:
         userid = i[0]
         mode = i[1]
-   
+
         best_scores = await app.state.services.database.fetch_all(
-                    "SELECT s.pp, s.acc FROM scores s "
-                    "INNER JOIN maps m ON s.map_md5 = m.md5 "
-                    "WHERE s.userid = :user_id AND s.mode = :mode "
-                    "AND s.status = 2 AND m.status IN (2, 3) "  # ranked, approved
-                    "ORDER BY s.pp DESC",
-                    {"user_id": userid, "mode": mode},
+            "SELECT s.pp, s.acc FROM scores s "
+            "INNER JOIN maps m ON s.map_md5 = m.md5 "
+            "WHERE s.userid = :user_id AND s.mode = :mode "
+            "AND s.status = 2 AND m.status IN (2, 3) "  # ranked, approved
+            "ORDER BY s.pp DESC",
+            {"user_id": userid, "mode": mode},
         )
 
         total_scores = len(best_scores)
@@ -367,10 +367,13 @@ async def recalcstats(ctx: Context) -> Optional[str]:
         bonus_pp = 416.6667 * (1 - 0.9994**total_scores)
         overal_pp = round(weighted_pp + bonus_pp)
 
-
-        await app.state.services.database.execute("UPDATE `stats` SET `pp` = :overal_pp WHERE `stats`.`id` = :user_id AND `stats`.`mode` = :mode",{"overal_pp":overal_pp,"user_id":userid,"mode":mode},)
+        await app.state.services.database.execute(
+            "UPDATE `stats` SET `pp` = :overal_pp WHERE `stats`.`id` = :user_id AND `stats`.`mode` = :mode",
+            {"overal_pp": overal_pp, "user_id": userid, "mode": mode},
+        )
 
     return "Done!"
+
 
 @command(Privileges.DEVELOPER)
 async def rankrecalc(ctx: Context) -> Optional[str]:
@@ -712,7 +715,7 @@ async def request(ctx: Context) -> Optional[str]:
         icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
     )
     embed.add_embed_field(
-        name='Download:', 
+        name="Download:",
         value=f"[🐱](https://catboy.best/d/{bmap.id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
     )
     embed.set_image(
@@ -829,7 +832,11 @@ async def _map(ctx: Context) -> Optional[str]:
             # update whole set
             await db_conn.execute(
                 "UPDATE maps SET status = :status, frozen = 1, ranked = :ranked WHERE set_id = :set_id",
-                {"status": new_status, "set_id": bmap.set_id, "ranked": ctx.player.name},
+                {
+                    "status": new_status,
+                    "set_id": bmap.set_id,
+                    "ranked": ctx.player.name,
+                },
             )
 
             # select all map ids for clearing map requests.
@@ -874,7 +881,7 @@ async def _map(ctx: Context) -> Optional[str]:
             icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
         )
         embed.add_embed_field(
-            name='Download:', 
+            name="Download:",
             value=f"[🐱](https://catboy.best/d/{bmap.id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
         )
         embed.set_image(
@@ -1093,6 +1100,7 @@ async def kickuser(ctx: Context) -> Optional[str]:
 
     return f"{t} was kicked."
 
+
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def changeuserpass(ctx: Context) -> Optional[str]:
     """Change password for user with a reason."""
@@ -1114,6 +1122,7 @@ async def changeuserpass(ctx: Context) -> Optional[str]:
     await t.changeuserpass(admin=ctx.player, reason=reason)
 
     return f"{t} have new password for now."
+
 
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def wiperestrict(ctx: Context) -> Optional[str]:
@@ -1140,6 +1149,7 @@ async def wiperestrict(ctx: Context) -> Optional[str]:
 
     return f"{t} was restricted."
 
+
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def restrict(ctx: Context) -> Optional[str]:
     """Restrict a specified player's account, with a reason."""
@@ -1164,6 +1174,7 @@ async def restrict(ctx: Context) -> Optional[str]:
     await t.restrict(admin=ctx.player, reason=reason)
 
     return f"{t} was restricted."
+
 
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def wipeuser(ctx: Context) -> Optional[str]:
@@ -2797,6 +2808,7 @@ async def clan_help(ctx: Context) -> Optional[str]:
         cmds.append(f"{prefix}clan {cmd.triggers[0]}: {cmd.doc}")
 
     return "\n".join(cmds)
+
 
 @clan_commands.add(Privileges.NORMAL, aliases=["c"])
 async def clan_create(ctx: Context) -> Optional[str]:

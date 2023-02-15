@@ -100,7 +100,7 @@ pycparser==2.21
 pydantic==1.10.4
 PyGObject==3.42.1
 PyICU==2.8.1
-PyJWT==2.3.0
+PyJWT==2.4.0
 PyMySQL==0.9.3
 pyOpenSSL==21.0.0
 pyparsing==3.0.9
