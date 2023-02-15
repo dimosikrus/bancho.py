@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import hashlib
 import time
 import uuid
-import hashlib
-import bcrypt
 from dataclasses import dataclass
 from datetime import date
+from datetime import datetime
+from datetime import timedelta
 from enum import Enum
 from enum import IntEnum
 from enum import unique
@@ -17,20 +18,18 @@ from typing import TYPE_CHECKING
 from typing import TypedDict
 from typing import Union
 
+import bcrypt
 import databases.core
-from app.discord import Embed
-from app.discord import Webhook
 
 import app.packets
 import app.settings
 import app.state
-from datetime import datetime
-from datetime import timedelta
 from app._typing import IPAddress
 from app.constants.gamemodes import GameMode
 from app.constants.mods import Mods
 from app.constants.privileges import ClientPrivileges
 from app.constants.privileges import Privileges
+from app.discord import Embed
 from app.discord import Webhook
 from app.logging import Ansi
 from app.logging import log
@@ -609,9 +608,14 @@ class Player:
 
         embed.add_field(name="Reason", value=reason, inline=True)
 
-        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+        embed.add_field(
+            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+        )
 
-        embed.set_footer(text=f"{self.name} have new password on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+        embed.set_footer(
+            text=f"{self.name} have new password on {app.settings.DOMAIN}",
+            icon_url=admin.avatar_url,
+        )
 
         webhook.add_embed(embed)
         await webhook.post(app.state.services.http)
@@ -658,9 +662,14 @@ class Player:
 
         embed.add_field(name="Reason", value=reason, inline=True)
 
-        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+        embed.add_field(
+            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+        )
 
-        embed.set_footer(text=f"{self.name} banned on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+        embed.set_footer(
+            text=f"{self.name} banned on {app.settings.DOMAIN}",
+            icon_url=admin.avatar_url,
+        )
 
         webhook.add_embed(embed)
         await webhook.post(app.state.services.http)
@@ -716,9 +725,14 @@ class Player:
 
         embed.add_field(name="Reason", value=reason, inline=True)
 
-        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+        embed.add_field(
+            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+        )
 
-        embed.set_footer(text=f"{self.name} unrestricted on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+        embed.set_footer(
+            text=f"{self.name} unrestricted on {app.settings.DOMAIN}",
+            icon_url=admin.avatar_url,
+        )
 
         webhook.add_embed(embed)
         await webhook.post(app.state.services.http)
@@ -772,9 +786,14 @@ class Player:
 
         embed.add_field(name="Reason", value=reason, inline=True)
 
-        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+        embed.add_field(
+            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+        )
 
-        embed.set_footer(text=f"{self.name} silenced on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+        embed.set_footer(
+            text=f"{self.name} silenced on {app.settings.DOMAIN}",
+            icon_url=admin.avatar_url,
+        )
 
         webhook.add_embed(embed)
         await webhook.post(app.state.services.http)
@@ -783,7 +802,7 @@ class Player:
 
     async def wiperestrict(self, admin: Player, reason: str) -> None:
         """Wipe `self` for `reason` and restrict him."""
-        
+
         await self.remove_privs(Privileges.NORMAL)
 
         await app.state.services.database.execute(
@@ -792,7 +811,7 @@ class Player:
             "VALUES (:from, :to, :action, :msg, NOW())",
             {"from": admin.id, "to": self.id, "action": "wipe", "msg": reason},
         )
-        
+
         for mode in (0, 1, 2, 3, 4, 5, 6, 8):
             await app.state.services.redis.zrem(
                 f"bancho:leaderboard:{mode}",
@@ -821,17 +840,17 @@ class Player:
             color="ff0000",
         )
         embed.add_embed_field(
-                    name='User:', 
-                    value='**{}**'.format(self.name),
-                )
+            name="User:",
+            value=f"**{self.name}**",
+        )
         embed.add_embed_field(
-                    name='Admin:', 
-                    value='**{}**'.format(admin),
-                )
+            name="Admin:",
+            value=f"**{admin}**",
+        )
         embed.add_embed_field(
-                    name='Reason:', 
-                    value='**{}**'.format(reason),
-                )
+            name="Reason:",
+            value=f"**{reason}**",
+        )
         embed.set_author(
             name=f"{self} has been restricted and wiped",
             url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
@@ -860,7 +879,7 @@ class Player:
             "VALUES (:from, :to, :action, :msg, NOW())",
             {"from": admin.id, "to": self.id, "action": "wipe", "msg": reason},
         )
-        
+
         for mode in (0, 1, 2, 3, 4, 5, 6, 8):
             await app.state.services.redis.zrem(
                 f"bancho:leaderboard:{mode}",
@@ -880,7 +899,9 @@ class Player:
             {"id": self.id},
         )
 
-        await app.state.services.database.execute("DELETE FROM scores WHERE userid = :user_id", {"user_id": self.id})
+        await app.state.services.database.execute(
+            "DELETE FROM scores WHERE userid = :user_id", {"user_id": self.id},
+        )
 
         webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
 
@@ -900,9 +921,14 @@ class Player:
 
         embed.add_field(name="Reason", value=reason, inline=True)
 
-        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+        embed.add_field(
+            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+        )
 
-        embed.set_footer(text=f"{self.name} wiped on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+        embed.set_footer(
+            text=f"{self.name} wiped on {app.settings.DOMAIN}",
+            icon_url=admin.avatar_url,
+        )
 
         webhook.add_embed(embed)
         await webhook.post(app.state.services.http)
@@ -944,9 +970,14 @@ class Player:
 
         embed.add_field(name="Reason", value=reason, inline=True)
 
-        embed.add_field(name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True)
+        embed.add_field(
+            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+        )
 
-        embed.set_footer(text=f"{self.name} unsilence on {app.settings.DOMAIN}", icon_url=admin.avatar_url)
+        embed.set_footer(
+            text=f"{self.name} unsilence on {app.settings.DOMAIN}",
+            icon_url=admin.avatar_url,
+        )
 
         webhook.add_embed(embed)
         await webhook.post(app.state.services.http)
