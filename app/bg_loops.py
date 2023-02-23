@@ -46,7 +46,7 @@ async def initialize_housekeeping_tasks() -> None:
                 _remove_expired_donation_privileges(interval=30 * 60),
                 _update_bot_status(interval=5 * 60),
                 _disconnect_ghosts(interval=OSU_CLIENT_MIN_PING_INTERVAL // 3),
-                _rankrecalc(interval=60 * 60),
+                _rankrecalc(interval=1440 * 60),
                 _replay_detections(),
                 _handle_scores(),
             )
