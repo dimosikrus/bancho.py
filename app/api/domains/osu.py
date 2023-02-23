@@ -29,8 +29,6 @@ import databases.core
 import discord
 from discord_webhook import DiscordEmbed
 from discord_webhook import DiscordWebhook
-from app.discord import Embed   
-from app.discord import Webhook
 from fastapi import status
 from fastapi.datastructures import FormData
 from fastapi.datastructures import UploadFile
@@ -59,6 +57,7 @@ from app.constants import regexes
 from app.constants.clientflags import ClientFlags
 from app.constants.gamemodes import GameMode
 from app.constants.mods import Mods
+from app.discord import Embed
 from app.discord import Webhook
 from app.logging import Ansi
 from app.logging import log
@@ -778,7 +777,11 @@ async def osuSubmitModularSelector(
     if score.mode == GameMode.VANILLA_MANIA:
         if score.mods & Mods.SCOREV2 != 0 and score.mods & Mods.NOFAIL != 0:
             log(f"{score.player} submitted a score {score.mods!r}.", Ansi.LRED)
-            score.player.enqueue(app.packets.notification(f'FUCK you. Dont even try to submit {score.mods!r}'))
+            score.player.enqueue(
+                app.packets.notification(
+                    f"FUCK you. Dont even try to submit {score.mods!r}",
+                ),
+            )
             return b"error: no"
 
     if fl_cheat_screenshot:
@@ -796,7 +799,7 @@ async def osuSubmitModularSelector(
             pp_cap = app.settings.RX_PP_CAP
         if score.mode == GameMode.AUTOPILOT_OSU:
             pp_cap = app.settings.AP_PP_CAP
-            
+
         if score.pp > pp_cap:
             await score.player.restrict(
                 admin=app.state.sessions.bot,
@@ -809,17 +812,17 @@ async def osuSubmitModularSelector(
                 color="ff0000",
             )
             embed.add_embed_field(
-                        name='User:', 
-                        value='**{}**'.format(score.player),
-                    )
+                name="User:",
+                value=f"**{score.player}**",
+            )
             embed.add_embed_field(
-                        name='Admin:', 
-                        value='**{}**'.format(admin),
-                    )
+                name="Admin:",
+                value=f"**{admin}**",
+            )
             embed.add_embed_field(
-                        name='Reason:', 
-                        value='**{}**'.format(reason),
-                    )
+                name="Reason:",
+                value=f"**{reason}**",
+            )
             embed.set_author(
                 name=f"{score.player} has been restricted",
                 url=f"https://osu.{app.settings.DOMAIN}/u/{score.player}",
@@ -910,20 +913,20 @@ async def osuSubmitModularSelector(
                         color="ff0000",
                     )
                     embed.add_embed_field(
-                        name='Score mods:', 
-                        value='**{!r}**'.format(score.mods),
+                        name="Score mods:",
+                        value=f"**{score.mods!r}**",
                     )
                     embed.add_embed_field(
-                        name='Accuracy:', 
-                        value='**{:.2f}%**'.format(score.acc),
+                        name="Accuracy:",
+                        value=f"**{score.acc:.2f}%**",
                     )
                     embed.add_embed_field(
-                        name='Score PP:', 
-                        value='**{:.2f}PP**'.format(score.pp),
+                        name="Score PP:",
+                        value=f"**{score.pp:.2f}PP**",
                     )
                     embed.add_embed_field(
-                        name='Gamemode:', 
-                        value='**{!r}**'.format(score.mode),
+                        name="Gamemode:",
+                        value=f"**{score.mode!r}**",
                     )
                     embed.set_author(
                         name=f"{score.player}",
@@ -958,20 +961,20 @@ async def osuSubmitModularSelector(
                         color="ff0000",
                     )
                     embed.add_embed_field(
-                        name='Score mods:', 
-                        value='**{!r}**'.format(score.mods),
+                        name="Score mods:",
+                        value=f"**{score.mods!r}**",
                     )
                     embed.add_embed_field(
-                        name='Accuracy:', 
-                        value='**{:.2f}%**'.format(score.acc),
+                        name="Accuracy:",
+                        value=f"**{score.acc:.2f}%**",
                     )
                     embed.add_embed_field(
-                        name='Score PP:', 
-                        value='**{:.2f}PP**'.format(score.pp),
+                        name="Score PP:",
+                        value=f"**{score.pp:.2f}PP**",
                     )
                     embed.add_embed_field(
-                        name='Gamemode:', 
-                        value='**{!r}**'.format(score.mode),
+                        name="Gamemode:",
+                        value=f"**{score.mode!r}**",
                     )
                     embed.set_author(
                         name=f"{score.player}",
@@ -1042,7 +1045,7 @@ async def osuSubmitModularSelector(
         },
     )
 
-    # Queue our sensetive data to handle.   
+    # Queue our sensetive data to handle.
     await app.state.sessions.score_queue.put(score)
 
     if score.passed:
@@ -1215,7 +1218,9 @@ async def osuSubmitModularSelector(
         and score.bmap.has_leaderboard
         and not score.player.restricted
     ):
-        await db_conn.execute("DELETE FROM first_places WHERE map_md5 = :md5", {"md5": score.bmap.md5})
+        await db_conn.execute(
+            "DELETE FROM first_places WHERE map_md5 = :md5", {"md5": score.bmap.md5},
+        )
         await db_conn.execute(
             "INSERT INTO first_places "
             "VALUES (NULL, "
@@ -1250,9 +1255,9 @@ async def osuSubmitModularSelector(
             },
         )
 
-    #if not score.passed or score.mode >= GameMode.RELAX_OSU:
-        # charts & achievements won't be shown ingame.
-        #ret = b"error: no"
+    # if not score.passed or score.mode >= GameMode.RELAX_OSU:
+    # charts & achievements won't be shown ingame.
+    # ret = b"error: no"
 
     if True:
         # construct and send achievements & ranking charts to the client
@@ -1337,37 +1342,37 @@ async def osuSubmitModularSelector(
         Ansi.LGREEN,
     )
 
-    if (    
-        score.bmap.awards_ranked_pp 
-        and score.status == SubmissionStatus.BEST   
-        and not score.player.restricted 
-    ):  
-        webhook = Webhook(url=app.settings.DISCORD_AUDIT_SCORE_WEBHOOK)   
-        if not score.max_combo <= score.max_combo - 10 and score.nmiss == 0:    
-            status = "FC"   
-        else:   
-            if score.nmiss > 0: 
-                status = f"{score.max_combo}/{score.bmap.max_combo} {score.nmiss}xMiss" 
-            else:   
-                status = f"{score.max_combo}/{score.bmap.max_combo} SB" 
-        embed = Embed(  
-            title=f"__New {score.status!r} Score! **{score.pp:.2f}pp**__",  
-            description=f"▸ [{score.mode!r}] • #{stats.rank} • {stats.pp}pp • {stats.acc:.2f}%\n▸ {status} • {score.grade!r} • {score.mods!r} • {score.acc:.2f}%\n[{score.bmap.full_name}](https://osu.okayu.me/b/{score.bmap.id})",   
-            color=0xBB0EBE, 
-            timestamp=datetime.utcnow(),    
-        )   
-        embed.set_author(   
-            url=score.player.url,   
-            name=score.player.name, 
-            icon_url=score.player.avatar_url,   
-        )   
-        embed.set_image(    
-            url=f"https://assets.ppy.sh/beatmaps/{score.bmap.set_id}/covers/cover.jpg", 
-        )   
+    if (
+        score.bmap.awards_ranked_pp
+        and score.status == SubmissionStatus.BEST
+        and not score.player.restricted
+    ):
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_SCORE_WEBHOOK)
+        if not score.max_combo <= score.max_combo - 10 and score.nmiss == 0:
+            status = "FC"
+        else:
+            if score.nmiss > 0:
+                status = f"{score.max_combo}/{score.bmap.max_combo} {score.nmiss}xMiss"
+            else:
+                status = f"{score.max_combo}/{score.bmap.max_combo} SB"
+        embed = Embed(
+            title=f"__New {score.status!r} Score! **{score.pp:.2f}pp**__",
+            description=f"▸ [{score.mode!r}] • #{stats.rank} • {stats.pp}pp • {stats.acc:.2f}%\n▸ {status} • {score.grade!r} • {score.mods!r} • {score.acc:.2f}%\n[{score.bmap.full_name}](https://osu.okayu.me/b/{score.bmap.id})",
+            color=0xBB0EBE,
+            timestamp=datetime.utcnow(),
+        )
+        embed.set_author(
+            url=score.player.url,
+            name=score.player.name,
+            icon_url=score.player.avatar_url,
+        )
+        embed.set_image(
+            url=f"https://assets.ppy.sh/beatmaps/{score.bmap.set_id}/covers/cover.jpg",
+        )
         embed.set_footer(text=f"played on okayu.me")
-        webhook.add_embed(embed)    
-        await webhook.post(app.state.services.http) 
-    if score.passed:    
+        webhook.add_embed(embed)
+        await webhook.post(app.state.services.http)
+    if score.passed:
         await app.state.sessions.queue.put(score)
 
     return ret

@@ -6,24 +6,25 @@ from typing import Union
 
 from circleguard import Circleguard
 from circleguard import ReplayString
+from discord_webhook import DiscordEmbed
+from discord_webhook import DiscordWebhook
 
 import app.packets
 import app.settings
 import app.state
+from app.constants.gamemodes import GameMode
 from app.constants.mods import Mods
 from app.constants.privileges import Privileges
 from app.discord import Embed
 from app.discord import Webhook
-from discord_webhook import DiscordEmbed
-from discord_webhook import DiscordWebhook
 from app.logging import Ansi
 from app.logging import log
 from app.objects.score import Score
-from app.constants.gamemodes import GameMode
 
 __all__ = ("initialize_housekeeping_tasks",)
 
 OSU_CLIENT_MIN_PING_INTERVAL = 300000 // 1000  # defined by osu!
+
 
 def _get_conversion_factor(score_mods: Mods) -> Union[float, int]:
     if Mods.DOUBLETIME & score_mods:
@@ -32,6 +33,7 @@ def _get_conversion_factor(score_mods: Mods) -> Union[float, int]:
         return 1 / 0.75
 
     return 1
+
 
 async def initialize_housekeeping_tasks() -> None:
     """Create tasks for each housekeeping tasks."""
@@ -53,10 +55,12 @@ async def initialize_housekeeping_tasks() -> None:
         },
     )
 
+
 async def _handle_scores() -> None:
     """Handle score queue to process sensetive data."""
     while score := await app.state.sessions.score_queue.get():
         app.state.loop.create_task(score.handle_sensetive_data())
+
 
 async def _remove_expired_donation_privileges(interval: int) -> None:
     """Remove donation privileges from users with expired sessions."""
@@ -93,6 +97,7 @@ async def _remove_expired_donation_privileges(interval: int) -> None:
             log(f"{p}'s supporter status has expired.", Ansi.LMAGENTA)
 
         await asyncio.sleep(interval)
+
 
 PUBLIC_PATH = app.settings.GULAG_WEB_PATH / "static/framegraphs"
 # This function is currently pretty tiny and useless, but
@@ -158,7 +163,9 @@ async def _analyze_score(score: "Score") -> None:
                 icon_url=player.avatar_url,
             )
 
-            embed.set_thumbnail(url=f"https://osu.{app.settings.DOMAIN}/static/ingame.png")
+            embed.set_thumbnail(
+                url=f"https://osu.{app.settings.DOMAIN}/static/ingame.png",
+            )
 
             embed.add_field(
                 name="Map",
@@ -190,7 +197,9 @@ async def _analyze_score(score: "Score") -> None:
                 icon_url=player.avatar_url,
             )
 
-            embed.set_thumbnail(url=f"https://osu.{app.settings.DOMAIN}/static/ingame.png")
+            embed.set_thumbnail(
+                url=f"https://osu.{app.settings.DOMAIN}/static/ingame.png",
+            )
 
             embed.add_field(
                 name="Map",
@@ -239,12 +248,14 @@ async def _analyze_score(score: "Score") -> None:
     if len(webhook.embeds) > 0:
         await webhook.post(app.state.services.http)
 
+
 async def _replay_detections() -> None:
     """Actively run a background thread throughout gulag's
     lifespan; it will pull replays determined as sketch
     from a queue indefinitely."""
     while score := await app.state.sessions.queue.get():
         app.state.loop.create_task(_analyze_score(score))
+
 
 async def _disconnect_ghosts(interval: int) -> None:
     """Actively disconnect users above the
@@ -265,13 +276,14 @@ async def _update_bot_status(interval: int) -> None:
         await asyncio.sleep(interval)
         app.packets.bot_stats.cache_clear()
 
+
 async def _rankrecalc(interval: int) -> None:
     """Update users rank every `interval`."""
     while True:
         await asyncio.sleep(interval)
 
         scores = await app.state.services.database.fetch_all(
-        "SELECT stats.id,users.priv,country,stats.pp,stats.mode FROM `users` INNER JOIN stats on users.id = stats.id",
+            "SELECT stats.id,users.priv,country,stats.pp,stats.mode FROM `users` INNER JOIN stats on users.id = stats.id",
         )
 
         staff_chan = app.state.sessions.channels["#staff"]  # log any errs here

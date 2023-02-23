@@ -6,7 +6,6 @@ import struct
 from pathlib import Path as SystemPath
 from typing import Literal
 from typing import Optional
-from sqlalchemy import text
 
 import databases.core
 from fastapi import APIRouter
@@ -18,6 +17,7 @@ from fastapi.param_functions import Depends
 from fastapi.param_functions import Query
 from fastapi.responses import ORJSONResponse
 from fastapi.responses import StreamingResponse
+from sqlalchemy import text
 
 import app.packets
 import app.state
@@ -442,10 +442,8 @@ async def api_get_player_scores(
             query.append("AND b.id = :bmap_id")
             params["bmap_id"] = bmap_id
 
-
     query.append(f"ORDER BY {sort} DESC LIMIT :limit")
     params["limit"] = limit
-
 
     rows = [
         dict(row)
@@ -1139,6 +1137,7 @@ async def api_get_friends(
 
     return ORJSONResponse({"status": "success", action: res})
 
+
 @router.get("/search")
 async def api_search(
     search: Optional[str] = Query(None, alias="src"),
@@ -1170,10 +1169,17 @@ async def api_search(
     # if the search returns nothing, we tell that to the user.
     if results < 1:
         return ORJSONResponse(
-            {"status": "error", "message": "nothing was found matching those parameters!"},
+            {
+                "status": "error",
+                "message": "nothing was found matching those parameters!",
+            },
             status_code=status.HTTP_404_NOT_FOUND,
         )
-    else: # else, we return whatever matches we found
+    else:  # else, we return whatever matches we found
         return ORJSONResponse(
-            {"status": "success", "results": results, "result": [dict(row) for row in rows]},
+            {
+                "status": "success",
+                "results": results,
+                "result": [dict(row) for row in rows],
+            },
         )
