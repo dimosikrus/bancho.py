@@ -211,7 +211,7 @@ async def api_get_player_info(
         # get all stats
         rows = await app.state.services.database.fetch_all(
             "SELECT mode, tscore, rscore, pp, plays, playtime, acc, max_combo, replay_views, "
-            "xh_count, x_count, sh_count, s_count, a_count FROM stats "
+            "xh_count, x_count, sh_count, s_count, a_count, total_hits FROM stats "
             "WHERE id = :userid",
             {"userid": resolved_user_id},
         )

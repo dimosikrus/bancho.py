@@ -912,7 +912,7 @@ class Player:
         )
 
         embed.set_author(
-            url=admin.url,
+            url=self.url,
             name=self.name,
             icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
