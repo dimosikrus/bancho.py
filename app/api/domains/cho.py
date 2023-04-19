@@ -1074,7 +1074,7 @@ class SendPrivateMessage(BasePacket):
                 p.enqueue(
                     app.packets.notification(
                         f"{t.name} is currently offline, but will "
-                        "receive your messsage on their next login.",
+                        "receive your message on their next login.",
                     ),
                 )
 
