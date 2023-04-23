@@ -70,6 +70,7 @@ from app.usecases.performance import ScoreDifficultyParams
 from app.utils import make_safe_name
 from app.utils import seconds_readable
 
+
 try:
     from oppai_ng.oppai import OppaiWrapper
 except ModuleNotFoundError:
@@ -2876,6 +2877,31 @@ async def clan_create(ctx: Context) -> Optional[str]:
 
     return f"{clan!r} created."
 
+@clan_commands.add(Privileges.NORMAL)
+async def clan_join(ctx: Context) -> Optional[str]:
+    """ Join a clan by it's tag."""
+    """Exception Handling"""
+    if len(ctx.args) < 1:
+        return "Invalid syntax: !clan join <tag>"
+    if ctx.player.clan:
+        return "You're already in a clan!"
+    """ get clan """
+    try:
+        clan = app.state.sessions.clans.get(tag=" ".join(ctx.args).upper())
+    except:    
+        return "Clan could not be found."
+    """ assign player to clan """
+    ctx.player.clan = clan
+    ctx.player.clan_priv = ClanPrivileges.Member
+    clan.member_ids.add(ctx.player.id)
+    await app.state.services.database.execute(
+        "UPDATE users "
+        "SET clan_id = :clan_id, "
+        "clan_priv = 2 "  # ClanPrivileges.Member
+        "WHERE id = :user_id",
+        {"clan_id": clan.id, "user_id": ctx.player.id},
+    )
+    return f'Successfully joined clan {clan}!'
 
 @clan_commands.add(Privileges.NORMAL, aliases=["delete", "d"])
 async def clan_disband(ctx: Context) -> Optional[str]:
