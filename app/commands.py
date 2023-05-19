@@ -774,7 +774,7 @@ async def requests(ctx: Context) -> Optional[str]:
         return "Invalid syntax: !requests"
 
     rows = await app.state.services.database.fetch_all(
-        "SELECT map_id, player_id, datetime FROM map_requests WHERE active = 1",
+        "SELECT id, map_id, player_id, datetime FROM map_requests WHERE active = 1",
     )
 
     if not rows:
@@ -782,7 +782,7 @@ async def requests(ctx: Context) -> Optional[str]:
 
     l = [f"Total requests: {len(rows)}"]
 
-    for (map_id, player_id, dt) in rows:
+    for (id, map_id, player_id, dt) in rows:
         # find player & map for each row, and add to output.
         if not (p := await app.state.sessions.players.from_cache_or_sql(id=player_id)):
             l.append(f"Failed to find requesting player ({player_id})?")

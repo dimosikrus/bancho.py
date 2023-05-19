@@ -15,8 +15,10 @@ from fastapi import Response
 from fastapi import status
 from fastapi.param_functions import Depends
 from fastapi.param_functions import Query
+from fastapi.param_functions import Security
 from fastapi.responses import ORJSONResponse
 from fastapi.responses import StreamingResponse
+from fastapi.security.oauth2 import SecurityScopes
 from sqlalchemy import text
 
 import app.packets
@@ -70,6 +72,27 @@ router = APIRouter(tags=["bancho.py API"])
 
 DATETIME_OFFSET = 0x89F7FF5F7B58000
 
+async def get_player(
+    security_scopes: SecurityScopes,
+    api_key: str = Header(alias="Authorization", default=None),
+):
+    if api_key is None:
+        raise HTTPException(
+            status_code=400,
+            detail={"status": "Must provide authorization token."},
+        )
+    if api_key not in app.state.sessions.api_keys:
+        raise HTTPException(
+            status_code=401,
+            detail={"status": "Unknown authorization token."},
+        )
+    player_id = app.state.sessions.api_keys[api_key]
+    player = await app.state.sessions.players.from_cache_or_sql(id=player_id)
+    for scope in security_scopes.scopes:
+        priv = Privileges[scope.upper()]
+        if not player.priv & priv:
+            raise HTTPException(status_code=403, detail={"status": "No Permission."})
+    return player
 
 def format_clan_basic(clan: Clan) -> dict[str, object]:
     return {
@@ -181,6 +204,32 @@ async def api_get_player_info(
     if scope in ("info", "all"):
 
         api_data["info"] = dict(user_info)
+ 
+        playstyle = await app.state.services.database.fetch_one(
+            "SELECT playstyle FROM user_playstyle WHERE uid = :userid ORDER BY id DESC LIMIT 1",
+            {"userid": user_id},
+        )
+
+        if playstyle:
+            playstyle = playstyle
+        else:
+            playstyle = str("0")
+
+        friends_count = await app.state.services.database.fetch_one(
+            "SELECT COUNT(*) FROM relationships WHERE user1 = :userid",
+            {"userid": user_id},
+        )
+
+        followers_count = await app.state.services.database.fetch_one(
+            "SELECT COUNT(*) FROM relationships WHERE user2 = :userid",
+            {"userid": user_id},
+        )
+
+        api_data["info"]["information"] = {
+            "friends_count": friends_count[0],
+            "followers_count": followers_count[0],
+            "playstyle": playstyle[0]
+        }
 
         clan_id = user_info["clan_id"]
         clan_info = await app.state.services.database.fetch_one(
@@ -1183,3 +1232,21 @@ async def api_search(
                 "result": [dict(row) for row in rows],
             },
         )
+
+@router.get("/update_maps")
+async def api_update_maps(
+    user: Player = Security(get_player, scopes=["Staff"]),
+    sid: int = Query(...)):
+    set = await BeatmapSet.from_bsid(sid)
+    if set is None:
+        return ORJSONResponse(
+            {"status": "Beatmapset not found."},
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+    await set.force_update()
+    return ORJSONResponse(
+        {
+            "status": "Success!",
+            "sid": set.id
+        }, 
+        status_code=status.HTTP_200_OK)

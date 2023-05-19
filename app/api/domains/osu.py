@@ -1906,6 +1906,8 @@ if app.settings.REDIRECT_OSU_URLS:
 
     for pattern in (
         "/beatmapsets/{_}",
+        "/beatmaps/{_}",
+        "/beatmapsets/{_}/discussion",
         "/community/forums/topics/{_}",
     ):
         router.get(pattern)(osu_redirect)

@@ -609,7 +609,7 @@ class Player:
         embed.add_field(name="Reason", value=reason, inline=True)
 
         embed.add_field(
-            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+            name="Admin", value=f"[{admin.name}]({admin.url})", inline=True,
         )
 
         embed.set_footer(
@@ -663,7 +663,7 @@ class Player:
         embed.add_field(name="Reason", value=reason, inline=True)
 
         embed.add_field(
-            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+            name="Admin", value=f"[{admin.name}]({admin.url})", inline=True,
         )
 
         embed.set_footer(
@@ -726,7 +726,7 @@ class Player:
         embed.add_field(name="Reason", value=reason, inline=True)
 
         embed.add_field(
-            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+            name="Admin", value=f"[{admin.name}]({admin.url})", inline=True,
         )
 
         embed.set_footer(
@@ -787,7 +787,7 @@ class Player:
         embed.add_field(name="Reason", value=reason, inline=True)
 
         embed.add_field(
-            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+            name="Admin", value=f"[{admin.name}]({admin.url})", inline=True,
         )
 
         embed.set_footer(
@@ -922,7 +922,7 @@ class Player:
         embed.add_field(name="Reason", value=reason, inline=True)
 
         embed.add_field(
-            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+            name="Admin", value=f"[{admin.name}]({admin.url})", inline=True,
         )
 
         embed.set_footer(
@@ -971,7 +971,7 @@ class Player:
         embed.add_field(name="Reason", value=reason, inline=True)
 
         embed.add_field(
-            name="Admin", value=f"[{admin.name}](osu.{admin.url})", inline=True,
+            name="Admin", value=f"[{admin.name}]({admin.url})", inline=True,
         )
 
         embed.set_footer(
