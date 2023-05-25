@@ -206,14 +206,9 @@ async def api_get_player_info(
         api_data["info"] = dict(user_info)
  
         playstyle = await app.state.services.database.fetch_one(
-            "SELECT playstyle FROM user_playstyle WHERE uid = :userid ORDER BY id DESC LIMIT 1",
-            {"userid": user_id},
-        )
-
-        if playstyle:
-            playstyle = playstyle
-        else:
-            playstyle = str("0")
+                "SELECT playstyle FROM user_playstyle WHERE uid = :userid ORDER BY id DESC LIMIT 1",
+                {"userid": user_id},
+            )
 
         friends_count = await app.state.services.database.fetch_one(
             "SELECT COUNT(*) FROM relationships WHERE user1 = :userid",
