@@ -210,6 +210,11 @@ async def api_get_player_info(
                 {"userid": user_id},
             )
 
+        if playstyle is not None:
+            playstyle = playstyle
+        else:
+            playstyle = str("U")
+
         friends_count = await app.state.services.database.fetch_one(
             "SELECT COUNT(*) FROM relationships WHERE user1 = :userid",
             {"userid": user_id},
@@ -952,7 +957,7 @@ async def api_get_global_leaderboard(
 
     rows = await db_conn.fetch_all(
         "SELECT u.id as player_id, u.name, u.country, s.tscore, s.rscore, "
-        "s.pp, s.plays, s.playtime, s.acc, s.max_combo, "
+        "s.pp, s.plays, s.playtime, s.acc, s.max_combo, u.latest_activity, "
         "s.xh_count, s.x_count, s.sh_count, s.s_count, s.a_count, "
         "c.id as clan_id, c.name as clan_name, c.tag as clan_tag "
         "FROM stats s "

@@ -717,7 +717,7 @@ async def request(ctx: Context) -> Optional[str]:
     )
     embed.add_embed_field(
         name="Download:",
-        value=f"[🐱](https://catboy.best/d/{bmap.id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
+        value=f"[🐱](https://catboy.best/d/{bmap.set_id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.set_id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.set_id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.set_id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
     )
     embed.set_image(
         url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
@@ -883,7 +883,7 @@ async def _map(ctx: Context) -> Optional[str]:
         )
         embed.add_embed_field(
             name="Download:",
-            value=f"[🐱](https://catboy.best/d/{bmap.id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
+            value=f"[🐱](https://catboy.best/d/{bmap.set_id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.set_id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.set_id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.set_id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
         )
         embed.set_image(
             url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
@@ -1019,8 +1019,8 @@ async def silence(ctx: Context) -> Optional[str]:
 @command(Privileges.MODERATOR, hidden=True)
 async def unsilence(ctx: Context) -> Optional[str]:
     """Unsilence a specified player."""
-    if len(ctx.args) != 1:
-        return "Invalid syntax: !unsilence <name>"
+    if len(ctx.args) != 2:
+        return "Invalid syntax: !unsilence <name> <reason>"
 
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return f'"{ctx.args[0]}" not found.'
@@ -1031,7 +1031,12 @@ async def unsilence(ctx: Context) -> Optional[str]:
     if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
         return "Only developers can manage staff members."
 
-    await t.unsilence(ctx.player)
+    reason = " ".join(ctx.args[1:])
+
+    if reason in SHORTHAND_REASONS:
+        reason = SHORTHAND_REASONS[reason]
+
+    await t.unsilence(ctx.player, reason)
     return f"{t} was unsilenced."
 
 
@@ -1608,6 +1613,7 @@ async def recalc(ctx: Context) -> Optional[str]:
         return "Starting a full recalculation."
 
 
+
 @command(Privileges.DEVELOPER, hidden=True)
 async def debug(ctx: Context) -> Optional[str]:
     """Toggle the console's debug setting."""
@@ -1723,12 +1729,36 @@ async def wipemap(ctx: Context) -> Optional[str]:
         return "Please /np a map first!"
 
     map_md5 = ctx.player.last_np["bmap"].md5
+    bmap = ctx.player.last_np["bmap"]
 
     # delete scores from all tables
     await app.state.services.database.execute(
         "DELETE FROM scores WHERE map_md5 = :map_md5",
         {"map_md5": map_md5},
     )
+
+    webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+    embed = DiscordEmbed(
+        title=f"wiped map set **{ctx.player.name}**!",
+        description=f"**{ctx.player.name}** wiped map set **{bmap}**",
+        color="2cc77c",
+    )
+    embed.set_author(
+        name=f"{ctx.player.name}",
+        url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
+        icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
+    )
+    embed.add_embed_field(
+        name="Download:",
+        value=f"[🐱](https://catboy.best/d/{bmap.set_id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.set_id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.set_id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.set_id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
+    )
+    embed.set_footer(
+        text="New request on osu!okayu",
+        icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
+    )
+    embed.set_timestamp()
+    webhook.add_embed(embed)
+    response = webhook.execute()
 
     return "Scores wiped."
 

@@ -117,7 +117,7 @@ async def _analyze_score(score: "Score") -> None:
     circle_guard = Circleguard(app.settings.OSU_API_KEY)
 
     # Base Webhook
-    webhook = Webhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+    webhook = Webhook(url=app.settings.DISCORD_AUDIT_ANTICHEAT_LOG_WEBHOOK)
 
     # get & parse replay files frames
     replay_file = await app.state.services.http.get(

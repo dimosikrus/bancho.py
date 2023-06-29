@@ -901,6 +901,40 @@ async def osuSubmitModularSelector(
 
                 announce_chan.send(" ".join(ann), sender=score.player, to_self=True)
 
+                score.id = await db_conn.execute(
+                    "INSERT INTO scores "
+                    "VALUES (NULL, "
+                    ":map_md5, :score, :pp, :acc, "
+                    ":max_combo, :mods, :n300, :n100, "
+                    ":n50, :nmiss, :ngeki, :nkatu, "
+                    ":grade, :status, :mode, :play_time, "
+                    ":time_elapsed, :client_flags, :user_id, :perfect, "
+                    ":checksum)",
+                    {
+                        "map_md5": score.bmap.md5,
+                        "score": score.score,
+                        "pp": score.pp,
+                        "acc": score.acc,
+                        "max_combo": score.max_combo,
+                        "mods": score.mods,
+                        "n300": score.n300,
+                        "n100": score.n100,
+                        "n50": score.n50,
+                        "nmiss": score.nmiss,
+                        "ngeki": score.ngeki,
+                        "nkatu": score.nkatu,
+                        "grade": score.grade.name,
+                        "status": score.status,
+                        "mode": score.mode,
+                        "play_time": score.server_time,
+                        "time_elapsed": score.time_elapsed,
+                        "client_flags": score.client_flags,
+                        "user_id": score.player.id,
+                        "perfect": score.perfect,
+                        "checksum": score.client_checksum,
+                    },
+                )
+
                 if (
                     score.pp > 500
                     and not score.player.priv & Privileges.WHITELISTED
@@ -927,6 +961,10 @@ async def osuSubmitModularSelector(
                     embed.add_embed_field(
                         name="Gamemode:",
                         value=f"**{score.mode!r}**",
+                    )
+                    embed.add_embed_field(
+                        name="Replay",
+                        value=f"[Download](https://api.{app.settings.DOMAIN}/get_replay?id={score.id})",
                     )
                     embed.set_author(
                         name=f"{score.player}",
@@ -975,6 +1013,10 @@ async def osuSubmitModularSelector(
                     embed.add_embed_field(
                         name="Gamemode:",
                         value=f"**{score.mode!r}**",
+                    )
+                    embed.add_embed_field(
+                        name="Replay",
+                        value=f"[Download](https://api.{app.settings.DOMAIN}/get_replay?id={score.id})",
                     )
                     embed.set_author(
                         name=f"{score.player}",
@@ -1479,7 +1521,7 @@ async def get_leaderboard_scores(
         "FROM scores s "
         "INNER JOIN users u ON u.id = s.userid "
         "LEFT JOIN clans c ON c.id = u.clan_id "
-        "WHERE s.map_md5 = :map_md5  "  # 2: =best score
+        "WHERE s.map_md5 = :map_md5 "  # 2: =best score
         "AND (u.priv & 1 OR u.id = :user_id) AND mode = :mode",
     ]
 

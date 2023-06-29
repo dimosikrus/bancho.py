@@ -590,7 +590,7 @@ class Player:
             {"from": admin.id, "to": self.id, "action": "restrict", "msg": reason},
         )
 
-        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
 
         embed = Embed(
             title="Player password has been changed!",
@@ -768,7 +768,7 @@ class Player:
         if self.match:
             self.leave_match()
 
-        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
 
         embed = Embed(
             title="Player has been silenced!",
@@ -785,6 +785,7 @@ class Player:
         embed.set_thumbnail(url=self.avatar_url)
 
         embed.add_field(name="Reason", value=reason, inline=True)
+        embed.add_field(name="Duration", value=f"{duration} seconds", inline=True)
 
         embed.add_field(
             name="Admin", value=f"[{admin.name}]({admin.url})", inline=True,
@@ -834,36 +835,35 @@ class Player:
         if "restricted" in self.__dict__:
             del self.restricted  # wipe cached_property
 
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(
-            title=f"{admin} restricted and wiped {self.name}!",
-            color="ff0000",
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+
+        embed = Embed(
+            title="Player has been wiped and restricted!",
+            color=0xBB0EBE,
+            timestamp=datetime.utcnow(),
         )
-        embed.add_embed_field(
-            name="User:",
-            value=f"**{self.name}**",
-        )
-        embed.add_embed_field(
-            name="Admin:",
-            value=f"**{admin}**",
-        )
-        embed.add_embed_field(
-            name="Reason:",
-            value=f"**{reason}**",
-        )
+
         embed.set_author(
-            name=f"{self} has been restricted and wiped",
-            url=f"https://osu.{app.settings.DOMAIN}/u/{self.id}",
-            icon_url=f"https://a.{app.settings.DOMAIN}/{self.id}",
-        )
-        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{self.id}")
-        embed.set_footer(
-            text=f"{self.name} banned on osu!okayu",
+            url=self.url,
+            name=self.name,
             icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
         )
-        embed.set_timestamp()
+
+        embed.set_thumbnail(url=self.avatar_url)
+
+        embed.add_field(name="Reason", value=reason, inline=True)
+
+        embed.add_field(
+            name="Admin", value=f"[{admin.name}]({admin.url})", inline=True,
+        )
+
+        embed.set_footer(
+            text=f"{self.name} wiped on {app.settings.DOMAIN}",
+            icon_url=admin.avatar_url,
+        )
+
         webhook.add_embed(embed)
-        response = webhook.execute()
+        await webhook.post(app.state.services.http)
 
         if self.online:
             # log the user out if they're offline, this
@@ -903,7 +903,7 @@ class Player:
             "DELETE FROM scores WHERE userid = :user_id", {"user_id": self.id},
         )
 
-        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
 
         embed = Embed(
             title="Player has been wiped!",
@@ -933,7 +933,7 @@ class Player:
         webhook.add_embed(embed)
         await webhook.post(app.state.services.http)
 
-    async def unsilence(self, admin: Player) -> None:
+    async def unsilence(self, admin: Player, reason: str) -> None:
         """Unsilence `self`, and log to sql."""
         self.silence_end = int(time.time())
 
@@ -952,7 +952,7 @@ class Player:
         # inform the user's client
         self.enqueue(app.packets.silence_end(0))
 
-        webhook = Webhook(url=app.settings.DISCORD_AUDIT_HALLOFSHAME)
+        webhook = Webhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
 
         embed = Embed(
             title="Player has been unsilenced!",
