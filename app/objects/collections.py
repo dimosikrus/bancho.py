@@ -254,9 +254,11 @@ class Players(list[Player]):
 
         # try to get from sql.
         row = await app.state.services.database.fetch_one(
-            "SELECT id, name, priv, pw_bcrypt, country, "
-            "silence_end, donor_end, clan_id, clan_priv, api_key "
-            f"FROM users WHERE {attr} = :val",
+            "SELECT u.id, u.name, pp, u.priv, u.pw_bcrypt, u.country, "
+            "u.silence_end, u.donor_end, u.clan_id, u.clan_priv, u.api_key "
+            "FROM stats "
+            "LEFT JOIN users u USING (id) "
+            f"WHERE {attr} = :val AND mode = 0",
             {"val": val},
         )
 
@@ -267,6 +269,7 @@ class Players(list[Player]):
 
         # encode pw_bcrypt from str -> bytes.
         row["pw_bcrypt"] = row["pw_bcrypt"].encode()
+        row["pp"] = row["pp"]
 
         if row["clan_id"] != 0:
             row["clan"] = app.state.sessions.clans.get(id=row["clan_id"])

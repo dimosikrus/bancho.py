@@ -901,40 +901,6 @@ async def osuSubmitModularSelector(
 
                 announce_chan.send(" ".join(ann), sender=score.player, to_self=True)
 
-                score.id = await db_conn.execute(
-                    "INSERT INTO scores "
-                    "VALUES (NULL, "
-                    ":map_md5, :score, :pp, :acc, "
-                    ":max_combo, :mods, :n300, :n100, "
-                    ":n50, :nmiss, :ngeki, :nkatu, "
-                    ":grade, :status, :mode, :play_time, "
-                    ":time_elapsed, :client_flags, :user_id, :perfect, "
-                    ":checksum)",
-                    {
-                        "map_md5": score.bmap.md5,
-                        "score": score.score,
-                        "pp": score.pp,
-                        "acc": score.acc,
-                        "max_combo": score.max_combo,
-                        "mods": score.mods,
-                        "n300": score.n300,
-                        "n100": score.n100,
-                        "n50": score.n50,
-                        "nmiss": score.nmiss,
-                        "ngeki": score.ngeki,
-                        "nkatu": score.nkatu,
-                        "grade": score.grade.name,
-                        "status": score.status,
-                        "mode": score.mode,
-                        "play_time": score.server_time,
-                        "time_elapsed": score.time_elapsed,
-                        "client_flags": score.client_flags,
-                        "user_id": score.player.id,
-                        "perfect": score.perfect,
-                        "checksum": score.client_checksum,
-                    },
-                )
-
                 if (
                     score.pp > 500
                     and not score.player.priv & Privileges.WHITELISTED
@@ -1399,7 +1365,7 @@ async def osuSubmitModularSelector(
                 status = f"{score.max_combo}/{score.bmap.max_combo} SB"
         embed = Embed(
             title=f"__New {score.status!r} Score! **{score.pp:.2f}pp**__",
-            description=f"▸ [{score.mode!r}] • #{stats.rank} • {stats.pp}pp • {stats.acc:.2f}%\n▸ {status} • {score.grade!r} • {score.mods!r} • {score.acc:.2f}%\n[{score.bmap.full_name}](https://osu.okayu.me/b/{score.bmap.id})",
+            description=f"▸ [{score.mode!r}] • #{stats.rank} • {stats.pp}pp • {stats.acc:.2f}%\n▸ {status} • {score.grade!r} • {score.mods!r} • {score.acc:.2f}%\n[{score.bmap.full_name}](https://osu.okayu.pw/b/{score.bmap.id})",
             color=0xBB0EBE,
             timestamp=datetime.utcnow(),
         )
@@ -1411,7 +1377,7 @@ async def osuSubmitModularSelector(
         embed.set_image(
             url=f"https://assets.ppy.sh/beatmaps/{score.bmap.set_id}/covers/cover.jpg",
         )
-        embed.set_footer(text=f"played on okayu.me")
+        embed.set_footer(text=f"played on okayu.pw")
         webhook.add_embed(embed)
         await webhook.post(app.state.services.http)
     if score.passed:

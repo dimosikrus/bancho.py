@@ -135,7 +135,7 @@ async def _analyze_score(score: "Score") -> None:
 
         embed.set_author(url=player.url, name=player.name, icon_url=player.avatar_url)
 
-        embed.set_thumbnail(url=f"https://osu.okayu.me/static/favicon/favicon.ico")
+        embed.set_thumbnail(url=f"https://osu.okayu.pw/static/favicon/favicon.ico")
 
         embed.add_field(
             name="Map",

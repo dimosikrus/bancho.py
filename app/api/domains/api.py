@@ -177,14 +177,14 @@ async def api_get_player_info(
     if username:
         user_info = await app.state.services.database.fetch_one(
             "SELECT users.id, users.name, users.safe_name, "
-            "users.priv, users.username_aka, users.clan_id, users.country, users.old_name, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content ,users.donor_end, users.creation_time, users.latest_activity, users.clan_id "
+            "users.priv, users.username_aka, users.clan_id, users.country, users.old_name, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content, users.donor_end, users.preferred_mode, users.creation_time, users.latest_activity, users.clan_id "
             "FROM users WHERE users.safe_name = :username",
             {"username": username.lower()},
         )
     else:  # if user_id
         user_info = await app.state.services.database.fetch_one(
             "SELECT users.id, users.name, users.safe_name, "
-            "users.priv, users.username_aka, users.clan_id, users.country, users.old_name, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content, users.donor_end, users.creation_time, users.latest_activity, users.clan_id "
+            "users.priv, users.username_aka, users.clan_id, users.country, users.old_name, users.silence_end, users.custom_badge_icon, users.custom_badge_name, users.userpage_content, users.donor_end, users.preferred_mode, users.creation_time, users.latest_activity, users.clan_id "
             "FROM users WHERE users.id = :userid",
             {"userid": user_id},
         )
@@ -369,7 +369,7 @@ async def api_get_player_status(
 
 @router.get("/get_player_scores")
 async def api_get_player_scores(
-    scope: Literal["recent", "best", "first"],
+    scope: Literal["recent", "best", "first", "pinned"],
     user_id: Optional[int] = Query(None, alias="id", ge=3, le=2_147_483_647),
     username: Optional[str] = Query(None, alias="name", regex=regexes.USERNAME.pattern),
     mods_arg: Optional[str] = Query(None, alias="mods"),
@@ -472,10 +472,20 @@ async def api_get_player_scores(
             query.append("AND t.status != 0")
 
         sort = "t.play_time"
-    else:
+    elif scope == "first":
         allowed_statuses = [2, 3, 5]
         query.append("AND t.status = 2 AND b.status IN :statuses")
         query[0].replace("FROM scores", "FROM first_places")
+        params["statuses"] = allowed_statuses
+
+        if mode < 4:
+            sort = "t.score"
+        else:
+            sort = "t.pp"
+    else:
+        allowed_statuses = [2, 3, 5]
+        query.append("AND t.status = 2 AND b.status IN :statuses")
+        query[0].replace("FROM scores", "FROM pinned_scores")
         params["statuses"] = allowed_statuses
 
         if mode < 4:
@@ -972,10 +982,40 @@ async def api_get_global_leaderboard(
         {"status": "success", "leaderboard": [dict(row) for row in rows]},
     )
 
+@router.get("/get_clan_leaderboard")
+async def api_get_clan_leaderboard(
+    #sort: Literal["tscore", "rscore", "pp", "acc", "plays", "playtime"] = "pp",
+    mode_arg: int = Query(0, alias="mode", ge=0, le=11),
+    #limit: int = Query(25, ge=1, le=100),
+    #offset: int = Query(0, min=0, max=2_147_483_647),
+    #country: Optional[str] = Query(None, min_length=2, max_length=2),
+    db_conn: databases.core.Connection = Depends(acquire_db_conn),
+):
+    if mode_arg in (
+        GameMode.RELAX_MANIA,
+        GameMode.AUTOPILOT_CATCH,
+        GameMode.AUTOPILOT_TAIKO,
+        GameMode.AUTOPILOT_MANIA,
+    ):
+        return ORJSONResponse(
+            {"status": "Invalid gamemode."},
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    mode = GameMode(mode_arg)
+
+    rows = await db_conn.fetch_all(
+        "SELECT * FROM clans"
+    )
+
+    return ORJSONResponse(
+        {"status": "success", "leaderboard": [dict(row) for row in rows]},
+    )
 
 @router.get("/get_clan")
 async def api_get_clan(
     clan_id: int = Query(..., alias="id", ge=1, le=2_147_483_647),
+    db_conn: databases.core.Connection = Depends(acquire_db_conn),
 ):
     """Return information of a given clan."""
 
@@ -994,6 +1034,13 @@ async def api_get_clan(
         assert member is not None
         members.append(member)
 
+    rows = await db_conn.fetch_all(
+        "SELECT pp "
+        "FROM stats "
+        "WHERE id = :user_id AND mode = 0",
+        {"user_id": member.id},
+    )
+
     owner = await app.state.sessions.players.from_cache_or_sql(id=clan.owner_id)
     assert owner is not None
 
@@ -1002,10 +1049,12 @@ async def api_get_clan(
             "id": clan.id,
             "name": clan.name,
             "tag": clan.tag,
+            "country": owner.geoloc["country"]["acronym"],
             "members": [
                 {
                     "id": member.id,
                     "name": member.name,
+                    "pp": [dict(member_pp) for member_pp in rows],
                     "country": member.geoloc["country"]["acronym"],
                     "rank": ("Member", "Officer", "Owner")[member.clan_priv - 1],  # type: ignore
                 }

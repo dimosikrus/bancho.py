@@ -897,6 +897,14 @@ async def _map(ctx: Context) -> Optional[str]:
         webhook.add_embed(embed)
         response = webhook.execute()
 
+        announce_chan = app.state.sessions.channels["#beatmaps"]
+
+        ann = [
+            f"\x01ACTION {new_status} on {bmap.embed}"
+        ]
+
+        announce_chan.send(" ".join(ann), sender=ctx.player, to_self=True)
+
     return f"{bmap.embed} updated to {new_status!s}."
 
 
