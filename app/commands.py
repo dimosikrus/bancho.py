@@ -260,7 +260,7 @@ async def reconnect(ctx: Context) -> Optional[str]:
     """Disconnect and reconnect a given player (or self) to the server."""
     if ctx.args:
         # !reconnect <player>
-        if not ctx.player.priv & Privileges.ADMINISTRATOR:
+        if not ctx.player.priv & Privileges.COMMUNITYMANAGER:
             return None  # requires admin
 
         target = app.state.sessions.players.get(name=" ".join(ctx.args))
@@ -334,7 +334,7 @@ async def changename(ctx: Context) -> Optional[str]:
     return None
 
 
-@command(Privileges.DEVELOPER)
+@command(Privileges.COOWNER)
 async def recalcstats(ctx: Context) -> Optional[str]:
 
     if ctx.args[0] == ("all", "test"):
@@ -376,7 +376,7 @@ async def recalcstats(ctx: Context) -> Optional[str]:
     return "Done!"
 
 
-@command(Privileges.DEVELOPER)
+@command(Privileges.COOWNER)
 async def rankrecalc(ctx: Context) -> Optional[str]:
     """I guess you can understood what this comma do.."""
     alert_msg = "All user ranks has been recalculated! :rolling_eyes: "
@@ -1009,7 +1009,7 @@ async def silence(ctx: Context) -> Optional[str]:
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return f'"{ctx.args[0]}" not found.'
 
-    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.COOWNER:
         return "Only developers can manage staff members."
 
     if not (duration := timeparse(ctx.args[1])):
@@ -1036,7 +1036,7 @@ async def unsilence(ctx: Context) -> Optional[str]:
     if not t.silenced:
         return f"{t} is not silenced."
 
-    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.COOWNER:
         return "Only developers can manage staff members."
 
     reason = " ".join(ctx.args[1:])
@@ -1054,7 +1054,7 @@ async def unsilence(ctx: Context) -> Optional[str]:
 """
 
 
-@command(Privileges.ADMINISTRATOR, aliases=["u"], hidden=True)
+@command(Privileges.COMMUNITYMANAGER, aliases=["u"], hidden=True)
 async def user(ctx: Context) -> Optional[str]:
     """Return general information about a given user."""
     if not ctx.args:
@@ -1101,7 +1101,7 @@ async def user(ctx: Context) -> Optional[str]:
     )
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.COMMUNITYMANAGER, hidden=True)
 async def kickuser(ctx: Context) -> Optional[str]:
     """Kick user."""
     if len(ctx.args) < 1:
@@ -1115,7 +1115,7 @@ async def kickuser(ctx: Context) -> Optional[str]:
     return f"{t} was kicked."
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.COMMUNITYMANAGER, hidden=True)
 async def changeuserpass(ctx: Context) -> Optional[str]:
     """Change password for user with a reason."""
     if len(ctx.args) < 2:
@@ -1125,7 +1125,7 @@ async def changeuserpass(ctx: Context) -> Optional[str]:
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return f'"{ctx.args[0]}" not found.'
 
-    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.COOWNER:
         return "Only developers can manage staff members."
 
     reason = " ".join(ctx.args[1:])
@@ -1138,7 +1138,7 @@ async def changeuserpass(ctx: Context) -> Optional[str]:
     return f"{t} have new password for now."
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.COMMUNITYMANAGER, hidden=True)
 async def wiperestrict(ctx: Context) -> Optional[str]:
     """Restrict a specified player's account, with a reason."""
     if len(ctx.args) < 2:
@@ -1148,7 +1148,7 @@ async def wiperestrict(ctx: Context) -> Optional[str]:
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return f'"{ctx.args[0]}" not found.'
 
-    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.COOWNER:
         return "Only developers can manage staff members."
 
     if t.restricted:
@@ -1164,7 +1164,7 @@ async def wiperestrict(ctx: Context) -> Optional[str]:
     return f"{t} was restricted."
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.COMMUNITYMANAGER, hidden=True)
 async def restrict(ctx: Context) -> Optional[str]:
     """Restrict a specified player's account, with a reason."""
     if len(ctx.args) < 2:
@@ -1174,7 +1174,7 @@ async def restrict(ctx: Context) -> Optional[str]:
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return f'"{ctx.args[0]}" not found.'
 
-    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.COOWNER:
         return "Only developers can manage staff members."
 
     if t.restricted:
@@ -1190,7 +1190,7 @@ async def restrict(ctx: Context) -> Optional[str]:
     return f"{t} was restricted."
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.COMMUNITYMANAGER, hidden=True)
 async def wipeuser(ctx: Context) -> Optional[str]:
     if len(ctx.args) < 2:
         return "Invalid syntax: !wipeuser <name> <reason>"
@@ -1198,7 +1198,7 @@ async def wipeuser(ctx: Context) -> Optional[str]:
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return "Could not find user."
 
-    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.ADMINISTRATOR:
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.COMMUNITYMANAGER:
         return "Only administrator can do this comma."
 
     reason = " ".join(ctx.args[1:])
@@ -1211,7 +1211,7 @@ async def wipeuser(ctx: Context) -> Optional[str]:
     return f"{t} was wiped."
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.COMMUNITYMANAGER, hidden=True)
 async def unrestrict(ctx: Context) -> Optional[str]:
     """Unrestrict a specified player's account, with a reason."""
     if len(ctx.args) < 2:
@@ -1221,7 +1221,7 @@ async def unrestrict(ctx: Context) -> Optional[str]:
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return f'"{ctx.args[0]}" not found.'
 
-    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
+    if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.COOWNER:
         return "Only developers can manage staff members."
 
     if not t.restricted:
@@ -1237,7 +1237,7 @@ async def unrestrict(ctx: Context) -> Optional[str]:
     return f"{t} was unrestricted."
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.COMMUNITYMANAGER, hidden=True)
 async def alert(ctx: Context) -> Optional[str]:
     """Send a notification to all players."""
     if len(ctx.args) < 1:
@@ -1249,7 +1249,7 @@ async def alert(ctx: Context) -> Optional[str]:
     return "Alert sent."
 
 
-@command(Privileges.ADMINISTRATOR, aliases=["alertu"], hidden=True)
+@command(Privileges.COMMUNITYMANAGER, aliases=["alertu"], hidden=True)
 async def alertuser(ctx: Context) -> Optional[str]:
     """Send a notification to a specified player by name."""
     if len(ctx.args) < 2:
@@ -1267,7 +1267,7 @@ async def alertuser(ctx: Context) -> Optional[str]:
 # NOTE: this is pretty useless since it doesn't switch anything other
 # than the c[e4].ppy.sh domains; it exists on bancho as a tournament
 # server switch mechanism, perhaps we could leverage this in the future.
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.COMMUNITYMANAGER, hidden=True)
 async def switchserv(ctx: Context) -> Optional[str]:
     """Switch your client's internal endpoints to a specified IP address."""
     if len(ctx.args) != 1:
@@ -1279,7 +1279,7 @@ async def switchserv(ctx: Context) -> Optional[str]:
     return "Have a nice journey.."
 
 
-@command(Privileges.ADMINISTRATOR, aliases=["restart"])
+@command(Privileges.COMMUNITYMANAGER, aliases=["restart"])
 async def shutdown(ctx: Context) -> Optional[str]:
     """Gracefully shutdown the server."""
     if ctx.trigger == "restart":
@@ -1318,7 +1318,7 @@ async def shutdown(ctx: Context) -> Optional[str]:
 _fake_users: list[Player] = []
 
 
-@command(Privileges.DEVELOPER, aliases=["fu"])
+@command(Privileges.COOWNER, aliases=["fu"])
 async def fakeusers(ctx: Context) -> Optional[str]:
     """Add fake users to the online player list (for testing)."""
     # NOTE: this function is *very* performance-oriented.
@@ -1450,7 +1450,7 @@ async def fakeusers(ctx: Context) -> Optional[str]:
     return msg
 
 
-@command(Privileges.DEVELOPER)
+@command(Privileges.COOWNER)
 async def stealth(ctx: Context) -> Optional[str]:
     """Toggle the developer's stealth, allowing them to be hidden."""
     # NOTE: this command is a large work in progress and currently
@@ -1460,7 +1460,7 @@ async def stealth(ctx: Context) -> Optional[str]:
     return f'Stealth {"enabled" if ctx.player.stealth else "disabled"}.'
 
 
-@command(Privileges.DEVELOPER)
+@command(Privileges.COOWNER)
 async def recalc(ctx: Context) -> Optional[str]:
     """Recalculate pp for a given map, or all maps."""
     # NOTE: at the moment this command isn't very optimal and re-parses
@@ -1622,7 +1622,7 @@ async def recalc(ctx: Context) -> Optional[str]:
 
 
 
-@command(Privileges.DEVELOPER, hidden=True)
+@command(Privileges.COOWNER, hidden=True)
 async def debug(ctx: Context) -> Optional[str]:
     """Toggle the console's debug setting."""
     app.settings.DEBUG = not app.settings.DEBUG
@@ -1641,12 +1641,15 @@ str_priv_dict = {
     "tournament": Privileges.TOURNAMENT,
     "nominator": Privileges.NOMINATOR,
     "mod": Privileges.MODERATOR,
-    "admin": Privileges.ADMINISTRATOR,
+    "admin": Privileges.COMMUNITYMANAGER,
+    "commanager": Privileges.COMMUNITYMANAGER,
     "developer": Privileges.DEVELOPER,
+    "coowner": Privileges.COOWNER,
+    "owner": Privileges.OWNER,
 }
 
 
-@command(Privileges.DEVELOPER, hidden=True)
+@command(Privileges.COOWNER, hidden=True)
 async def addpriv(ctx: Context) -> Optional[str]:
     """Set privileges for a specified player (by name)."""
     if len(ctx.args) < 2:
@@ -1670,7 +1673,7 @@ async def addpriv(ctx: Context) -> Optional[str]:
     return f"Updated {t}'s privileges."
 
 
-@command(Privileges.DEVELOPER, hidden=True)
+@command(Privileges.COOWNER, hidden=True)
 async def rmpriv(ctx: Context) -> Optional[str]:
     """Set privileges for a specified player (by name)."""
     if len(ctx.args) < 2:
@@ -1699,7 +1702,7 @@ async def rmpriv(ctx: Context) -> Optional[str]:
     return f"Updated {t}'s privileges."
 
 
-@command(Privileges.DEVELOPER, hidden=True)
+@command(Privileges.COOWNER, hidden=True)
 async def givedonator(ctx: Context) -> Optional[str]:
     """Gives donator to a specified player (by name) for a specified amount of time, such as '3h5m'."""
     if len(ctx.args) < 2:
@@ -1727,7 +1730,7 @@ async def givedonator(ctx: Context) -> Optional[str]:
     return f"Added {ctx.args[1]} of donator status to {t}."
 
 
-@command(Privileges.DEVELOPER)
+@command(Privileges.COOWNER)
 async def wipemap(ctx: Context) -> Optional[str]:
     # (intentionally no docstring)
     if ctx.args:
@@ -1771,7 +1774,7 @@ async def wipemap(ctx: Context) -> Optional[str]:
     return "Scores wiped."
 
 
-@command(Privileges.DEVELOPER, hidden=True)
+@command(Privileges.COOWNER, hidden=True)
 async def menu(ctx: Context) -> Optional[str]:
     """Temporary command to illustrate the menu option idea."""
     ctx.player.send_current_menu()
@@ -1779,7 +1782,7 @@ async def menu(ctx: Context) -> Optional[str]:
     return None
 
 
-@command(Privileges.DEVELOPER, aliases=["re"])
+@command(Privileges.COOWNER, aliases=["re"])
 async def reload(ctx: Context) -> Optional[str]:
     """Reload a python module."""
     if len(ctx.args) != 1:
@@ -1898,7 +1901,7 @@ if app.settings.DEVELOPER_MODE:
         if mod in installed_mods
     }
 
-    @command(Privileges.DEVELOPER)
+    @command(Privileges.COOWNER)
     async def py(ctx: Context) -> Optional[str]:
         """Allow for (async) access to the python interpreter."""
         # This can be very good for getting used to bancho.py's API; just look
@@ -2452,7 +2455,7 @@ async def mp_rematch(ctx: Context, match: Match) -> Optional[str]:
     return msg
 
 
-@mp_commands.add(Privileges.ADMINISTRATOR, aliases=["f"], hidden=True)
+@mp_commands.add(Privileges.COMMUNITYMANAGER, aliases=["f"], hidden=True)
 @ensure_match
 async def mp_force(ctx: Context, match: Match) -> Optional[str]:
     """Force a player into the current match by name."""

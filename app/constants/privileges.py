@@ -33,11 +33,14 @@ class Privileges(IntFlag):
     TOURNAMENT = 1 << 10  # able to manage match state without host.
     NOMINATOR = 1 << 11  # able to manage maps ranked status.
     MODERATOR = 1 << 12  # able to manage users (level 1).
-    ADMINISTRATOR = 1 << 13  # able to manage users (level 2).
-    DEVELOPER = 1 << 14  # able to manage full server app.state.
+    ADMINISTRATOR = 1 << 13  # able to manage users.
+    COMMUNITYMANAGER = 1 << 14 # able to manage users (level 2).
+    DEVELOPER = 1 << 15  # able to manage full server app.state.
+    COOWNER = 1 << 16 # able to manage. divided from other staff list.
+    OWNER = 1 << 17 # able to manage. divided from other staff list.
 
     DONATOR = SUPPORTER | PREMIUM
-    STAFF = MODERATOR | ADMINISTRATOR | DEVELOPER
+    STAFF = MODERATOR | ADMINISTRATOR | COMMUNITYMANAGER | DEVELOPER | COOWNER | OWNER
 
 
 @unique
