@@ -1054,7 +1054,7 @@ async def unsilence(ctx: Context) -> Optional[str]:
 """
 
 
-@command(Privileges.COMMUNITYMANAGER, aliases=["u"], hidden=True)
+@command(Privileges.ADMINISTRATOR, aliases=["u"], hidden=True)
 async def user(ctx: Context) -> Optional[str]:
     """Return general information about a given user."""
     if not ctx.args:
@@ -1101,7 +1101,7 @@ async def user(ctx: Context) -> Optional[str]:
     )
 
 
-@command(Privileges.COMMUNITYMANAGER, hidden=True)
+@command(Privileges.ADMINISTRATOR, hidden=True)
 async def kickuser(ctx: Context) -> Optional[str]:
     """Kick user."""
     if len(ctx.args) < 1:
@@ -1164,7 +1164,7 @@ async def wiperestrict(ctx: Context) -> Optional[str]:
     return f"{t} was restricted."
 
 
-@command(Privileges.COMMUNITYMANAGER, hidden=True)
+@command(Privileges.ADMINISTRATOR, hidden=True)
 async def restrict(ctx: Context) -> Optional[str]:
     """Restrict a specified player's account, with a reason."""
     if len(ctx.args) < 2:
@@ -1190,7 +1190,7 @@ async def restrict(ctx: Context) -> Optional[str]:
     return f"{t} was restricted."
 
 
-@command(Privileges.COMMUNITYMANAGER, hidden=True)
+@command(Privileges.ADMINISTRATOR, hidden=True)
 async def wipeuser(ctx: Context) -> Optional[str]:
     if len(ctx.args) < 2:
         return "Invalid syntax: !wipeuser <name> <reason>"
@@ -1211,7 +1211,7 @@ async def wipeuser(ctx: Context) -> Optional[str]:
     return f"{t} was wiped."
 
 
-@command(Privileges.COMMUNITYMANAGER, hidden=True)
+@command(Privileges.ADMINISTRATOR, hidden=True)
 async def unrestrict(ctx: Context) -> Optional[str]:
     """Unrestrict a specified player's account, with a reason."""
     if len(ctx.args) < 2:
@@ -2455,7 +2455,7 @@ async def mp_rematch(ctx: Context, match: Match) -> Optional[str]:
     return msg
 
 
-@mp_commands.add(Privileges.COMMUNITYMANAGER, aliases=["f"], hidden=True)
+@mp_commands.add(Privileges.ADMINISTRATOR, aliases=["f"], hidden=True)
 @ensure_match
 async def mp_force(ctx: Context, match: Match) -> Optional[str]:
     """Force a player into the current match by name."""
