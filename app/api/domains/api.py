@@ -487,7 +487,8 @@ async def api_get_player_scores(
         if mode_arg in (GameMode.RELAX_OSU, GameMode.RELAX_CATCH, GameMode.RELAX_TAIKO, GameMode.AUTOPILOT_OSU): 
             query[0] = query[0].replace("JOIN (SELECT map_md5, MAX(score) AS max_score FROM scores WHERE status = 2 GROUP BY map_md5) max_scores "
                              "ON t.map_md5 = max_scores.map_md5 AND t.score = max_scores.max_score ", "JOIN (SELECT map_md5, MAX(pp) AS max_pp FROM scores WHERE status = 2 GROUP BY map_md5) max_scores " 
-                             "ON t.map_md5 = max_scores.map_md5 AND t.pp = max_scores.max_pp ")
+                             "ON t.map_md5 = max_scores.map_md5 AND t.pp = max_scores.max_pp "
+                             )
 
         sort = "t.play_time"
     else:
