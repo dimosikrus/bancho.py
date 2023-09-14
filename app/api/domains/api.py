@@ -993,13 +993,10 @@ async def api_get_global_leaderboard(
 
 @router.get("/get_clan_leaderboard")
 async def api_get_clan_leaderboard(
-    #sort: Literal["tscore", "rscore", "pp", "acc", "plays", "playtime"] = "pp",
-    mode_arg: int = Query(0, alias="mode", ge=0, le=11),
-    #limit: int = Query(25, ge=1, le=100),
-    #offset: int = Query(0, min=0, max=2_147_483_647),
-    #country: Optional[str] = Query(None, min_length=2, max_length=2),
-    db_conn: databases.core.Connection = Depends(acquire_db_conn),
+    sort: Literal["tscore", "rscore", "pp", "plays"] = "pp",
+    mode_arg: int = Query(0, alias="mode", ge=0, le=11)
 ):
+
     if mode_arg in (
         GameMode.RELAX_MANIA,
         GameMode.AUTOPILOT_CATCH,
@@ -1010,15 +1007,33 @@ async def api_get_clan_leaderboard(
             {"status": "Invalid gamemode."},
             status_code=status.HTTP_400_BAD_REQUEST,
         )
+    
+    rows = await app.state.services.database.fetch_all("SELECT id, name, tag, owner, created_at FROM clans")
 
-    mode = GameMode(mode_arg)
+    lb = []
+    for row in rows:
+        el = dict(row)
+        stats = await app.state.services.database.fetch_all(
+             f"SELECT s.pp, s.plays, s.rscore, s.tscore FROM users u INNER JOIN stats s ON u.id = s.id WHERE u.clan_id = :id AND mode = :mode",
+             {"id": el['id'], "mode": mode_arg}
+        )
+        co = await app.state.services.database.fetch_one(
+            "SELECT country FROM users WHERE id = :uid",
+            {"uid": el['owner']}
+        )
 
-    rows = await db_conn.fetch_all(
-        "SELECT * FROM clans"
-    )
+        el["pp"] = sum(stat["pp"] for stat in stats)
+        el["rscore"] = sum(stat["rscore"] for stat in stats)
+        el["tscore"] = sum(stat["tscore"] for stat in stats)
+        el["plays"] = sum(stat["plays"] for stat in stats) 
+        el['ownercountry'] = co['country']
+
+        lb.append(el)
+    
+    lb.sort(key=lambda x: x[f"{sort}"], reverse=True)
 
     return ORJSONResponse(
-        {"status": "success", "leaderboard": [dict(row) for row in rows]},
+        {"status": "success", "leaderboard": lb},
     )
 
 @router.get("/get_clan")
