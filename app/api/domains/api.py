@@ -265,12 +265,32 @@ async def api_get_player_info(
             {"userid": resolved_user_id},
         )
 
+        peak_ranks = await app.state.services.database.fetch_all(
+            "SELECT mode, MIN(player_rank), capture_time FROM leaderboard_history "
+            "WHERE uid= :userid "
+            "GROUP BY mode",
+            {"userid": resolved_user_id},
+        )
+
+        peak_ranks_date = await app.state.services.database.fetch_all(
+            "SELECT mode, capture_time FROM leaderboard_history "
+            "WHERE uid= :userid "
+            "GROUP BY mode ORDER BY player_rank ASC",
+            {"userid": resolved_user_id},
+        )
+
         for idx, mode_stats in enumerate([dict(row) for row in rows]):
             rank = await app.state.services.redis.zrevrank(
                 f"bancho:leaderboard:{idx}",
                 str(resolved_user_id),
             )
             mode_stats["rank"] = rank + 1 if rank is not None else 0
+
+            peak_rank_info = next((rank for rank in peak_ranks if rank[0] == idx), None)
+            mode_stats["peak_rank"] = peak_rank_info[1] if peak_rank_info is not None else 0
+            
+            peak_capture_time_info = next((rank for rank in peak_ranks_date if rank[0] == idx), None)
+            mode_stats["peak_capture_time"] = peak_capture_time_info[1] if peak_capture_time_info is not None else 0
 
             country_rank = await app.state.services.redis.zrevrank(
                 f"bancho:leaderboard:{idx}:{resolved_country}",

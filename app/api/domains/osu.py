@@ -424,17 +424,12 @@ async def lastFM(
     """
 
 
-# bancho.py supports both cheesegull mirrors & chimu.moe.
-# chimu.moe handles things a bit differently than cheesegull,
-# and has some extra features we'll eventually use more of.
-USING_CHIMU = "chimu.moe" in app.settings.MIRROR_URL
-
 DIRECT_SET_INFO_FMTSTR = (
-    "{{{setid_spelling}}}.osz|{{Artist}}|{{Title}}|{{Creator}}|"
-    "{{RankedStatus}}|10.0|{{LastUpdate}}|{{{setid_spelling}}}|"
-    "0|{{HasVideo}}|0|0|0|{{diffs}}"  # 0s are threadid, has_story,
+    "{SetID}.osz|{Artist}|{Title}|{Creator}|"
+    "{RankedStatus}|10.0|{LastUpdate}|{SetID}|"
+    "0|{HasVideo}|0|0|0|{diffs}"  # 0s are threadid, has_story,
     # filesize, filesize_novid.
-).format(setid_spelling="SetId" if USING_CHIMU else "SetID")
+)
 
 DIRECT_MAP_INFO_FMTSTR = (
     "[{DifficultyRating:.2f}⭐] {DiffName} "
@@ -450,12 +445,7 @@ async def osuSearchHandler(
     mode: int = Query(..., alias="m", ge=-1, le=3),  # -1 for all
     page_num: int = Query(..., alias="p"),
 ):
-    if USING_CHIMU:
-        search_url = f"{app.settings.MIRROR_URL}/search"
-    else:
-        search_url = f"{app.settings.MIRROR_URL}/api/search"
-
-    params: dict[str, object] = {"amount": 100, "offset": page_num}
+    params: dict[str, Any] = {"amount": 100, "offset": page_num * 100}
 
     # eventually we could try supporting these,
     # but it mostly depends on the mirror.
@@ -469,47 +459,65 @@ async def osuSearchHandler(
         # convert to osu!api status
         params["status"] = RankedStatus.from_osudirect(ranked_status).osu_api
 
-    async with app.state.services.http.get(search_url, params=params) as resp:
+    async with app.state.services.http.get(
+        app.settings.MIRROR_SEARCH_ENDPOINT,
+        params=params,
+    ) as resp:
         if resp.status != status.HTTP_200_OK:
-            if USING_CHIMU:
-                # chimu uses 404 for no maps found
-                if resp.status == status.HTTP_404_NOT_FOUND:
-                    return b"0"
-
             return b"-1\nFailed to retrieve data from the beatmap mirror."
 
         result = await resp.json()
-
-        if USING_CHIMU:
-            if result["code"] != 0:
-                return b"-1\nFailed to retrieve data from the beatmap mirror."
-
-            result = result["data"]
 
     lresult = len(result)  # send over 100 if we receive
     # 100 matches, so the client
     # knows there are more to get
     ret = [f"{'101' if lresult == 100 else lresult}"]
-
-    for bmap in result:
-        if bmap["ChildrenBeatmaps"] is None:
+    for bmapset in result:
+        if bmapset["ChildrenBeatmaps"] is None:
             continue
 
-        if USING_CHIMU:
-            bmap["HasVideo"] = int(bmap["HasVideo"])
-        else:
-            # cheesegull doesn't support vids
-            bmap["HasVideo"] = "0"
+        # some mirrors use a true/false instead of 0 or 1
+        bmapset["HasVideo"] = int(bmapset["HasVideo"])
 
         diff_sorted_maps = sorted(
-            bmap["ChildrenBeatmaps"],
+            bmapset["ChildrenBeatmaps"],
             key=lambda m: m["DifficultyRating"],
         )
+
+        def handle_invalid_characters(s: str) -> str:
+            # XXX: this is a bug that exists on official servers (lmao)
+            # | is used to delimit the set data, so the difficulty name
+            # cannot contain this or it will be ignored. we fix it here
+            # by using a different character.
+            return s.replace("|", "I")
+
         diffs_str = ",".join(
-            [DIRECT_MAP_INFO_FMTSTR.format(**row) for row in diff_sorted_maps],
+            [
+                DIRECT_MAP_INFO_FMTSTR.format(
+                    DifficultyRating=row["DifficultyRating"],
+                    DiffName=handle_invalid_characters(row["DiffName"]),
+                    CS=row["CS"],
+                    OD=row["OD"],
+                    AR=row["AR"],
+                    HP=row["HP"],
+                    Mode=row["Mode"],
+                )
+                for row in diff_sorted_maps
+            ],
         )
 
-        ret.append(DIRECT_SET_INFO_FMTSTR.format(**bmap, diffs=diffs_str))
+        ret.append(
+            DIRECT_SET_INFO_FMTSTR.format(
+                Artist=handle_invalid_characters(bmapset["Artist"]),
+                Title=handle_invalid_characters(bmapset["Title"]),
+                Creator=bmapset["Creator"],
+                RankedStatus=bmapset["RankedStatus"],
+                LastUpdate=bmapset["LastUpdate"],
+                SetID=bmapset["SetID"],
+                HasVideo=bmapset["HasVideo"],
+                diffs=diffs_str,
+            ),
+        )
 
     return "\n".join(ret).encode()
 
@@ -1955,13 +1963,10 @@ async def get_osz(
     if no_video:
         map_set_id = map_set_id[:-1]
 
-    if USING_CHIMU:
-        query_str = f"download/{map_set_id}?n={int(not no_video)}"
-    else:
-        query_str = f"d/{map_set_id}"
+    query_str = f"{map_set_id}?n={int(not no_video)}"
 
     return RedirectResponse(
-        url=f"{app.settings.MIRROR_URL}/{query_str}",
+        url=f"{app.settings.MIRROR_DOWNLOAD_ENDPOINT}/{query_str}",
         status_code=status.HTTP_301_MOVED_PERMANENTLY,
     )
 

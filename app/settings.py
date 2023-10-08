@@ -31,7 +31,9 @@ DISCORD_SECRET: Secret = config("DISCORD_SECRET", cast=Secret)
 GULAG_WEB_PATH: Path = config("GULAG_WEB_PATH", cast=Path)
 
 DOMAIN: str = config("DOMAIN", default="cmyui.xyz")
-MIRROR_URL: str = config("MIRROR_URL", default="https://api.chimu.moe/v1")
+
+MIRROR_SEARCH_ENDPOINT = os.environ["MIRROR_SEARCH_ENDPOINT"]
+MIRROR_DOWNLOAD_ENDPOINT = os.environ["MIRROR_DOWNLOAD_ENDPOINT"]
 
 COMMAND_PREFIX: str = config("COMMAND_PREFIX", default="!")
 
