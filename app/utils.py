@@ -45,7 +45,6 @@ __all__ = (
     "pymysql_encode",
     "escape_enum",
     "ensure_supported_platform",
-    "ensure_local_services_are_running",
     "ensure_directory_structure",
     "ensure_dependencies_and_requirements",
     "setup_runtime_environment",
@@ -355,35 +354,6 @@ def ensure_supported_platform() -> int:
             "and the minimum python version is 3.9.",
             Ansi.LRED,
         )
-        return 1
-
-    return 0
-
-
-def ensure_local_services_are_running() -> int:
-    """Ensure all required services (mysql, redis) are running."""
-    # NOTE: if you have any problems with this, please contact me
-    # @cmyui#0425/cmyuiosu@gmail.com. i'm interested in knowing
-    # how people are using the software so that i can keep it
-    # in mind while developing new features & refactoring.
-
-    if app.settings.DB_DSN.hostname in ("localhost", "127.0.0.1", None):
-        # sql server running locally, make sure it's running
-        for service in ("mysqld", "mariadb"):
-            if os.path.exists(f"/var/run/{service}/{service}.pid"):
-                break
-        else:
-            # not found, try pgrep
-            pgrep_exit_code = subprocess.call(
-                ["pgrep", "mysqld"],
-                stdout=subprocess.DEVNULL,
-            )
-            if pgrep_exit_code != 0:
-                log("Unable to connect to mysql server.", Ansi.LRED)
-                return 1
-
-    if not os.path.exists("/var/run/redis/redis-server.pid"):
-        log("Unable to connect to redis server.", Ansi.LRED)
         return 1
 
     return 0
