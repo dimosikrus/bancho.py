@@ -151,8 +151,8 @@ async def _analyze_score(score: "Score") -> None:
 
     # Frametime check
     frametime = circle_guard.frametime(replay)
-    if score.mode != GameMode.RELAX_OSU:
-        if frametime <= app.settings.FRAME_TIME_CAP:
+    if score.mode != GameMode.RELAX_OSU and frametime <= app.settings.FRAME_TIME_CAP:
+        ## if frametime <= app.settings.FRAME_TIME_CAP:
             embed = Embed(
                 title=f"[{score.mode!r}] Possibly Timewarped score. ({frametime} avg. frametime)",
                 color=0xBB0EBE,
