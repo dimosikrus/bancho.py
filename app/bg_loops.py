@@ -127,7 +127,7 @@ async def _analyze_score(score: "Score") -> None:
     replay = ReplayString(await replay_file.read())
 
     # UR Check
-    if (replay_ur := circle_guard.ur(replay)) < app.settings.UNSTABLE_RATE_CAP:
+    if (replay_ur := circle_guard.ur(replay)) < app.settings.UNSTABLE_RATE_CAP and score.mode != GameMode.RELAX_OSU:
         embed = Embed(
             title=f"[{score.mode!r}] Possibly relax score. ({replay_ur} UR)",
             color=0xBB0EBE,
