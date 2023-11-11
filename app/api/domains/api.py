@@ -459,7 +459,7 @@ async def api_get_player_scores(
     query = [
         "SELECT t.id, t.map_md5, t.score, t.pp, t.acc, t.max_combo, "
         "t.mods, t.n300, t.n100, t.n50, t.nmiss, t.ngeki, t.nkatu, t.grade, "
-        "t.status, t.mode, t.play_time, t.perfect "
+        "t.status, t.mode, t.time_elapsed, t.play_time, t.perfect "
         "FROM scores t "
         "INNER JOIN maps b ON t.map_md5 = b.md5 "
         "WHERE t.userid = :user_id AND t.mode = :mode",
