@@ -214,7 +214,7 @@ async def roll(ctx: Context) -> Optional[str]:
 
     if max_roll == 727:
         points = random.randrange(0, max_roll)
-        return "Wysi rolls {points} points!"
+        return f"Wysi rolls {points} points!"
 
     points = random.randrange(0, max_roll)
     return f"{ctx.player.name} rolls {points} points!"
