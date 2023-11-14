@@ -787,7 +787,7 @@ async def osuSubmitModularSelector(
             log(f"{score.player} submitted a score {score.mods!r}.", Ansi.LRED)
             score.player.enqueue(
                 app.packets.notification(
-                    f"FUCK you. Dont even try to submit {score.mods!r}",
+                    f"Dont even try to submit {score.mods!r}",
                 ),
             )
             return b"error: no"

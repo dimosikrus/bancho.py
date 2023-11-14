@@ -381,7 +381,7 @@ RESTRICTED_MSG = (
 )
 
 WELCOME_NOTIFICATION = app.packets.notification(
-    f"Welcome back to {BASE_DOMAIN}!\nRunning bancho.py v{app.settings.VERSION}.\nLogin time: {elapsed}",
+    f"Welcome back to {BASE_DOMAIN}!\nLogin time: {elapsed}",
 )
 
 OFFLINE_NOTIFICATION = app.packets.notification(

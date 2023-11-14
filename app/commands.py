@@ -336,6 +336,7 @@ async def changename(ctx: Context) -> Optional[str]:
 
 @command(Privileges.COOWNER)
 async def recalcstats(ctx: Context) -> Optional[str]:
+    staff_chan = app.state.sessions.channels["#staff"]
 
     if ctx.args[0] == ("all", "test"):
         return "Invalid syntax: !recalcstats <all>"
@@ -344,34 +345,38 @@ async def recalcstats(ctx: Context) -> Optional[str]:
         "SELECT id,mode FROM stats",
     )
 
-    for i in all_scores:
-        userid = i[0]
-        mode = i[1]
+    staff_chan.send_bot(f"{ctx.player} started a full stats recalculation.")
 
-        best_scores = await app.state.services.database.fetch_all(
-            "SELECT s.pp, s.acc FROM scores s "
-            "INNER JOIN maps m ON s.map_md5 = m.md5 "
-            "WHERE s.userid = :user_id AND s.mode = :mode "
-            "AND s.status = 2 AND m.status IN (2, 3) "  # ranked, approved
-            "ORDER BY s.pp DESC",
-            {"user_id": userid, "mode": mode},
-        )
+    for chunk in [all_scores[i:i + 1000] for i in range(0, len(all_scores), 1000)]:
+        for i in chunk:
+            userid = i[0]
+            mode = i[1]
 
-        total_scores = len(best_scores)
-        top_100_pp = best_scores[:100]
+            best_scores = await app.state.services.database.fetch_all(
+                "SELECT s.pp, s.acc FROM scores s "
+                "INNER JOIN maps m ON s.map_md5 = m.md5 "
+                "WHERE s.userid = :user_id AND s.mode = :mode "
+                "AND s.status = 2 AND m.status IN (2, 3) "  # ranked, approved
+                "ORDER BY s.pp DESC",
+                {"user_id": userid, "mode": mode},
+            )
 
-        if total_scores == 0:
-            continue
+            total_scores = len(best_scores)
+            top_100_pp = best_scores[:100]
 
-        # calculate new total weighted pp
-        weighted_pp = sum(row["pp"] * 0.95**i for i, row in enumerate(top_100_pp))
-        bonus_pp = 416.6667 * (1 - 0.9994**total_scores)
-        overal_pp = round(weighted_pp + bonus_pp)
+            if total_scores == 0:
+                continue
 
-        await app.state.services.database.execute(
-            "UPDATE `stats` SET `pp` = :overal_pp WHERE `stats`.`id` = :user_id AND `stats`.`mode` = :mode",
-            {"overal_pp": overal_pp, "user_id": userid, "mode": mode},
-        )
+            # calculate new total weighted pp
+            weighted_pp = sum(row["pp"] * 0.95**i for i, row in enumerate(top_100_pp))
+            bonus_pp = 416.6667 * (1 - 0.9994**total_scores)
+            overal_pp = round(weighted_pp + bonus_pp)
+
+            await app.state.services.database.execute(
+                "UPDATE `stats` SET `pp` = :overal_pp WHERE `stats`.`id` = :user_id AND `stats`.`mode` = :mode",
+                {"overal_pp": overal_pp, "user_id": userid, "mode": mode},
+            )
+        await asyncio.sleep(0.1)  # pause between chunks to reduce CPU load
 
     return "Done!"
 
@@ -1842,7 +1847,8 @@ async def server(ctx: Context) -> Optional[str]:
     ram_info = " / ".join([f"{v // 1024 ** 2}MB" for v in ram_values])
 
     # current state of settings
-    mirror_url = app.settings.MIRROR_URL
+    mirror_s_endpoint = app.settings.MIRROR_SEARCH_ENDPOINT
+    mirror_d_endpoint = app.settings.MIRROR_DOWNLOAD_ENDPOINT
     using_osuapi = app.settings.OSU_API_KEY != ""
     advanced_mode = app.settings.DEVELOPER_MODE
     auto_logging = app.settings.AUTOMATICALLY_REPORT_PROBLEMS
@@ -1861,11 +1867,11 @@ async def server(ctx: Context) -> Optional[str]:
 
     return "\n".join(
         (
-            f"{build_str} | uptime: {seconds_readable(uptime)}",
-            f"cpu(s): {cpus_info}",
-            f"ram: {ram_info}",
-            f"mirror: {mirror_url} | osu!api connection: {using_osuapi}",
-            f"advanced mode: {advanced_mode} | auto logging: {auto_logging}",
+            f"{build_str} | Uptime: {seconds_readable(uptime)}",
+            f"Cpu(s): {cpus_info}",
+            f"Ram: {ram_info}",
+            f"Mirror search: {mirror_s_endpoint} | Mirror download: {mirror_d_endpoint} | Osu!api connection: {using_osuapi}",
+            f"Advanced mode: {advanced_mode} | Auto logging: {auto_logging}",
             "",
             "requirements",
             requirements_info,
