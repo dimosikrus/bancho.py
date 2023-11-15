@@ -1198,15 +1198,15 @@ class Player:
             log(f"{self} failed to join {spec_chan}?", Ansi.LYELLOW)
             return
 
-        if not p.stealth:
-            p_joined = app.packets.fellow_spectator_joined(p.id)
-            for s in self.spectators:
-                s.enqueue(p_joined)
-                p.enqueue(app.packets.fellow_spectator_joined(s.id))
+        p_joined = app.packets.fellow_spectator_joined(p.id)
+        for s in self.spectators:
+            s.enqueue(p_joined)
+            p.enqueue(app.packets.fellow_spectator_joined(s.id))
 
+        if not self.stealth:
             self.enqueue(app.packets.spectator_joined(p.id))
         else:
-            # player is admin in stealth, only give
+            # player is in stealth mode, only give
             # other players data to us, not vice-versa.
             for s in self.spectators:
                 p.enqueue(app.packets.fellow_spectator_joined(s.id))

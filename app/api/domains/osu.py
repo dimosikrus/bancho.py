@@ -1027,6 +1027,29 @@ async def osuSubmitModularSelector(
             },
         )
 
+    score_data = {
+        "map_md5": score.bmap.md5,
+        "score": score.score,
+        "pp": score.pp,
+        "acc": score.acc,
+        "max_combo": score.max_combo,
+        "mods": score.mods,
+        "n300": score.n300,
+        "n100": score.n100,
+        "n50": score.n50,
+        "nmiss": score.nmiss,
+        "ngeki": score.ngeki,
+        "nkatu": score.nkatu,
+        "grade": score.grade.name,
+        "status": score.status,
+        "mode": score.mode,
+        "play_time": score.server_time,
+        "time_elapsed": score.time_elapsed,
+        "client_flags": score.client_flags,
+        "user_id": score.player.id,
+        "perfect": score.perfect,
+        "checksum": score.client_checksum,
+    }
     score.id = await db_conn.execute(
         "INSERT INTO scores "
         "VALUES (NULL, "
@@ -1036,29 +1059,7 @@ async def osuSubmitModularSelector(
         ":grade, :status, :mode, :play_time, "
         ":time_elapsed, :client_flags, :user_id, :perfect, "
         ":checksum)",
-        {
-            "map_md5": score.bmap.md5,
-            "score": score.score,
-            "pp": score.pp,
-            "acc": score.acc,
-            "max_combo": score.max_combo,
-            "mods": score.mods,
-            "n300": score.n300,
-            "n100": score.n100,
-            "n50": score.n50,
-            "nmiss": score.nmiss,
-            "ngeki": score.ngeki,
-            "nkatu": score.nkatu,
-            "grade": score.grade.name,
-            "status": score.status,
-            "mode": score.mode,
-            "play_time": score.server_time,
-            "time_elapsed": score.time_elapsed,
-            "client_flags": score.client_flags,
-            "user_id": score.player.id,
-            "perfect": score.perfect,
-            "checksum": score.client_checksum,
-        },
+        score_data,
     )
 
     # Queue our sensetive data to handle.
@@ -1160,7 +1161,7 @@ async def osuSubmitModularSelector(
             # likely be split into two queries in the future.
             best_scores = await db_conn.fetch_all(
                 "SELECT s.pp, s.acc FROM scores s "
-                "INNER JOIN maps m ON s.map_md5 = m.md5 "
+                "JOIN maps m ON s.map_md5 = m.md5 "
                 "WHERE s.userid = :user_id AND s.mode = :mode "
                 "AND s.status = 2 AND m.status IN (2, 3) "  # ranked, approved
                 "ORDER BY s.pp DESC",

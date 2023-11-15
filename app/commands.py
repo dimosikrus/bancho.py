@@ -1461,6 +1461,7 @@ async def stealth(ctx: Context) -> Optional[str]:
     # NOTE: this command is a large work in progress and currently
     # half works; eventually it will be moved to the Admin level.
     ctx.player.stealth = not ctx.player.stealth
+    ctx.player.spectating = None
 
     return f'Stealth {"enabled" if ctx.player.stealth else "disabled"}.'
 
