@@ -34,8 +34,6 @@ from typing import Union
 
 import psutil
 import timeago
-from discord_webhook import DiscordEmbed
-from discord_webhook import DiscordWebhook
 from pytimeparse.timeparse import timeparse
 
 import app.logging
@@ -51,7 +49,6 @@ from app.constants.mods import Mods
 from app.constants.mods import SPEED_CHANGING_MODS
 from app.constants.privileges import ClanPrivileges
 from app.constants.privileges import Privileges
-from app.discord import Webhook
 from app.logging import Ansi
 from app.logging import log
 from app.objects.beatmap import Beatmap
@@ -69,6 +66,9 @@ from app.objects.score import SubmissionStatus
 from app.usecases.performance import ScoreDifficultyParams
 from app.utils import make_safe_name
 from app.utils import seconds_readable
+
+from discord_webhook import DiscordEmbed
+from discord_webhook import DiscordWebhook
 
 
 try:
@@ -337,6 +337,12 @@ async def changename(ctx: Context) -> Optional[str]:
 
     return None
 
+@command(Privileges.OWNER)
+async def nigga(ctx: Context) -> Optional[str]:
+    name = ctx.args[0]
+    message = f"{name} has destroyed!"
+    app.state.sessions.players.enqueue(app.packets.notification(message))
+    return message
 
 @command(Privileges.COOWNER)
 async def recalcstats(ctx: Context) -> Optional[str]:
@@ -712,33 +718,14 @@ async def request(ctx: Context) -> Optional[str]:
             "msg": bmap.id,
         },
     )
-
-    webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_NEW_REQUEST_WEBHOOK)
-    embed = DiscordEmbed(
-        title=f"New request from **{ctx.player.name}**!",
-        description=f"**{ctx.player.name}** request **[{bmap}](https://osu.ppy.sh/b/{bmap.id})** for rank/love.",
-        color="2cc77c",
+    wb = DiscordWebhook(url="https://discord.com/api/webhooks/1195399072111136808/R3vE-3daLNubc2ds8ypmjYp0iVMSND5McoYLRaxVrCetAD6ybGE7PYJRIurQkCmgOsxV")
+    ds_embed = DiscordEmbed(
+        title="New Map Request",
+        description=f"Map: [{bmap.full_name_no_diff}]({bmap.url})\nBy: {ctx.player.name}",
+        color="03b2f8"
     )
-    embed.set_author(
-        name=f"{ctx.player.name}",
-        url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
-        icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
-    )
-    embed.add_embed_field(
-        name="Download:",
-        value=f"[🐱](https://catboy.best/d/{bmap.set_id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.set_id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.set_id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.set_id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
-    )
-    embed.set_image(
-        url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
-    )
-    embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
-    embed.set_footer(
-        text="New request on osu!okayu",
-        icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
-    )
-    embed.set_timestamp()
-    webhook.add_embed(embed)
-    response = webhook.execute()
+    wb.add_embed(ds_embed)
+    wb.execute()
 
     return "Request submitted."
 
@@ -879,40 +866,22 @@ async def _map(ctx: Context) -> Optional[str]:
             {"map_ids": map_ids},
         )
 
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_NEW_RANKED_WEBHOOK)
-        embed = DiscordEmbed(
-            title=f"New **{new_status}**!",
-            description=f"**{ctx.player.name}** updated to **{new_status}** **{bmap}**.",
-            color="2cc77c",
+        #staff_chan = app.state.sessions.channels["#staff"]
+        #
+        #ann = [
+        #    f"\x01ACTION {new_status} on {bmap.embed}"
+        #]
+        #
+        #staff_chan.send_bot(f"{ctx.player} - ".join(ann))
+        #announce_chan.send(" ".join(ann), sender=ctx.player, to_self=True)
+        wb = DiscordWebhook(url="https://discord.com/api/webhooks/1195398623001849866/HM_O-69FVLjGzZ-Wt5cGt6FL0HdY9yhFV3BfWviofuYh1vKF7-K9SANoRAFQ1dAwp_Q6")
+        ds_embed = DiscordEmbed(
+            title="Map Rank Status Update",
+            description=f"[{bmap.full_name_no_diff}]({bmap.url}) updated to {new_status!s}.",
+            color="03b2f8"
         )
-        embed.set_author(
-            name=f"{ctx.player.name}",
-            url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
-            icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
-        )
-        embed.add_embed_field(
-            name="Download:",
-            value=f"[🐱](https://catboy.best/d/{bmap.set_id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.set_id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.set_id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.set_id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
-        )
-        embed.set_image(
-            url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
-        )
-        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
-        embed.set_footer(
-            text=f"{new_status} on osu!okayu",
-            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
-        )
-        embed.set_timestamp()
-        webhook.add_embed(embed)
-        response = webhook.execute()
-
-        announce_chan = app.state.sessions.channels["#beatmaps"]
-
-        ann = [
-            f"\x01ACTION {new_status} on {bmap.embed}"
-        ]
-
-        announce_chan.send(" ".join(ann), sender=ctx.player, to_self=True)
+        wb.add_embed(ds_embed)
+        wb.execute()
 
     return f"{bmap.embed} updated to {new_status!s}."
 
@@ -1584,50 +1553,9 @@ async def recalc(ctx: Context) -> Optional[str]:
                     await asyncio.sleep(0.01)
 
             elapsed = app.utils.seconds_readable(int(time.time() - st))
-            webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-            embed = DiscordEmbed(
-                title=f"Recalculation completed!",
-                description=f"Elapsed: **{elapsed}**",
-                color="ff0000",
-            )
-            embed.set_author(
-                name=f"{ctx.player.name}",
-                url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
-                icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
-            )
-            embed.set_image(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
-            embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
-            embed.set_footer(
-                text="recalculation on osu!okayu",
-                icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
-            )
-            embed.set_timestamp()
-            webhook.add_embed(embed)
-            response = webhook.execute()
             staff_chan.send_bot(f"Recalculation complete. | Elapsed: {elapsed}")
 
         app.state.loop.create_task(recalc_all())
-
-        webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(
-            title=f"Started recalculation **{ctx.player.name}**!",
-            description=f"**{ctx.player.name}** started full recalculation!",
-            color="ff0000",
-        )
-        embed.set_author(
-            name=f"{ctx.player.name}",
-            url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
-            icon_url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}",
-        )
-        embed.set_image(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
-        embed.set_thumbnail(url=f"https://a.{app.settings.DOMAIN}/{ctx.player.id}")
-        embed.set_footer(
-            text="recalculation on osu!okayu",
-            icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
-        )
-        embed.set_timestamp()
-        webhook.add_embed(embed)
-        response = webhook.execute()
         return "Starting a full recalculation."
 
 
@@ -1758,29 +1686,6 @@ async def wipemap(ctx: Context) -> Optional[str]:
         {"map_md5": map_md5},
     )
 
-    webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-    embed = DiscordEmbed(
-        title=f"wiped map set **{ctx.player.name}**!",
-        description=f"**{ctx.player.name}** wiped map set **{bmap}**",
-        color="2cc77c",
-    )
-    embed.set_author(
-        name=f"{ctx.player.name}",
-        url=f"https://osu.{app.settings.DOMAIN}/u/{ctx.player.id}",
-        icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
-    )
-    embed.add_embed_field(
-        name="Download:",
-        value=f"[🐱](https://catboy.best/d/{bmap.set_id})[<:beatconnect:986084752303992863>](https://beatconnect.io/d/{bmap.set_id})[<:kitsu:986086974131675187>](https://kitsu.moe/d/{bmap.set_id})[<:GatariOld:562573313663041537>](https://osu.gatari.pw/d/{bmap.set_id})[<a:osu:523901275079966720>](https://osu.ppy.sh/b/{bmap.id})",
-    )
-    embed.set_footer(
-        text="New request on osu!okayu",
-        icon_url=f"https://osu.{app.settings.DOMAIN}/static/favicon/logo.png",
-    )
-    embed.set_timestamp()
-    webhook.add_embed(embed)
-    response = webhook.execute()
-
     return "Scores wiped."
 
 
@@ -1819,69 +1724,69 @@ async def reload(ctx: Context) -> Optional[str]:
     return f"Reloaded {mod.__name__}"
 
 
-@command(Privileges.NORMAL)
-async def server(ctx: Context) -> Optional[str]:
-    """Retrieve performance data about the server."""
-
-    build_str = f"bancho.py v{app.settings.VERSION} ({app.settings.DOMAIN})"
-
-    # get info about this process
-    proc = psutil.Process(os.getpid())
-    uptime = int(time.time() - proc.create_time())
-
-    # get info about our cpu
-    with open("/proc/cpuinfo") as f:
-        header = "model name\t: "
-        trailer = "\n"
-
-        model_names = Counter(
-            line[len(header) : -len(trailer)]
-            for line in f.readlines()
-            if line.startswith("model name")
-        )
-
-    # list of all cpus installed with thread count
-    cpus_info = " | ".join(f"{v}x {k}" for k, v in model_names.most_common())
-
-    # get system-wide ram usage
-    sys_ram = psutil.virtual_memory()
-
-    # output ram usage as `{bancho_used}MB / {sys_used}MB / {sys_total}MB`
-    bancho_ram = proc.memory_info()[0]
-    ram_values = (bancho_ram, sys_ram.used, sys_ram.total)
-    ram_info = " / ".join([f"{v // 1024 ** 2}MB" for v in ram_values])
-
-    # current state of settings
-    mirror_s_endpoint = app.settings.MIRROR_SEARCH_ENDPOINT
-    mirror_d_endpoint = app.settings.MIRROR_DOWNLOAD_ENDPOINT
-    using_osuapi = app.settings.OSU_API_KEY != ""
-    advanced_mode = app.settings.DEVELOPER_MODE
-    auto_logging = app.settings.AUTOMATICALLY_REPORT_PROBLEMS
-
-    # package versioning info
-    # divide up pkg versions, 3 displayed per line, e.g.
-    # aiohttp v3.6.3 | aiomysql v0.0.21 | bcrypt v3.2.0
-    # cmyui v1.7.3 | datadog v0.40.1 | geoip2 v4.1.0
-    # maniera v1.0.0 | mysql-connector-python v8.0.23 | orjson v3.5.1
-    # psutil v5.8.0 | py3rijndael v0.3.3 | uvloop v0.15.2
-    reqs = (Path.cwd() / "requirements.txt").read_text().splitlines()
-    requirements_info = "\n".join(
-        " | ".join("{} v{}".format(*pkg.split("==")) for pkg in section)
-        for section in (reqs[i : i + 3] for i in range(0, len(reqs), 3))
-    )
-
-    return "\n".join(
-        (
-            f"{build_str} | Uptime: {seconds_readable(uptime)}",
-            f"Cpu(s): {cpus_info}",
-            f"Ram: {ram_info}",
-            f"Mirror search: {mirror_s_endpoint} | Mirror download: {mirror_d_endpoint} | Osu!api connection: {using_osuapi}",
-            f"Advanced mode: {advanced_mode} | Auto logging: {auto_logging}",
-            "",
-            "requirements",
-            requirements_info,
-        ),
-    )
+#@command(Privileges.NORMAL)
+#async def server(ctx: Context) -> Optional[str]:
+#    """Retrieve performance data about the server."""
+#
+#    build_str = f"bancho.py v{app.settings.VERSION} ({app.settings.DOMAIN})"
+#
+#    # get info about this process
+#    proc = psutil.Process(os.getpid())
+#    uptime = int(time.time() - proc.create_time())
+#
+#    # get info about our cpu
+#    with open("/proc/cpuinfo") as f:
+#        header = "model name\t: "
+#        trailer = "\n"
+#
+#        model_names = Counter(
+#            line[len(header) : -len(trailer)]
+#            for line in f.readlines()
+#            if line.startswith("model name")
+#        )
+#
+#    # list of all cpus installed with thread count
+#    cpus_info = " | ".join(f"{v}x {k}" for k, v in model_names.most_common())
+#
+#    # get system-wide ram usage
+#    sys_ram = psutil.virtual_memory()
+#
+#    # output ram usage as `{bancho_used}MB / {sys_used}MB / {sys_total}MB`
+#    bancho_ram = proc.memory_info()[0]
+#    ram_values = (bancho_ram, sys_ram.used, sys_ram.total)
+#    ram_info = " / ".join([f"{v // 1024 ** 2}MB" for v in ram_values])
+#
+#    # current state of settings
+#    mirror_s_endpoint = app.settings.MIRROR_SEARCH_ENDPOINT
+#    mirror_d_endpoint = app.settings.MIRROR_DOWNLOAD_ENDPOINT
+#    using_osuapi = app.settings.OSU_API_KEY != ""
+#    advanced_mode = app.settings.DEVELOPER_MODE
+#    auto_logging = app.settings.AUTOMATICALLY_REPORT_PROBLEMS
+#
+#    # package versioning info
+#    # divide up pkg versions, 3 displayed per line, e.g.
+#    # aiohttp v3.6.3 | aiomysql v0.0.21 | bcrypt v3.2.0
+#    # cmyui v1.7.3 | datadog v0.40.1 | geoip2 v4.1.0
+#    # maniera v1.0.0 | mysql-connector-python v8.0.23 | orjson v3.5.1
+#    # psutil v5.8.0 | py3rijndael v0.3.3 | uvloop v0.15.2
+#    reqs = (Path.cwd() / "requirements.txt").read_text().splitlines()
+#    requirements_info = "\n".join(
+#        " | ".join("{} v{}".format(*pkg.split("==")) for pkg in section)
+#        for section in (reqs[i : i + 3] for i in range(0, len(reqs), 3))
+#    )
+#
+#    return "\n".join(
+#        (
+#            f"{build_str} | Uptime: {seconds_readable(uptime)}",
+#            f"Cpu(s): {cpus_info}",
+#            f"Ram: {ram_info}",
+#            f"Mirror search: {mirror_s_endpoint} | Mirror download: {mirror_d_endpoint} | Osu!api connection: {using_osuapi}",
+#            f"Advanced mode: {advanced_mode} | Auto logging: {auto_logging}",
+#            "",
+#            "requirements",
+#            requirements_info,
+#        ),
+#    )
 
 
 if app.settings.DEVELOPER_MODE:

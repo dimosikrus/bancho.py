@@ -1,419 +1,744 @@
-create table achievements
-(
-	id int auto_increment
-		primary key,
-	file varchar(128) not null,
-	name varchar(128) charset utf8 not null,
-	`desc` varchar(256) charset utf8 not null,
-	cond varchar(64) not null,
-	constraint achievements_desc_uindex
-		unique (`desc`),
-	constraint achievements_file_uindex
-		unique (file),
-	constraint achievements_name_uindex
-		unique (name)
-);
+-- MySQL dump 10.13  Distrib 8.0.35, for Linux (x86_64)
+--
+-- Host: localhost    Database: osudb
+-- ------------------------------------------------------
+-- Server version	8.0.35-0ubuntu0.22.04.1
 
-create table channels
-(
-	id int auto_increment
-		primary key,
-	name varchar(32) not null,
-	topic varchar(256) not null,
-	read_priv int default 1 not null,
-	write_priv int default 2 not null,
-	auto_join tinyint(1) default 0 not null,
-	constraint channels_name_uindex
-		unique (name)
-);
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-create table clans
-(
-	id int auto_increment
-		primary key,
-	name varchar(16) charset utf8 not null,
-	tag varchar(6) charset utf8 not null,
-	owner int not null,
-	created_at datetime not null,
-	constraint clans_name_uindex
-		unique (name),
-	constraint clans_owner_uindex
-		unique (owner),
-	constraint clans_tag_uindex
-		unique (tag)
-);
+--
+-- Table structure for table `achievements`
+--
 
-create table client_hashes
-(
-	userid int not null,
-	osupath char(32) not null,
-	adapters char(32) not null,
-	uninstall_id char(32) not null,
-	disk_serial char(32) not null,
-	latest_time datetime not null,
-	occurrences int default 0 not null,
-	primary key (userid, osupath, adapters, uninstall_id, disk_serial)
-);
+DROP TABLE IF EXISTS `achievements`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `achievements` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `file` varchar(128) NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `desc` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `cond` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `achievements_desc_uindex` (`desc`),
+  UNIQUE KEY `achievements_file_uindex` (`file`),
+  UNIQUE KEY `achievements_name_uindex` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-create table comments
-(
-	id int auto_increment
-		primary key,
-	target_id int not null comment 'replay, map, or set id',
-	target_type enum('replay', 'map', 'song') not null,
-	userid int not null,
-	time int not null,
-	comment varchar(80) charset utf8 not null,
-	colour char(6) null comment 'rgb hex string'
-);
+--
+-- Dumping data for table `achievements`
+--
 
-create table favourites
-(
-	userid int not null,
-	setid int not null,
-	primary key (userid, setid)
-);
+LOCK TABLES `achievements` WRITE;
+/*!40000 ALTER TABLE `achievements` DISABLE KEYS */;
+INSERT INTO `achievements` VALUES (1,'osu-skill-pass-1','Rising Star','Can\'t go forward without the first steps.','(score.mods & 1 == 0) and 1 <= score.sr < 2 and mode_vn == 0'),(2,'osu-skill-pass-2','Constellation Prize','Definitely not a consolation prize. Now things start getting hard!','(score.mods & 1 == 0) and 2 <= score.sr < 3 and mode_vn == 0'),(3,'osu-skill-pass-3','Building Confidence','Oh, you\'ve SO got this.','(score.mods & 1 == 0) and 3 <= score.sr < 4 and mode_vn == 0'),(4,'osu-skill-pass-4','Insanity Approaches','You\'re not twitching, you\'re just ready.','(score.mods & 1 == 0) and 4 <= score.sr < 5 and mode_vn == 0'),(5,'osu-skill-pass-5','These Clarion Skies','Everything seems so clear now.','(score.mods & 1 == 0) and 5 <= score.sr < 6 and mode_vn == 0'),(6,'osu-skill-pass-6','Above and Beyond','A cut above the rest.','(score.mods & 1 == 0) and 6 <= score.sr < 7 and mode_vn == 0'),(7,'osu-skill-pass-7','Supremacy','All marvel before your prowess.','(score.mods & 1 == 0) and 7 <= score.sr < 8 and mode_vn == 0'),(8,'osu-skill-pass-8','Absolution','My god, you\'re full of stars!','(score.mods & 1 == 0) and 8 <= score.sr < 9 and mode_vn == 0'),(9,'osu-skill-pass-9','Event Horizon','No force dares to pull you under.','(score.mods & 1 == 0) and 9 <= score.sr < 10 and mode_vn == 0'),(10,'osu-skill-pass-10','Phantasm','Fevered is your passion, extraordinary is your skill.','(score.mods & 1 == 0) and 10 <= score.sr < 11 and mode_vn == 0'),(11,'osu-skill-fc-1','Totality','All the notes. Every single one.','score.perfect and 1 <= score.sr < 2 and mode_vn == 0'),(12,'osu-skill-fc-2','Business As Usual','Two to go, please.','score.perfect and 2 <= score.sr < 3 and mode_vn == 0'),(13,'osu-skill-fc-3','Building Steam','Hey, this isn\'t so bad.','score.perfect and 3 <= score.sr < 4 and mode_vn == 0'),(14,'osu-skill-fc-4','Moving Forward','Bet you feel good about that.','score.perfect and 4 <= score.sr < 5 and mode_vn == 0'),(15,'osu-skill-fc-5','Paradigm Shift','Surprisingly difficult.','score.perfect and 5 <= score.sr < 6 and mode_vn == 0'),(16,'osu-skill-fc-6','Anguish Quelled','Don\'t choke.','score.perfect and 6 <= score.sr < 7 and mode_vn == 0'),(17,'osu-skill-fc-7','Never Give Up','Excellence is its own reward.','score.perfect and 7 <= score.sr < 8 and mode_vn == 0'),(18,'osu-skill-fc-8','Aberration','They said it couldn\'t be done. They were wrong.','score.perfect and 8 <= score.sr < 9 and mode_vn == 0'),(19,'osu-skill-fc-9','Chosen','Reign among the Prometheans, where you belong.','score.perfect and 9 <= score.sr < 10 and mode_vn == 0'),(20,'osu-skill-fc-10','Unfathomable','You have no equal.','score.perfect and 10 <= score.sr < 11 and mode_vn == 0'),(21,'osu-combo-500','500 Combo','500 big ones! You\'re moving up in the world!','500 <= score.max_combo < 750 and mode_vn == 0'),(22,'osu-combo-750','750 Combo','750 notes back to back? Woah.','750 <= score.max_combo < 1000 and mode_vn == 0'),(23,'osu-combo-1000','1000 Combo','A thousand reasons why you rock at this game.','1000 <= score.max_combo < 2000 and mode_vn == 0'),(24,'osu-combo-2000','2000 Combo','Nothing can stop you now.','2000 <= score.max_combo and mode_vn == 0'),(25,'taiko-skill-pass-1','My First Don','Marching to the beat of your own drum. Literally.','(score.mods & 1 == 0) and 1 <= score.sr < 2 and mode_vn == 1'),(26,'taiko-skill-pass-2','Katsu Katsu Katsu','Hora! Izuko!','(score.mods & 1 == 0) and 2 <= score.sr < 3 and mode_vn == 1'),(27,'taiko-skill-pass-3','Not Even Trying','Muzukashii? Not even.','(score.mods & 1 == 0) and 3 <= score.sr < 4 and mode_vn == 1'),(28,'taiko-skill-pass-4','Face Your Demons','The first trials are now behind you, but are you a match for the Oni?','(score.mods & 1 == 0) and 4 <= score.sr < 5 and mode_vn == 1'),(29,'taiko-skill-pass-5','The Demon Within','No rest for the wicked.','(score.mods & 1 == 0) and 5 <= score.sr < 6 and mode_vn == 1'),(30,'taiko-skill-pass-6','Drumbreaker','Too strong.','(score.mods & 1 == 0) and 6 <= score.sr < 7 and mode_vn == 1'),(31,'taiko-skill-pass-7','The Godfather','You are the Don of Dons.','(score.mods & 1 == 0) and 7 <= score.sr < 8 and mode_vn == 1'),(32,'taiko-skill-pass-8','Rhythm Incarnate','Feel the beat. Become the beat.','(score.mods & 1 == 0) and 8 <= score.sr < 9 and mode_vn == 1'),(33,'taiko-skill-fc-1','Keeping Time','Don, then katsu. Don, then katsu..','score.perfect and 1 <= score.sr < 2 and mode_vn == 1'),(34,'taiko-skill-fc-2','To Your Own Beat','Straight and steady.','score.perfect and 2 <= score.sr < 3 and mode_vn == 1'),(35,'taiko-skill-fc-3','Big Drums','Bigger scores to match.','score.perfect and 3 <= score.sr < 4 and mode_vn == 1'),(36,'taiko-skill-fc-4','Adversity Overcome','Difficult? Not for you.','score.perfect and 4 <= score.sr < 5 and mode_vn == 1'),(37,'taiko-skill-fc-5','Demonslayer','An Oni felled forevermore.','score.perfect and 5 <= score.sr < 6 and mode_vn == 1'),(38,'taiko-skill-fc-6','Rhythm\'s Call','Heralding true skill.','score.perfect and 6 <= score.sr < 7 and mode_vn == 1'),(39,'taiko-skill-fc-7','Time Everlasting','Not a single beat escapes you.','score.perfect and 7 <= score.sr < 8 and mode_vn == 1'),(40,'taiko-skill-fc-8','The Drummer\'s Throne','Percussive brilliance befitting royalty alone.','score.perfect and 8 <= score.sr < 9 and mode_vn == 1'),(41,'fruits-skill-pass-1','A Slice Of Life','Hey, this fruit catching business isn\'t bad.','(score.mods & 1 == 0) and 1 <= score.sr < 2 and mode_vn == 2'),(42,'fruits-skill-pass-2','Dashing Ever Forward','Fast is how you do it.','(score.mods & 1 == 0) and 2 <= score.sr < 3 and mode_vn == 2'),(43,'fruits-skill-pass-3','Zesty Disposition','No scurvy for you, not with that much fruit.','(score.mods & 1 == 0) and 3 <= score.sr < 4 and mode_vn == 2'),(44,'fruits-skill-pass-4','Hyperdash ON!','Time and distance is no obstacle to you.','(score.mods & 1 == 0) and 4 <= score.sr < 5 and mode_vn == 2'),(45,'fruits-skill-pass-5','It\'s Raining Fruit','And you can catch them all.','(score.mods & 1 == 0) and 5 <= score.sr < 6 and mode_vn == 2'),(46,'fruits-skill-pass-6','Fruit Ninja','Legendary techniques.','(score.mods & 1 == 0) and 6 <= score.sr < 7 and mode_vn == 2'),(47,'fruits-skill-pass-7','Dreamcatcher','No fruit, only dreams now.','(score.mods & 1 == 0) and 7 <= score.sr < 8 and mode_vn == 2'),(48,'fruits-skill-pass-8','Lord of the Catch','Your kingdom kneels before you.','(score.mods & 1 == 0) and 8 <= score.sr < 9 and mode_vn == 2'),(49,'fruits-skill-fc-1','Sweet And Sour','Apples and oranges, literally.','score.perfect and 1 <= score.sr < 2 and mode_vn == 2'),(50,'fruits-skill-fc-2','Reaching The Core','The seeds of future success.','score.perfect and 2 <= score.sr < 3 and mode_vn == 2'),(51,'fruits-skill-fc-3','Clean Platter','Clean only of failure. It is completely full, otherwise.','score.perfect and 3 <= score.sr < 4 and mode_vn == 2'),(52,'fruits-skill-fc-4','Between The Rain','No umbrella needed.','score.perfect and 4 <= score.sr < 5 and mode_vn == 2'),(53,'fruits-skill-fc-5','Addicted','That was an overdose?','score.perfect and 5 <= score.sr < 6 and mode_vn == 2'),(54,'fruits-skill-fc-6','Quickening','A dash above normal limits.','score.perfect and 6 <= score.sr < 7 and mode_vn == 2'),(55,'fruits-skill-fc-7','Supersonic','Faster than is reasonably necessary.','score.perfect and 7 <= score.sr < 8 and mode_vn == 2'),(56,'fruits-skill-fc-8','Dashing Scarlet','Speed beyond mortal reckoning.','score.perfect and 8 <= score.sr < 9 and mode_vn == 2'),(57,'mania-skill-pass-1','First Steps','It isn\'t 9-to-5, but 1-to-9. Keys, that is.','(score.mods & 1 == 0) and 1 <= score.sr < 2 and mode_vn == 3'),(58,'mania-skill-pass-2','No Normal Player','Not anymore, at least.','(score.mods & 1 == 0) and 2 <= score.sr < 3 and mode_vn == 3'),(59,'mania-skill-pass-3','Impulse Drive','Not quite hyperspeed, but getting close.','(score.mods & 1 == 0) and 3 <= score.sr < 4 and mode_vn == 3'),(60,'mania-skill-pass-4','Hyperspeed','Woah.','(score.mods & 1 == 0) and 4 <= score.sr < 5 and mode_vn == 3'),(61,'mania-skill-pass-5','Ever Onwards','Another challenge is just around the corner.','(score.mods & 1 == 0) and 5 <= score.sr < 6 and mode_vn == 3'),(62,'mania-skill-pass-6','Another Surpassed','Is there no limit to your skills?','(score.mods & 1 == 0) and 6 <= score.sr < 7 and mode_vn == 3'),(63,'mania-skill-pass-7','Extra Credit','See me after class.','(score.mods & 1 == 0) and 7 <= score.sr < 8 and mode_vn == 3'),(64,'mania-skill-pass-8','Maniac','There\'s just no stopping you.','(score.mods & 1 == 0) and 8 <= score.sr < 9 and mode_vn == 3'),(65,'mania-skill-fc-1','Keystruck','The beginning of a new story','score.perfect and 1 <= score.sr < 2 and mode_vn == 3'),(66,'mania-skill-fc-2','Keying In','Finding your groove.','score.perfect and 2 <= score.sr < 3 and mode_vn == 3'),(67,'mania-skill-fc-3','Hyperflow','You can *feel* the rhythm.','score.perfect and 3 <= score.sr < 4 and mode_vn == 3'),(68,'mania-skill-fc-4','Breakthrough','Many skills mastered, rolled into one.','score.perfect and 4 <= score.sr < 5 and mode_vn == 3'),(69,'mania-skill-fc-5','Everything Extra','Giving your all is giving everything you have.','score.perfect and 5 <= score.sr < 6 and mode_vn == 3'),(70,'mania-skill-fc-6','Level Breaker','Finesse beyond reason','score.perfect and 6 <= score.sr < 7 and mode_vn == 3'),(71,'mania-skill-fc-7','Step Up','A precipice rarely seen.','score.perfect and 7 <= score.sr < 8 and mode_vn == 3'),(72,'mania-skill-fc-8','Behind The Veil','Supernatural!','score.perfect and 8 <= score.sr < 9 and mode_vn == 3');
+/*!40000 ALTER TABLE `achievements` ENABLE KEYS */;
+UNLOCK TABLES;
 
-create table ingame_logins
-(
-	id int auto_increment
-		primary key,
-	userid int not null,
-	ip varchar(45) not null comment 'maxlen for ipv6',
-	osu_ver date not null,
-	osu_stream varchar(11) not null,
-	datetime datetime not null
-);
+--
+-- Table structure for table `channels`
+--
 
-create table relationships
-(
-	user1 int not null,
-	user2 int not null,
-	type enum('friend', 'block') not null,
-	primary key (user1, user2)
-);
+DROP TABLE IF EXISTS `channels`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `channels` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL,
+  `topic` varchar(256) NOT NULL,
+  `read_priv` int NOT NULL DEFAULT '1',
+  `write_priv` int NOT NULL DEFAULT '2',
+  `auto_join` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `channels_name_uindex` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-create table logs
-(
-	id int auto_increment
-		primary key,
-	`from` int not null comment 'both from and to are playerids',
-	`to` int not null,
-	`action` varchar(32) not null,
-	msg varchar(2048) charset utf8 null,
-	time datetime not null on update CURRENT_TIMESTAMP
-);
+--
+-- Dumping data for table `channels`
+--
 
-create table mail
-(
-	id int auto_increment
-		primary key,
-	from_id int not null,
-	to_id int not null,
-	msg varchar(2048) charset utf8 not null,
-	time int null,
-	`read` tinyint(1) default 0 not null
-);
+LOCK TABLES `channels` WRITE;
+/*!40000 ALTER TABLE `channels` DISABLE KEYS */;
+INSERT INTO `channels` VALUES (1,'#osu','General discussion.',1,2,1),(2,'#announce','Exemplary performance and public announcements.',1,24576,1),(3,'#lobby','Multiplayer lobby discussion room.',1,2,0),(4,'#supporter','General discussion for supporters.',48,48,0),(5,'#staff','General discussion for staff members.',28672,28672,1),(6,'#admin','General discussion for administrators.',24576,24576,1),(7,'#dev','General discussion for developers.',16384,16384,1);
+/*!40000 ALTER TABLE `channels` ENABLE KEYS */;
+UNLOCK TABLES;
 
-create table maps
-(
-	server enum('osu!', 'private') default 'osu!' not null,
-	id int not null,
-	set_id int not null,
-	status int not null,
-	md5 char(32) not null,
-	artist varchar(128) charset utf8 not null,
-	title varchar(128) charset utf8 not null,
-	version varchar(128) charset utf8 not null,
-	creator varchar(19) charset utf8 not null,
-	filename varchar(256) charset utf8 not null,
-	last_update datetime not null,
-	total_length int not null,
-	max_combo int not null,
-	frozen tinyint(1) default 0 not null,
-	plays int default 0 not null,
-	passes int default 0 not null,
-	mode tinyint(1) default 0 not null,
-	bpm float(12,2) default 0.00 not null,
-	cs float(4,2) default 0.00 not null,
-	ar float(4,2) default 0.00 not null,
-	od float(4,2) default 0.00 not null,
-	hp float(4,2) default 0.00 not null,
-	diff float(6,3) default 0.000 not null,
-	primary key (server, id),
-	constraint maps_id_uindex
-		unique (id),
-	constraint maps_md5_uindex
-		unique (md5)
-);
+--
+-- Table structure for table `clans`
+--
 
-create table mapsets
-(
-	server enum('osu!', 'private') default 'osu!' not null,
-	id int not null,
-	last_osuapi_check datetime default CURRENT_TIMESTAMP not null,
-	primary key (server, id),
-	constraint nmapsets_id_uindex
-		unique (id)
-);
+DROP TABLE IF EXISTS `clans`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `clans` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(16) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `tag` varchar(6) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `owner` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `clans_name_uindex` (`name`),
+  UNIQUE KEY `clans_owner_uindex` (`owner`),
+  UNIQUE KEY `clans_tag_uindex` (`tag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-create table map_requests
-(
-	id int auto_increment
-		primary key,
-	map_id int not null,
-	player_id int not null,
-	datetime datetime not null,
-	active tinyint(1) not null
-);
+--
+-- Dumping data for table `clans`
+--
 
-create table performance_reports
-(
-	scoreid bigint(20) unsigned not null,
-	mod_mode enum('vanilla', 'relax', 'autopilot') default 'vanilla' not null,
-	os varchar(64) not null,
-	fullscreen tinyint(1) not null,
-	fps_cap varchar(16) not null,
-	compatibility tinyint(1) not null,
-	version varchar(16) not null,
-	start_time int not null,
-	end_time int not null,
-	frame_count int not null,
-	spike_frames int not null,
-	aim_rate int not null,
-	completion tinyint(1) not null,
-	identifier varchar(128) null comment 'really don''t know much about this yet',
-	average_frametime int not null,
-	primary key (scoreid, mod_mode)
-);
+LOCK TABLES `clans` WRITE;
+/*!40000 ALTER TABLE `clans` DISABLE KEYS */;
+/*!40000 ALTER TABLE `clans` ENABLE KEYS */;
+UNLOCK TABLES;
 
-create table ratings
-(
-	userid int not null,
-	map_md5 char(32) not null,
-	rating tinyint(2) not null,
-	primary key (userid, map_md5)
-);
+--
+-- Table structure for table `client_hashes`
+--
 
-create table scores
-(
-	id bigint unsigned auto_increment
-		primary key,
-	map_md5 char(32) not null,
-	score int not null,
-	pp float(7,3) not null,
-	acc float(6,3) not null,
-	max_combo int not null,
-	mods int not null,
-	n300 int not null,
-	n100 int not null,
-	n50 int not null,
-	nmiss int not null,
-	ngeki int not null,
-	nkatu int not null,
-	grade varchar(2) default 'N' not null,
-	status tinyint not null,
-	mode tinyint not null,
-	play_time datetime not null,
-	time_elapsed int not null,
-	client_flags int not null,
-	userid int not null,
-	perfect tinyint(1) not null,
-	online_checksum char(32) not null
-);
+DROP TABLE IF EXISTS `client_hashes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `client_hashes` (
+  `userid` int NOT NULL,
+  `osupath` char(32) NOT NULL,
+  `adapters` char(32) NOT NULL,
+  `uninstall_id` char(32) NOT NULL,
+  `disk_serial` char(32) NOT NULL,
+  `latest_time` datetime NOT NULL,
+  `occurrences` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`userid`,`osupath`,`adapters`,`uninstall_id`,`disk_serial`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-create table startups
-(
-	id int auto_increment
-		primary key,
-	ver_major tinyint not null,
-	ver_minor tinyint not null,
-	ver_micro tinyint not null,
-	datetime datetime not null
-);
+--
+-- Dumping data for table `client_hashes`
+--
 
-create table stats
-(
-	id int auto_increment,
-	mode tinyint(1) not null,
-	tscore bigint unsigned default 0 not null,
-	rscore bigint unsigned default 0 not null,
-	pp int unsigned default 0 not null,
-	plays int unsigned default 0 not null,
-	playtime int unsigned default 0 not null,
-	acc float(6,3) default 0.000 not null,
-	max_combo int unsigned default 0 not null,
-	total_hits int unsigned default 0 not null,
-	replay_views int unsigned default 0 not null,
-	xh_count int unsigned default 0 not null,
-	x_count int unsigned default 0 not null,
-	sh_count int unsigned default 0 not null,
-	s_count int unsigned default 0 not null,
-	a_count int unsigned default 0 not null,
-	primary key (id, mode)
-);
+LOCK TABLES `client_hashes` WRITE;
+/*!40000 ALTER TABLE `client_hashes` DISABLE KEYS */;
+INSERT INTO `client_hashes` VALUES (3,'e1be1e8dc7f82166d1e4a9e6321fa6f0','ecc235281ca4acc258f0f2ae3ca8b608','a7b01f7a263fb038897cc95b8e1020ee','680f04976c37056d87abb7a46d92b394','2023-11-15 21:44:53',9);
+/*!40000 ALTER TABLE `client_hashes` ENABLE KEYS */;
+UNLOCK TABLES;
 
-create table tourney_pool_maps
-(
-	map_id int not null,
-	pool_id int not null,
-	mods int not null,
-	slot tinyint not null,
-	primary key (map_id, pool_id)
-);
+--
+-- Table structure for table `comments`
+--
 
-create index tourney_pool_maps_tourney_pools_id_fk
-	on tourney_pool_maps (pool_id);
+DROP TABLE IF EXISTS `comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `comments` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `target_id` int NOT NULL COMMENT 'replay, map, or set id',
+  `target_type` enum('replay','map','song') NOT NULL,
+  `userid` int NOT NULL,
+  `time` int NOT NULL,
+  `comment` varchar(80) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `colour` char(6) DEFAULT NULL COMMENT 'rgb hex string',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-create table tourney_pools
-(
-	id int auto_increment
-		primary key,
-	name varchar(16) not null,
-	created_at datetime not null,
-	created_by int not null
-);
+--
+-- Dumping data for table `comments`
+--
 
-create index tourney_pools_users_id_fk
-	on tourney_pools (created_by);
+LOCK TABLES `comments` WRITE;
+/*!40000 ALTER TABLE `comments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `comments` ENABLE KEYS */;
+UNLOCK TABLES;
 
-create table user_achievements
-(
-	userid int not null,
-	achid int not null,
-	primary key (userid, achid)
-);
+--
+-- Table structure for table `favourites`
+--
 
-create table users
-(
-	id int auto_increment
-		primary key,
-	name varchar(32) charset utf8 not null,
-	safe_name varchar(32) charset utf8 not null,
-	email varchar(254) not null,
-	priv int default 1 not null,
-	pw_bcrypt char(60) not null,
-	country char(2) default 'xx' not null,
-	silence_end int default 0 not null,
-	donor_end int default 0 not null,
-	creation_time int default 0 not null,
-	latest_activity int default 0 not null,
-	clan_id int default 0 not null,
-	clan_priv tinyint(1) default 0 not null,
-	preferred_mode int default 0 not null,
-	play_style int default 0 not null,
-	custom_badge_name varchar(16) charset utf8 null,
-	custom_badge_icon varchar(64) null,
-	userpage_content varchar(2048) charset utf8 null,
-	api_key char(36) null,
-	constraint users_api_key_uindex
-		unique (api_key),
-	constraint users_email_uindex
-		unique (email),
-	constraint users_name_uindex
-		unique (name),
-	constraint users_safe_name_uindex
-		unique (safe_name)
-);
+DROP TABLE IF EXISTS `favourites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `favourites` (
+  `userid` int NOT NULL,
+  `setid` int NOT NULL,
+  PRIMARY KEY (`userid`,`setid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-insert into users (id, name, safe_name, priv, country, silence_end, email, pw_bcrypt, creation_time, latest_activity)
-values (1, 'BanchoBot', 'banchobot', 1, 'ca', 0, 'bot@akatsuki.pw',
-        '_______________________my_cool_bcrypt_______________________', UNIX_TIMESTAMP(), UNIX_TIMESTAMP());
+--
+-- Dumping data for table `favourites`
+--
 
-INSERT INTO stats (id, mode) VALUES (1, 0); # vn!std
-INSERT INTO stats (id, mode) VALUES (1, 1); # vn!taiko
-INSERT INTO stats (id, mode) VALUES (1, 2); # vn!catch
-INSERT INTO stats (id, mode) VALUES (1, 3); # vn!mania
-INSERT INTO stats (id, mode) VALUES (1, 4); # rx!std
-INSERT INTO stats (id, mode) VALUES (1, 5); # rx!taiko
-INSERT INTO stats (id, mode) VALUES (1, 6); # rx!catch
-INSERT INTO stats (id, mode) VALUES (1, 8); # ap!std
+LOCK TABLES `favourites` WRITE;
+/*!40000 ALTER TABLE `favourites` DISABLE KEYS */;
+/*!40000 ALTER TABLE `favourites` ENABLE KEYS */;
+UNLOCK TABLES;
 
+--
+-- Table structure for table `ingame_logins`
+--
 
-# userid 2 is reserved for ppy in osu!, and the
-# client will not allow users to pm this id.
-# If you want this, simply remove these two lines.
-alter table users auto_increment = 3;
-alter table stats auto_increment = 3;
+DROP TABLE IF EXISTS `ingame_logins`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ingame_logins` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `userid` int NOT NULL,
+  `ip` varchar(45) NOT NULL COMMENT 'maxlen for ipv6',
+  `osu_ver` date NOT NULL,
+  `osu_stream` varchar(11) NOT NULL,
+  `datetime` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-insert into channels (name, topic, read_priv, write_priv, auto_join)
-values ('#osu', 'General discussion.', 1, 2, true),
-	   ('#announce', 'Exemplary performance and public announcements.', 1, 24576, true),
-	   ('#lobby', 'Multiplayer lobby discussion room.', 1, 2, false),
-	   ('#supporter', 'General discussion for supporters.', 48, 48, false),
-	   ('#staff', 'General discussion for staff members.', 28672, 28672, true),
-	   ('#admin', 'General discussion for administrators.', 24576, 24576, true),
-	   ('#dev', 'General discussion for developers.', 16384, 16384, true);
+--
+-- Dumping data for table `ingame_logins`
+--
 
-insert into achievements (id, file, name, `desc`, cond) values (1, 'osu-skill-pass-1', 'Rising Star', 'Can''t go forward without the first steps.', '(score.mods & 1 == 0) and 1 <= score.sr < 2 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (2, 'osu-skill-pass-2', 'Constellation Prize', 'Definitely not a consolation prize. Now things start getting hard!', '(score.mods & 1 == 0) and 2 <= score.sr < 3 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (3, 'osu-skill-pass-3', 'Building Confidence', 'Oh, you''ve SO got this.', '(score.mods & 1 == 0) and 3 <= score.sr < 4 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (4, 'osu-skill-pass-4', 'Insanity Approaches', 'You''re not twitching, you''re just ready.', '(score.mods & 1 == 0) and 4 <= score.sr < 5 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (5, 'osu-skill-pass-5', 'These Clarion Skies', 'Everything seems so clear now.', '(score.mods & 1 == 0) and 5 <= score.sr < 6 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (6, 'osu-skill-pass-6', 'Above and Beyond', 'A cut above the rest.', '(score.mods & 1 == 0) and 6 <= score.sr < 7 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (7, 'osu-skill-pass-7', 'Supremacy', 'All marvel before your prowess.', '(score.mods & 1 == 0) and 7 <= score.sr < 8 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (8, 'osu-skill-pass-8', 'Absolution', 'My god, you''re full of stars!', '(score.mods & 1 == 0) and 8 <= score.sr < 9 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (9, 'osu-skill-pass-9', 'Event Horizon', 'No force dares to pull you under.', '(score.mods & 1 == 0) and 9 <= score.sr < 10 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (10, 'osu-skill-pass-10', 'Phantasm', 'Fevered is your passion, extraordinary is your skill.', '(score.mods & 1 == 0) and 10 <= score.sr < 11 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (11, 'osu-skill-fc-1', 'Totality', 'All the notes. Every single one.', 'score.perfect and 1 <= score.sr < 2 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (12, 'osu-skill-fc-2', 'Business As Usual', 'Two to go, please.', 'score.perfect and 2 <= score.sr < 3 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (13, 'osu-skill-fc-3', 'Building Steam', 'Hey, this isn''t so bad.', 'score.perfect and 3 <= score.sr < 4 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (14, 'osu-skill-fc-4', 'Moving Forward', 'Bet you feel good about that.', 'score.perfect and 4 <= score.sr < 5 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (15, 'osu-skill-fc-5', 'Paradigm Shift', 'Surprisingly difficult.', 'score.perfect and 5 <= score.sr < 6 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (16, 'osu-skill-fc-6', 'Anguish Quelled', 'Don''t choke.', 'score.perfect and 6 <= score.sr < 7 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (17, 'osu-skill-fc-7', 'Never Give Up', 'Excellence is its own reward.', 'score.perfect and 7 <= score.sr < 8 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (18, 'osu-skill-fc-8', 'Aberration', 'They said it couldn''t be done. They were wrong.', 'score.perfect and 8 <= score.sr < 9 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (19, 'osu-skill-fc-9', 'Chosen', 'Reign among the Prometheans, where you belong.', 'score.perfect and 9 <= score.sr < 10 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (20, 'osu-skill-fc-10', 'Unfathomable', 'You have no equal.', 'score.perfect and 10 <= score.sr < 11 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (21, 'osu-combo-500', '500 Combo', '500 big ones! You''re moving up in the world!', '500 <= score.max_combo < 750 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (22, 'osu-combo-750', '750 Combo', '750 notes back to back? Woah.', '750 <= score.max_combo < 1000 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (23, 'osu-combo-1000', '1000 Combo', 'A thousand reasons why you rock at this game.', '1000 <= score.max_combo < 2000 and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (24, 'osu-combo-2000', '2000 Combo', 'Nothing can stop you now.', '2000 <= score.max_combo and mode_vn == 0');
-insert into achievements (id, file, name, `desc`, cond) values (25, 'taiko-skill-pass-1', 'My First Don', 'Marching to the beat of your own drum. Literally.', '(score.mods & 1 == 0) and 1 <= score.sr < 2 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (26, 'taiko-skill-pass-2', 'Katsu Katsu Katsu', 'Hora! Izuko!', '(score.mods & 1 == 0) and 2 <= score.sr < 3 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (27, 'taiko-skill-pass-3', 'Not Even Trying', 'Muzukashii? Not even.', '(score.mods & 1 == 0) and 3 <= score.sr < 4 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (28, 'taiko-skill-pass-4', 'Face Your Demons', 'The first trials are now behind you, but are you a match for the Oni?', '(score.mods & 1 == 0) and 4 <= score.sr < 5 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (29, 'taiko-skill-pass-5', 'The Demon Within', 'No rest for the wicked.', '(score.mods & 1 == 0) and 5 <= score.sr < 6 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (30, 'taiko-skill-pass-6', 'Drumbreaker', 'Too strong.', '(score.mods & 1 == 0) and 6 <= score.sr < 7 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (31, 'taiko-skill-pass-7', 'The Godfather', 'You are the Don of Dons.', '(score.mods & 1 == 0) and 7 <= score.sr < 8 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (32, 'taiko-skill-pass-8', 'Rhythm Incarnate', 'Feel the beat. Become the beat.', '(score.mods & 1 == 0) and 8 <= score.sr < 9 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (33, 'taiko-skill-fc-1', 'Keeping Time', 'Don, then katsu. Don, then katsu..', 'score.perfect and 1 <= score.sr < 2 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (34, 'taiko-skill-fc-2', 'To Your Own Beat', 'Straight and steady.', 'score.perfect and 2 <= score.sr < 3 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (35, 'taiko-skill-fc-3', 'Big Drums', 'Bigger scores to match.', 'score.perfect and 3 <= score.sr < 4 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (36, 'taiko-skill-fc-4', 'Adversity Overcome', 'Difficult? Not for you.', 'score.perfect and 4 <= score.sr < 5 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (37, 'taiko-skill-fc-5', 'Demonslayer', 'An Oni felled forevermore.', 'score.perfect and 5 <= score.sr < 6 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (38, 'taiko-skill-fc-6', 'Rhythm''s Call', 'Heralding true skill.', 'score.perfect and 6 <= score.sr < 7 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (39, 'taiko-skill-fc-7', 'Time Everlasting', 'Not a single beat escapes you.', 'score.perfect and 7 <= score.sr < 8 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (40, 'taiko-skill-fc-8', 'The Drummer''s Throne', 'Percussive brilliance befitting royalty alone.', 'score.perfect and 8 <= score.sr < 9 and mode_vn == 1');
-insert into achievements (id, file, name, `desc`, cond) values (41, 'fruits-skill-pass-1', 'A Slice Of Life', 'Hey, this fruit catching business isn''t bad.', '(score.mods & 1 == 0) and 1 <= score.sr < 2 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (42, 'fruits-skill-pass-2', 'Dashing Ever Forward', 'Fast is how you do it.', '(score.mods & 1 == 0) and 2 <= score.sr < 3 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (43, 'fruits-skill-pass-3', 'Zesty Disposition', 'No scurvy for you, not with that much fruit.', '(score.mods & 1 == 0) and 3 <= score.sr < 4 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (44, 'fruits-skill-pass-4', 'Hyperdash ON!', 'Time and distance is no obstacle to you.', '(score.mods & 1 == 0) and 4 <= score.sr < 5 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (45, 'fruits-skill-pass-5', 'It''s Raining Fruit', 'And you can catch them all.', '(score.mods & 1 == 0) and 5 <= score.sr < 6 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (46, 'fruits-skill-pass-6', 'Fruit Ninja', 'Legendary techniques.', '(score.mods & 1 == 0) and 6 <= score.sr < 7 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (47, 'fruits-skill-pass-7', 'Dreamcatcher', 'No fruit, only dreams now.', '(score.mods & 1 == 0) and 7 <= score.sr < 8 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (48, 'fruits-skill-pass-8', 'Lord of the Catch', 'Your kingdom kneels before you.', '(score.mods & 1 == 0) and 8 <= score.sr < 9 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (49, 'fruits-skill-fc-1', 'Sweet And Sour', 'Apples and oranges, literally.', 'score.perfect and 1 <= score.sr < 2 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (50, 'fruits-skill-fc-2', 'Reaching The Core', 'The seeds of future success.', 'score.perfect and 2 <= score.sr < 3 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (51, 'fruits-skill-fc-3', 'Clean Platter', 'Clean only of failure. It is completely full, otherwise.', 'score.perfect and 3 <= score.sr < 4 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (52, 'fruits-skill-fc-4', 'Between The Rain', 'No umbrella needed.', 'score.perfect and 4 <= score.sr < 5 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (53, 'fruits-skill-fc-5', 'Addicted', 'That was an overdose?', 'score.perfect and 5 <= score.sr < 6 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (54, 'fruits-skill-fc-6', 'Quickening', 'A dash above normal limits.', 'score.perfect and 6 <= score.sr < 7 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (55, 'fruits-skill-fc-7', 'Supersonic', 'Faster than is reasonably necessary.', 'score.perfect and 7 <= score.sr < 8 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (56, 'fruits-skill-fc-8', 'Dashing Scarlet', 'Speed beyond mortal reckoning.', 'score.perfect and 8 <= score.sr < 9 and mode_vn == 2');
-insert into achievements (id, file, name, `desc`, cond) values (57, 'mania-skill-pass-1', 'First Steps', 'It isn''t 9-to-5, but 1-to-9. Keys, that is.', '(score.mods & 1 == 0) and 1 <= score.sr < 2 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (58, 'mania-skill-pass-2', 'No Normal Player', 'Not anymore, at least.', '(score.mods & 1 == 0) and 2 <= score.sr < 3 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (59, 'mania-skill-pass-3', 'Impulse Drive', 'Not quite hyperspeed, but getting close.', '(score.mods & 1 == 0) and 3 <= score.sr < 4 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (60, 'mania-skill-pass-4', 'Hyperspeed', 'Woah.', '(score.mods & 1 == 0) and 4 <= score.sr < 5 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (61, 'mania-skill-pass-5', 'Ever Onwards', 'Another challenge is just around the corner.', '(score.mods & 1 == 0) and 5 <= score.sr < 6 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (62, 'mania-skill-pass-6', 'Another Surpassed', 'Is there no limit to your skills?', '(score.mods & 1 == 0) and 6 <= score.sr < 7 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (63, 'mania-skill-pass-7', 'Extra Credit', 'See me after class.', '(score.mods & 1 == 0) and 7 <= score.sr < 8 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (64, 'mania-skill-pass-8', 'Maniac', 'There''s just no stopping you.', '(score.mods & 1 == 0) and 8 <= score.sr < 9 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (65, 'mania-skill-fc-1', 'Keystruck', 'The beginning of a new story', 'score.perfect and 1 <= score.sr < 2 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (66, 'mania-skill-fc-2', 'Keying In', 'Finding your groove.', 'score.perfect and 2 <= score.sr < 3 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (67, 'mania-skill-fc-3', 'Hyperflow', 'You can *feel* the rhythm.', 'score.perfect and 3 <= score.sr < 4 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (68, 'mania-skill-fc-4', 'Breakthrough', 'Many skills mastered, rolled into one.', 'score.perfect and 4 <= score.sr < 5 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (69, 'mania-skill-fc-5', 'Everything Extra', 'Giving your all is giving everything you have.', 'score.perfect and 5 <= score.sr < 6 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (70, 'mania-skill-fc-6', 'Level Breaker', 'Finesse beyond reason', 'score.perfect and 6 <= score.sr < 7 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (71, 'mania-skill-fc-7', 'Step Up', 'A precipice rarely seen.', 'score.perfect and 7 <= score.sr < 8 and mode_vn == 3');
-insert into achievements (id, file, name, `desc`, cond) values (72, 'mania-skill-fc-8', 'Behind The Veil', 'Supernatural!', 'score.perfect and 8 <= score.sr < 9 and mode_vn == 3');
+LOCK TABLES `ingame_logins` WRITE;
+/*!40000 ALTER TABLE `ingame_logins` DISABLE KEYS */;
+INSERT INTO `ingame_logins` VALUES (1,3,'188.68.81.134','2023-11-02','stable','2023-11-15 21:01:41'),(2,3,'188.68.81.134','2023-11-02','stable','2023-11-15 21:02:37'),(3,3,'188.68.81.134','2023-11-02','stable','2023-11-15 21:03:35'),(4,3,'188.68.81.134','2023-11-02','stable','2023-11-15 21:13:12'),(5,3,'188.68.81.134','2023-11-02','stable','2023-11-15 21:21:40'),(6,3,'188.68.81.134','2023-11-02','stable','2023-11-15 21:37:20'),(7,3,'188.68.81.134','2023-11-02','stable','2023-11-15 21:42:45'),(8,3,'188.68.81.134','2023-11-02','stable','2023-11-15 21:43:44'),(9,3,'188.68.81.134','2023-11-02','stable','2023-11-15 21:44:53');
+/*!40000 ALTER TABLE `ingame_logins` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `leaderboard_history`
+--
+
+DROP TABLE IF EXISTS `leaderboard_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `leaderboard_history` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `uid` int NOT NULL,
+  `mode` tinyint NOT NULL,
+  `player_rank` int NOT NULL,
+  `capture_time` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `leaderboard_history`
+--
+
+LOCK TABLES `leaderboard_history` WRITE;
+/*!40000 ALTER TABLE `leaderboard_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `leaderboard_history` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `logs`
+--
+
+DROP TABLE IF EXISTS `logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `logs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `from` int NOT NULL COMMENT 'both from and to are playerids',
+  `to` int NOT NULL,
+  `action` varchar(32) NOT NULL,
+  `msg` varchar(2048) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `time` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `logs`
+--
+
+LOCK TABLES `logs` WRITE;
+/*!40000 ALTER TABLE `logs` DISABLE KEYS */;
+INSERT INTO `logs` VALUES (1,3,3,'restrict','hz','2023-11-15 21:43:15');
+/*!40000 ALTER TABLE `logs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mail`
+--
+
+DROP TABLE IF EXISTS `mail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mail` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `from_id` int NOT NULL,
+  `to_id` int NOT NULL,
+  `msg` varchar(2048) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `time` int DEFAULT NULL,
+  `read` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mail`
+--
+
+LOCK TABLES `mail` WRITE;
+/*!40000 ALTER TABLE `mail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `map_requests`
+--
+
+DROP TABLE IF EXISTS `map_requests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `map_requests` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `map_id` int NOT NULL,
+  `player_id` int NOT NULL,
+  `datetime` datetime NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `map_requests`
+--
+
+LOCK TABLES `map_requests` WRITE;
+/*!40000 ALTER TABLE `map_requests` DISABLE KEYS */;
+/*!40000 ALTER TABLE `map_requests` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `maps`
+--
+
+DROP TABLE IF EXISTS `maps`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `maps` (
+  `server` enum('osu!','private') NOT NULL DEFAULT 'osu!',
+  `id` int NOT NULL,
+  `set_id` int NOT NULL,
+  `status` int NOT NULL,
+  `md5` char(32) NOT NULL,
+  `artist` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `title` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `version` varchar(128) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `creator` varchar(19) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `filename` varchar(256) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `last_update` datetime NOT NULL,
+  `total_length` int NOT NULL,
+  `max_combo` int NOT NULL,
+  `frozen` tinyint(1) NOT NULL DEFAULT '0',
+  `plays` int NOT NULL DEFAULT '0',
+  `passes` int NOT NULL DEFAULT '0',
+  `mode` tinyint(1) NOT NULL DEFAULT '0',
+  `bpm` float(12,2) NOT NULL DEFAULT '0.00',
+  `cs` float(4,2) NOT NULL DEFAULT '0.00',
+  `ar` float(4,2) NOT NULL DEFAULT '0.00',
+  `od` float(4,2) NOT NULL DEFAULT '0.00',
+  `hp` float(4,2) NOT NULL DEFAULT '0.00',
+  `diff` float(6,3) NOT NULL DEFAULT '0.000',
+  `ranked` text,
+  PRIMARY KEY (`server`,`id`),
+  UNIQUE KEY `maps_id_uindex` (`id`),
+  UNIQUE KEY `maps_md5_uindex` (`md5`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `maps`
+--
+
+LOCK TABLES `maps` WRITE;
+/*!40000 ALTER TABLE `maps` DISABLE KEYS */;
+INSERT INTO `maps` VALUES ('osu!',1410,300,2,'ea34f51cac301ffef943677d322c32c9','Back-On','Hikari Sasuhou','Hard','EiJi','Back-On - Hikari Sasuhou (EiJi) [Hard].osu','2007-11-27 22:31:26',87,306,0,0,0,0,200.00,5.00,5.00,5.00,5.00,2.867,NULL),('osu!',20915,3080,2,'14bec3b7bfcc0ad15859228db38390fd','Radiohead','Bodysnatchers','Hard','foulcoon','Radiohead - Bodysnatchers (foulcoon) [Hard].osu','2008-09-23 23:50:52',235,508,0,0,0,0,167.36,5.00,7.00,7.00,8.00,3.843,NULL),('osu!',21037,3080,2,'0ac1657217134e6454f11a3774613b88','Radiohead','Bodysnatchers','Normal','foulcoon','Radiohead - Bodysnatchers (foulcoon) [Normal].osu','2008-09-23 23:50:52',190,305,0,0,0,0,167.36,3.00,5.00,5.00,6.00,2.723,NULL),('osu!',23394,4131,2,'890d1da2875218fd7677229485050170','Grant Kirkhope','Freezeezy Peak','Easy (Wozza\'s Cave)','Kasada','Grant Kirkhope - Freezeezy Peak (Kasada) [Easy (Wozza\'s Cave)].osu','2009-02-13 03:54:44',38,78,0,0,0,0,100.05,3.00,3.00,3.00,2.00,1.867,NULL),('osu!',23395,4131,2,'d8f0ba512cb912fc11ec3ce32ab19ce4','Grant Kirkhope','Freezeezy Peak','Hard','Kasada','Grant Kirkhope - Freezeezy Peak (Kasada) [Hard].osu','2009-02-13 03:54:44',127,471,0,0,0,0,145.08,6.00,6.00,6.00,6.00,4.300,NULL),('osu!',23396,4131,2,'41812f0f905bf83a3a7ece91c376bd5c','Grant Kirkhope','Freezeezy Peak','Normal','Kasada','Grant Kirkhope - Freezeezy Peak (Kasada) [Normal].osu','2009-02-13 03:54:44',96,217,0,0,0,0,145.08,4.00,5.00,5.00,4.00,2.855,NULL),('osu!',27776,5865,2,'968c12ce6a68f15eee885ed7b3562c84','John Mayer','Belief','Hard','Detective Tuesday','John Mayer - Belief (Detective Tuesday) [Hard].osu','2009-05-15 20:51:00',213,507,0,0,0,0,101.34,4.00,5.00,5.00,6.00,3.109,NULL),('osu!',27777,5865,2,'0e6bfa8f14c2bf776712ce21ceb659b2','John Mayer','Belief','Insane','Detective Tuesday','John Mayer - Belief (Detective Tuesday) [Insane].osu','2009-05-15 20:51:00',213,580,0,0,0,0,101.34,5.00,6.00,6.00,8.00,3.716,NULL),('osu!',27778,5865,2,'79af6c357ab9f214cc2ff7f44f742ba7','John Mayer','Belief','Normal','Detective Tuesday','John Mayer - Belief (Detective Tuesday) [Normal].osu','2009-05-15 20:51:00',213,368,0,0,0,0,101.34,3.00,4.00,4.00,4.00,2.655,NULL),('osu!',35135,8596,2,'5f34b719111d1cf068e9fee393852d74','Mizuki Nana','Pray (TV Size)','Fate','Mystearica','Mizuki Nana - Pray (TV Size) (Mystearica) [Fate].osu','2009-08-22 22:51:04',102,412,0,0,0,0,141.00,5.00,7.00,7.00,7.00,4.115,NULL),('osu!',35218,8596,2,'6bf3e5130308ba431f01518138643692','Mizuki Nana','Pray (TV Size)','minyeob difficulty','Mystearica','Mizuki Nana - Pray (TV Size) (Mystearica) [minyeob difficulty].osu','2009-08-22 22:51:04',102,311,0,0,0,0,141.00,5.00,7.00,7.00,7.00,3.282,NULL),('osu!',35272,8596,2,'43a495c7aeb31d0488a393ba33332a13','Mizuki Nana','Pray (TV Size)','Normal','Mystearica','Mizuki Nana - Pray (TV Size) (Mystearica) [Normal].osu','2009-08-22 22:51:04',100,264,0,0,0,0,141.00,3.00,4.00,4.00,4.00,2.234,NULL),('osu!',39508,9984,2,'0c41e390a4b45a35f60189fd62f0a659','Riryka','Glass no Loneliness','Clear','azuki','Riryka - Glass no Loneliness (azuki) [Clear].osu','2009-11-06 16:52:44',199,650,0,0,0,0,136.00,5.00,8.00,8.00,8.00,4.062,NULL),('osu!',39860,9984,2,'4ecacd7653068c9d4a42050d18cd9e5b','Riryka','Glass no Loneliness','Normal','azuki','Riryka - Glass no Loneliness (azuki) [Normal].osu','2009-11-06 16:52:44',198,350,0,0,0,0,136.00,4.00,5.00,5.00,5.00,2.332,NULL),('osu!',39895,9984,2,'7a1041cd50b91e85c09d0f5f379e30a0','Riryka','Glass no Loneliness','taka\'s Hard','azuki','Riryka - Glass no Loneliness (azuki) [taka\'s Hard].osu','2009-11-06 16:52:44',199,567,0,0,0,0,136.00,4.00,7.00,7.00,7.00,3.499,NULL),('osu!',40185,10279,2,'c2941f644749306a5d8aa4f61fb65b64','Snoop Dogg','Sensual Seduction','Hard','mrtn','Snoop Dogg - Sensual Seduction (mrtn) [Hard].osu','2009-11-01 11:50:24',176,485,0,0,0,0,120.20,4.00,7.00,7.00,7.00,3.121,NULL),('osu!',40186,10279,2,'5d2fe112988576785df513b0a7390379','Snoop Dogg','Sensual Seduction','Normal','mrtn','Snoop Dogg - Sensual Seduction (mrtn) [Normal].osu','2009-11-01 11:50:24',111,226,0,0,0,0,120.20,4.00,4.00,4.00,3.00,2.113,NULL),('osu!',41470,10654,2,'d1ca255853d7bbf3fd5b85101e5d3c4e','Kirsten Price','We Will Be Heroes','Blue Dragonite','Kytoxid','Kirsten Price - We Will Be Heroes (Kytoxid) [Blue Dragonite].osu','2009-11-22 23:22:00',32,110,0,0,0,0,145.00,4.00,7.00,7.00,5.00,3.929,NULL),('osu!',41471,10654,2,'e0734901e3af70f6f415e76a4d59997b','Kirsten Price','We Will Be Heroes','Dragonair','Kytoxid','Kirsten Price - We Will Be Heroes (Kytoxid) [Dragonair].osu','2009-11-22 23:22:00',31,90,0,0,0,0,145.00,4.00,4.00,4.00,3.00,2.245,NULL),('osu!',41472,10654,2,'8fe2f01ce1cf392360c2edaf99d84591','Kirsten Price','We Will Be Heroes','Dratini','Kytoxid','Kirsten Price - We Will Be Heroes (Kytoxid) [Dratini].osu','2009-11-22 23:22:00',30,67,0,0,0,0,145.00,3.00,3.00,3.00,3.00,1.606,NULL),('osu!',41475,10654,2,'25d78688faa395689050e4d19a941940','Kirsten Price','We Will Be Heroes','Dragonite','Kytoxid','Kirsten Price - We Will Be Heroes (Kytoxid) [Dragonite].osu','2009-11-22 23:22:00',32,96,0,0,0,0,145.00,4.00,7.00,7.00,7.00,3.101,NULL),('osu!',43185,10362,2,'6504f3ca70d3305c0860725336362600','KOTOKO','Sensitive (Remix)','Hard','simplistiC','KOTOKO - Sensitive (Remix) (simplistiC) [Hard].osu','2010-01-22 21:04:24',180,555,0,0,0,0,150.00,5.00,7.00,7.00,6.00,3.344,NULL),('osu!',44322,10362,2,'168554515730531d0180ee6bcc243bc4','KOTOKO','Sensitive (Remix)','MB\'s Sensitivity','simplistiC','KOTOKO - Sensitive (Remix) (simplistiC) [MB\'s Sensitivity].osu','2010-01-22 21:04:24',101,241,0,0,0,0,150.00,3.00,2.00,2.00,2.00,2.062,NULL),('osu!',46574,10362,2,'b39ff712095745209b66c69bc9d35957','KOTOKO','Sensitive (Remix)','Normal+','simplistiC','KOTOKO - Sensitive (Remix) (simplistiC) [Normal+].osu','2010-01-22 21:04:24',116,302,0,0,0,0,150.00,4.00,5.00,5.00,4.00,2.458,NULL),('osu!',55508,15311,2,'821e5a745837f2949e1be5ef4b22ec63','Chiaki Ishikawa','Uninstall','Install','Glasslake','Chiaki Ishikawa - Uninstall (Glasslake) [Install].osu','2010-07-02 22:39:22',264,475,0,0,0,0,122.50,3.00,4.00,4.00,3.00,2.125,NULL),('osu!',55509,15311,2,'6fd2cba25cab24296c15d601fbad6330','Chiaki Ishikawa','Uninstall','Uninstall','Glasslake','Chiaki Ishikawa - Uninstall (Glasslake) [Uninstall].osu','2010-07-02 22:39:22',264,677,0,0,0,0,122.50,4.00,7.00,7.00,8.00,3.643,NULL),('osu!',64266,16349,3,'7cf6aeef187fe54f4a6bdbd0d6e93c69','Renard','Banned Forever','Lesjuh','Blue Dragon','Renard - Banned Forever (Blue Dragon) [Lesjuh].osu','2010-07-27 22:00:23',210,1049,0,0,0,0,220.00,5.00,8.00,8.00,6.00,5.773,NULL),('osu!',64267,16349,3,'65b3555ed70e7899cb197c6a23ede3cd','Renard','Banned Forever','Nogard','Blue Dragon','Renard - Banned Forever (Blue Dragon) [Nogard].osu','2010-07-27 22:00:23',210,1175,0,0,0,0,220.00,4.00,8.00,8.00,7.00,6.030,NULL),('osu!',113668,34992,2,'c1f59324de09ee859b9003f6406c3fad','Sakakibara Yui','Beautiful day','Hard','quintitem','Sakakibara Yui - Beautiful day (quintitem) [Hard].osu','2011-08-27 14:35:53',189,646,0,0,0,0,138.00,4.00,6.00,4.00,5.00,2.772,NULL),('osu!',113669,34992,2,'6ee288436964695da618257abe84b4da','Sakakibara Yui','Beautiful day','Mizuho','quintitem','Sakakibara Yui - Beautiful day (quintitem) [Mizuho].osu','2011-08-27 14:35:53',191,708,0,0,0,0,138.00,5.00,7.00,6.00,8.00,3.765,NULL),('osu!',113670,34992,2,'b0b686640c0d591e56f3062e99469cff','Sakakibara Yui','Beautiful day','Normal','quintitem','Sakakibara Yui - Beautiful day (quintitem) [Normal].osu','2011-08-27 14:35:53',146,431,0,0,0,0,138.00,4.00,4.00,2.00,3.00,2.034,NULL),('osu!',114599,34465,2,'b5905a1e41f14cbec98a34482eb71783','Silver Forest','Sentence','Lunatic','C R E A M','Silver Forest - Sentence (C R E A M) [Lunatic].osu','2012-01-11 17:08:01',183,854,0,0,0,0,176.00,4.00,8.00,7.00,7.00,5.056,NULL),('osu!',114600,34465,2,'aa142c7ab9c28ea838ca2ed119050def','Silver Forest','Sentence','impossiblexu\'s Easy','C R E A M','Silver Forest - Sentence (C R E A M) [impossiblexu\'s Easy].osu','2012-01-11 17:08:01',183,383,0,0,0,0,176.00,3.00,2.00,1.00,2.00,1.533,NULL),('osu!',114743,34465,2,'610e3f441d7ec2057ffe2f95bdaf9cb5','Silver Forest','Sentence','Normal','C R E A M','Silver Forest - Sentence (C R E A M) [Normal].osu','2012-01-11 17:08:01',183,487,0,0,0,0,176.00,3.00,4.00,4.00,3.00,2.225,NULL),('osu!',115021,34465,2,'8b15e424a03dd2f1cbcb01efe218c7b0','Silver Forest','Sentence','Suzully\'s Hard','C R E A M','Silver Forest - Sentence (C R E A M) [Suzully\'s Hard].osu','2012-01-11 17:08:01',183,652,0,0,0,0,176.00,4.00,7.00,5.00,5.00,3.569,NULL),('osu!',142988,45843,2,'8698bfda698b5a653498d967018ece5e','Megpoid GUMI','Nisemono no Uta','Easy','raririn','Megpoid GUMI - Nisemono no Uta (raririn) [Easy].osu','2012-07-15 06:35:25',193,376,0,0,0,0,142.00,3.00,3.00,2.00,2.00,1.555,NULL),('osu!',142989,45843,2,'31609d6843d5e3aedcf46f0ebd1b00e9','Megpoid GUMI','Nisemono no Uta','Hard','raririn','Megpoid GUMI - Nisemono no Uta (raririn) [Hard].osu','2012-07-15 06:35:25',193,768,0,0,0,0,142.00,4.00,7.00,5.00,6.00,3.776,NULL),('osu!',148370,45843,2,'11afcbba5e6953887d6505033c88fe0e','Megpoid GUMI','Nisemono no Uta','Normal','raririn','Megpoid GUMI - Nisemono no Uta (raririn) [Normal].osu','2012-07-15 06:35:25',193,446,0,0,0,0,142.00,3.00,4.00,3.00,4.00,2.035,NULL),('osu!',149364,45843,2,'b449efc1ebc2efd5c3e230e580f329da','Megpoid GUMI','Nisemono no Uta','TuInsane','raririn','Megpoid GUMI - Nisemono no Uta (raririn) [TuInsane].osu','2012-07-15 06:35:25',193,852,0,0,0,0,142.00,4.00,8.00,7.00,7.00,4.127,NULL),('osu!',153904,45843,2,'da4237c97e5843209df929bc81b1f3f2','Megpoid GUMI','Nisemono no Uta','Ts8aiko','raririn','Megpoid GUMI - Nisemono no Uta (raririn) [Ts8aiko].osu','2012-07-15 06:35:25',193,885,0,0,0,1,142.00,3.00,7.00,5.00,5.00,3.888,NULL),('osu!',170328,56309,2,'a8b3fe893a7c81e1ab59d3559aa225af','Takeharu Ishimoto','Battle Theme 1 - arrange - from FINAL FANTASY II','Normal','Deni','Takeharu Ishimoto - Battle Theme 1 - arrange - from FINAL FANTASY II (Deni) [Normal].osu','2012-11-21 14:10:01',104,309,0,0,0,0,150.00,3.00,5.00,4.00,4.00,2.109,NULL),('osu!',170557,56401,2,'dec4b0fa5ad55eb7ca5c7d195f2212a4','Rinjinbu','Be My Friend (TV Size)','Easy','popner','Rinjinbu - Be My Friend (TV Size) (popner) [Easy].osu','2013-02-10 09:41:48',88,193,0,0,0,0,145.00,3.00,3.00,2.00,2.00,1.492,NULL),('osu!',170861,56309,2,'41fcfe455dd654747039167eb64f087b','Takeharu Ishimoto','Battle Theme 1 - arrange - from FINAL FANTASY II','Easy','Deni','Takeharu Ishimoto - Battle Theme 1 - arrange - from FINAL FANTASY II (Deni) [Easy].osu','2012-11-21 14:10:01',104,213,0,0,0,0,150.00,3.00,4.00,2.00,2.00,1.721,NULL),('osu!',171047,56309,2,'09618964af4eea1e915f6dccc68ff448','Takeharu Ishimoto','Battle Theme 1 - arrange - from FINAL FANTASY II','KonataN\'s Insane','Deni','Takeharu Ishimoto - Battle Theme 1 - arrange - from FINAL FANTASY II (Deni) [KonataN\'s Insane].osu','2012-11-21 14:10:01',101,422,0,0,0,0,150.00,4.00,8.00,7.00,7.00,3.847,NULL),('osu!',171089,56309,2,'4dc1ac6f7de0116a7ddfe06e17abf71a','Takeharu Ishimoto','Battle Theme 1 - arrange - from FINAL FANTASY II','Aldwych\'s Hard','Deni','Takeharu Ishimoto - Battle Theme 1 - arrange - from FINAL FANTASY II (Deni) [Aldwych\'s Hard].osu','2012-11-21 14:10:01',101,375,0,0,0,0,150.00,4.00,7.00,6.00,6.00,3.262,NULL),('osu!',215237,56401,2,'7580aa0db41da6c924a5db6daf7871e0','Rinjinbu','Be My Friend (TV Size)','Insane','popner','Rinjinbu - Be My Friend (TV Size) (popner) [Insane].osu','2013-02-10 09:41:48',88,437,0,0,0,0,145.00,4.00,8.00,6.00,6.00,3.740,NULL),('osu!',215885,56401,2,'296246c1e3ba2f0099278bc0dde5241c','Rinjinbu','Be My Friend (TV Size)','wcx\'s Normal','popner','Rinjinbu - Be My Friend (TV Size) (popner) [wcx\'s Normal].osu','2013-02-10 09:41:48',88,276,0,0,0,0,145.00,4.00,5.00,3.00,4.00,1.865,NULL),('osu!',216188,56401,2,'8d66ebc4efdc0d8500e9c30cc6849602','Rinjinbu','Be My Friend (TV Size)','Fumika\'s Hard','popner','Rinjinbu - Be My Friend (TV Size) (popner) [Fumika\'s Hard].osu','2013-02-10 09:41:48',88,389,0,0,0,0,145.00,4.00,7.00,6.00,5.00,2.705,NULL),('osu!',246084,90777,2,'a633060020c499ec28eec7a0d0c6874f','Nekomata Master+ feat. JUNE','being torn the sky','Another','Leader','Nekomata Master+ feat. JUNE - being torn the sky (Leader) [Another].osu','2013-07-04 18:54:39',135,546,0,0,0,0,102.00,5.00,8.00,7.00,7.00,3.413,NULL),('osu!',246299,90777,2,'7718dd8abf03ed991ee2366a43315b5d','Nekomata Master+ feat. JUNE','being torn the sky','Hyper','Leader','Nekomata Master+ feat. JUNE - being torn the sky (Leader) [Hyper].osu','2013-07-04 18:54:39',135,509,0,0,0,0,102.00,4.00,6.00,5.00,5.00,2.419,NULL),('osu!',246625,90777,2,'65c92f06823f41dc17aa1be335db34cc','Nekomata Master+ feat. JUNE','being torn the sky','Normal','Leader','Nekomata Master+ feat. JUNE - being torn the sky (Leader) [Normal].osu','2013-07-04 18:54:39',135,342,0,0,0,0,102.00,3.00,3.00,3.00,3.00,1.385,NULL),('osu!',249438,92235,2,'8a23baea5da5786b3ce6f83e5755d1ec','Infected Mushroom','Becoming Insane','LC','Nemis','Infected Mushroom - Becoming Insane (Nemis) [LC].osu','2013-09-09 16:18:36',159,768,0,0,0,0,145.00,4.00,8.00,7.00,7.00,4.648,NULL),('osu!',250349,92235,2,'73772af6ff9c70f7da9584c5a9a8c713','Infected Mushroom','Becoming Insane','Nemis','Nemis','Infected Mushroom - Becoming Insane (Nemis) [Nemis].osu','2013-09-09 16:18:36',159,743,0,0,0,0,145.00,4.00,8.00,7.00,7.00,4.410,NULL),('osu!',250350,92235,2,'fb264b84887a367603e417adf249ac1b','Infected Mushroom','Becoming Insane','Reiji\'s Hard','Nemis','Infected Mushroom - Becoming Insane (Nemis) [Reiji\'s Hard].osu','2013-09-09 16:18:36',159,737,0,0,0,0,145.00,4.00,8.00,6.00,6.00,3.627,NULL),('osu!',265234,99832,2,'c214f7d6923d04bcb3d3e158e9824d6e','Song Riders','Be','Hard','Yasora','Song Riders - Be (Yasora) [Hard].osu','2013-08-25 04:23:15',242,678,0,0,0,0,88.00,4.00,7.00,5.00,6.00,2.703,NULL),('osu!',266656,99832,2,'f1d7e6b0a9efbc81d4c3ca24a2e11353','Song Riders','Be','shikyu\'s Normal','Yasora','Song Riders - Be (Yasora) [shikyu\'s Normal].osu','2013-08-25 04:23:15',240,383,0,0,0,0,88.00,3.00,4.00,3.00,3.00,1.660,NULL),('osu!',267837,99832,2,'de3299628e2f71b414a73e9e0f66b7d9','Song Riders','Be','Niva\'s Insane','Yasora','Song Riders - Be (Yasora) [Niva\'s Insane].osu','2013-08-25 04:23:15',241,845,0,0,0,0,88.00,4.00,8.00,7.00,7.00,4.011,NULL),('osu!',272544,99832,2,'52185b74b6f11c2b20a86e0afbd1974d','Song Riders','Be','Survive','Yasora','Song Riders - Be (Yasora) [Survive].osu','2013-08-25 04:23:15',242,861,0,0,0,0,88.00,4.00,8.00,7.00,8.00,3.773,NULL),('osu!',297011,92235,2,'8a83bfb48cce96638c271b289c499f6d','Infected Mushroom','Becoming Insane','Normal','Nemis','Infected Mushroom - Becoming Insane (Nemis) [Normal].osu','2013-09-09 16:18:36',158,293,0,0,0,0,145.00,3.00,4.00,3.00,3.00,1.629,NULL),('osu!',308491,120328,2,'a7c15a003d77a5426020f4f1ed919c56','Infinite Stratos Cast','BEAUTIFUL SKY (TV Size)','Easy','Guy','Infinite Stratos Cast - BEAUTIFUL SKY (TV Size) (Guy) [Easy].osu','2014-01-31 19:25:11',88,225,0,0,0,0,180.00,3.00,3.00,2.00,2.00,1.649,NULL),('osu!',308492,120328,2,'d3fce8388e4f8c8019add2af6e4cb3c5','Infinite Stratos Cast','BEAUTIFUL SKY (TV Size)','Hard','Guy','Infinite Stratos Cast - BEAUTIFUL SKY (TV Size) (Guy) [Hard].osu','2014-01-31 19:25:11',88,427,0,0,0,0,180.00,4.00,8.00,6.00,6.00,3.361,NULL),('osu!',308494,120328,2,'fb534d6d9def43b3051a564d83130a7e','Infinite Stratos Cast','BEAUTIFUL SKY (TV Size)','maaagic\'s Insane','Guy','Infinite Stratos Cast - BEAUTIFUL SKY (TV Size) (Guy) [maaagic\'s Insane].osu','2014-01-31 19:25:11',88,530,0,0,0,0,180.00,4.00,9.00,7.00,7.00,5.115,NULL),('osu!',308495,120328,2,'c865ab286916a3d82ce5385ab5133e72','Infinite Stratos Cast','BEAUTIFUL SKY (TV Size)','Normal','Guy','Infinite Stratos Cast - BEAUTIFUL SKY (TV Size) (Guy) [Normal].osu','2014-01-31 19:25:11',88,275,0,0,0,0,180.00,3.00,5.00,4.00,4.00,1.911,NULL),('osu!',308981,120328,2,'bd7180e0e1ddca7dc4536e0ccd0991b6','Infinite Stratos Cast','BEAUTIFUL SKY (TV Size)','Insane','Guy','Infinite Stratos Cast - BEAUTIFUL SKY (TV Size) (Guy) [Insane].osu','2014-01-31 19:25:11',88,519,0,0,0,0,180.00,4.00,9.00,8.00,7.00,4.910,NULL),('osu!',310842,120328,2,'6a64e30acb62d89ca09545136d459566','Infinite Stratos Cast','BEAUTIFUL SKY (TV Size)','Kana\'s Taiko Muzu','Guy','Infinite Stratos Cast - BEAUTIFUL SKY (TV Size) (Guy) [Kana\'s Taiko Muzu].osu','2014-01-31 19:25:11',88,392,0,0,0,1,180.00,4.00,4.00,4.00,4.00,3.488,NULL),('osu!',310843,120328,2,'7bc64f91ff55a1483e2ebf1c57dadc5f','Infinite Stratos Cast','BEAUTIFUL SKY (TV Size)','Kana\'s Taiko Oni','Guy','Infinite Stratos Cast - BEAUTIFUL SKY (TV Size) (Guy) [Kana\'s Taiko Oni].osu','2014-01-31 19:25:11',88,535,0,0,0,1,180.00,4.00,5.00,5.00,5.00,4.519,NULL),('osu!',312933,122327,2,'1c28a2ed466a33cab190885193c3a677','nano','neophobia','Insane','Hanabi','nano - neophobia (Hanabi) [Insane].osu','2013-12-18 23:41:44',97,531,0,0,0,0,180.00,4.00,8.00,7.00,7.00,4.269,NULL),('osu!',314393,122327,2,'7326165d014ef2c1bb67dba0394a7a39','nano','neophobia','Normal','Hanabi','nano - neophobia (Hanabi) [Normal].osu','2013-12-18 23:41:44',97,388,0,0,0,0,180.00,3.00,5.00,4.00,3.00,2.097,NULL),('osu!',316041,122327,2,'a55d27560047cc31982cc96781d7d594','nano','neophobia','alacat\'s Hard','Hanabi','nano - neophobia (Hanabi) [alacat\'s Hard].osu','2013-12-18 23:41:44',97,496,0,0,0,0,180.00,4.00,7.00,6.00,6.00,3.762,NULL),('osu!',316258,123956,2,'477f500c1574f0635d3eb833a45d02b1','mimimemeMIMI','Sentimental Love','Insane','Tari','mimimemeMIMI - Sentimental Love (Tari) [Insane].osu','2014-01-20 07:59:41',277,1262,0,0,0,0,138.00,4.00,8.00,7.00,7.00,4.167,NULL),('osu!',316259,123956,2,'9ca242b64ac25b48c9e62fcf4acc02cd','mimimemeMIMI','Sentimental Love','Normal','Tari','mimimemeMIMI - Sentimental Love (Tari) [Normal].osu','2014-01-20 07:59:41',276,847,0,0,0,0,138.00,3.00,4.00,3.00,3.00,1.856,NULL),('osu!',316260,123956,2,'756b1ee0a45ffb27ac9e73fc4a26ac44','mimimemeMIMI','Sentimental Love','Yomi\'s Hard','Tari','mimimemeMIMI - Sentimental Love (Tari) [Yomi\'s Hard].osu','2014-01-20 07:59:41',277,1175,0,0,0,0,138.00,4.00,7.00,6.00,5.00,3.010,NULL),('osu!',316281,122327,2,'140060a27f761384fa2ba01a8e213ebb','nano','neophobia','Gloria\'s Easy','Hanabi','nano - neophobia (Hanabi) [Gloria\'s Easy].osu','2013-12-18 23:41:44',97,296,0,0,0,0,180.00,3.00,3.00,2.00,2.00,1.800,NULL),('osu!',412288,100348,2,'5fa4a5de6f19dc2d04779cbb37307e9f','Halozy','Sentimental Skyscraper','Myouren Hijiri','Hollow Wings','Halozy - Sentimental Skyscraper (Hollow Wings) [Myouren Hijiri].osu','2014-05-20 18:04:01',327,2148,0,1,0,0,183.00,4.00,9.00,8.00,6.00,6.909,NULL),('osu!',436442,181917,2,'0d6be6ba4c6ad180175356463f5e15af','Chris Da House vs. DJ Sledge Hammer','Believe (Nightcore Mix)','Midnight','Kazuya','Chris Da House vs. DJ Sledge Hammer - Believe (Nightcore Mix) (Kazuya) [Midnight].osu','2015-12-27 02:15:29',180,771,0,0,0,0,171.12,4.00,9.00,8.00,7.00,5.052,NULL),('osu!',437721,181917,2,'cfda4bba335b8211ff9d4857537da087','Chris Da House vs. DJ Sledge Hammer','Believe (Nightcore Mix)','Normal','Kazuya','Chris Da House vs. DJ Sledge Hammer - Believe (Nightcore Mix) (Kazuya) [Normal].osu','2015-12-27 02:15:29',180,468,0,0,0,0,171.12,3.00,5.00,3.00,3.00,1.972,NULL),('osu!',438096,181917,2,'08ac03003b3001f65074e8e2e270df97','Chris Da House vs. DJ Sledge Hammer','Believe (Nightcore Mix)','Pie\'s Advanced','Kazuya','Chris Da House vs. DJ Sledge Hammer - Believe (Nightcore Mix) (Kazuya) [Pie\'s Advanced].osu','2015-12-27 02:15:29',180,607,0,0,0,0,171.12,4.00,7.00,6.00,5.00,3.244,NULL),('osu!',440820,181917,2,'6f048a467cd7f788f0e638627d11fe47','Chris Da House vs. DJ Sledge Hammer','Believe (Nightcore Mix)','Asphyxia\'s Hyper','Kazuya','Chris Da House vs. DJ Sledge Hammer - Believe (Nightcore Mix) (Kazuya) [Asphyxia\'s Hyper].osu','2015-12-27 02:15:29',180,709,0,0,0,0,171.12,4.00,8.00,7.00,6.00,3.730,NULL),('osu!',453578,189095,2,'80df7f0bd1e9fa2c9046c1b11c4bee8b','Miyuki Hashimoto','Glossy:MMM','Habi\'s Insane','Neta','Miyuki Hashimoto - GlossyMMM (Neta) [Habi\'s Insane].osu','2018-03-22 05:22:41',88,465,0,0,0,0,175.00,4.00,8.50,7.00,6.00,4.706,NULL),('osu!',455550,189095,2,'f3a5ccbedf339e574372c7217c2d1056','Miyuki Hashimoto','Glossy:MMM','Cloud\'s Normal','Neta','Miyuki Hashimoto - GlossyMMM (Neta) [Cloud\'s Normal].osu','2018-03-22 05:22:41',87,284,0,0,0,0,175.00,3.00,5.00,4.00,4.00,2.259,NULL),('osu!',456454,189095,2,'7aea1e8628d8ce2bba7c484282df4875','Miyuki Hashimoto','Glossy:MMM','Momoka\'s Hard','Neta','Miyuki Hashimoto - GlossyMMM (Neta) [Momoka\'s Hard].osu','2018-03-22 05:22:41',88,417,0,0,0,0,175.00,4.00,8.00,6.00,5.00,3.497,NULL),('osu!',460768,189095,2,'4fa0f5f08f6d51c0367f713810d61335','Miyuki Hashimoto','Glossy:MMM','Easy','Neta','Miyuki Hashimoto - GlossyMMM (Neta) [Easy].osu','2018-03-22 05:22:41',87,236,0,0,0,0,175.00,3.00,3.00,2.00,2.00,1.837,NULL),('osu!',489249,207443,2,'6c0e0ac396264baa1b2d274022d7de06','The Rembrandts','I\'ll Be There For You (TV Version)','Hard','XavierJones','The Rembrandts - I\'ll Be There For You (TV Version) (XavierJones) [Hard].osu','2014-12-28 18:40:44',46,196,0,0,0,0,190.00,4.00,7.00,6.00,6.00,2.906,NULL),('osu!',492948,207443,2,'8bdaf89dd35fa0a0a5ce2b8edc054d38','The Rembrandts','I\'ll Be There For You (TV Version)','Insane','XavierJones','The Rembrandts - I\'ll Be There For You (TV Version) (XavierJones) [Insane].osu','2014-12-28 18:40:44',46,214,0,0,0,0,190.00,4.00,8.50,8.00,8.00,3.785,NULL),('osu!',492949,207443,2,'45c8852e3fac3bb9dffc8dbba7d3fd78','The Rembrandts','I\'ll Be There For You (TV Version)','Normal','XavierJones','The Rembrandts - I\'ll Be There For You (TV Version) (XavierJones) [Normal].osu','2014-12-28 18:40:44',43,160,0,0,0,0,190.00,3.50,5.00,4.00,4.00,2.125,NULL),('osu!',493653,207443,2,'03c1eb451830b50d2d77b64b22007915','The Rembrandts','I\'ll Be There For You (TV Version)','Don\'s Easy','XavierJones','The Rembrandts - I\'ll Be There For You (TV Version) (XavierJones) [Don\'s Easy].osu','2014-12-28 18:40:44',43,85,0,0,0,0,190.00,3.00,3.00,2.00,2.00,1.291,NULL),('osu!',502574,213835,2,'cfc8f20bbf44f3afb01726e6e7981305','I MY ME MINE','Troublemaker','Insane','Kyubey','I MY ME MINE - Troublemaker (Kyubey) [Insane].osu','2014-10-16 13:47:50',29,165,0,0,0,0,186.00,4.00,9.00,8.00,7.00,4.812,NULL),('osu!',503493,213835,2,'62506e2294e2f3934017e567e9864c24','I MY ME MINE','Troublemaker','Easy','Kyubey','I MY ME MINE - Troublemaker (Kyubey) [Easy].osu','2014-10-16 13:47:50',29,87,0,0,0,0,186.00,3.00,3.50,2.00,2.00,1.613,NULL),('osu!',505470,213835,2,'dac6487be0c85921b3ac4e6fa0271b8e','I MY ME MINE','Troublemaker','Normal','Kyubey','I MY ME MINE - Troublemaker (Kyubey) [Normal].osu','2014-10-16 13:47:50',29,105,0,0,0,0,186.00,3.50,5.50,4.00,4.00,2.253,NULL),('osu!',510510,213835,2,'95a53a2170b2e7d885da38b6bf413331','I MY ME MINE','Troublemaker','Skystar\'s Soul','Kyubey','I MY ME MINE - Troublemaker (Kyubey) [Skystar\'s Soul].osu','2014-10-16 13:47:50',29,188,0,0,0,0,186.00,4.00,9.00,8.00,7.00,4.823,NULL),('osu!',513228,213835,2,'822f09804be4f0482d2a3973f905c0fb','I MY ME MINE','Troublemaker','Fycho\'s Hard','Kyubey','I MY ME MINE - Troublemaker (Kyubey) [Fycho\'s Hard].osu','2014-10-16 13:47:50',29,156,0,0,0,0,186.00,4.00,8.00,6.00,6.00,3.456,NULL),('osu!',529988,130725,2,'3742a565f15f8d9bef7509ad02eac7f1','RhythmHolic','GLP Dubstep Intro','Hard','Nickelony','RhythmHolic - GLP Dubstep Intro (Nickelony) [Hard].osu','2014-11-11 20:45:19',37,128,0,0,0,0,139.00,4.00,7.00,5.00,5.00,2.489,NULL),('osu!',529989,130725,2,'f02b1a9b38b2f766e0c63ec8e12a3a5c','RhythmHolic','GLP Dubstep Intro','Muzukashii','Nickelony','RhythmHolic - GLP Dubstep Intro (Nickelony) [Muzukashii].osu','2014-11-11 20:45:19',36,113,0,0,0,1,139.00,4.00,4.00,4.00,4.00,2.265,NULL),('osu!',529990,130725,2,'2a33c34d3f1ecb2306d05677fbcb89c5','RhythmHolic','GLP Dubstep Intro','Mythozz\'s Insane','Nickelony','RhythmHolic - GLP Dubstep Intro (Nickelony) [Mythozz\'s Insane].osu','2014-11-11 20:45:19',36,178,0,0,0,0,139.00,4.00,8.00,7.00,7.00,3.425,NULL),('osu!',529991,130725,2,'f1da873f28757e536b212e947374b230','RhythmHolic','GLP Dubstep Intro','Normal','Nickelony','RhythmHolic - GLP Dubstep Intro (Nickelony) [Normal].osu','2014-11-11 20:45:19',36,98,0,0,0,0,139.00,3.50,4.00,3.00,3.00,1.661,NULL),('osu!',529992,130725,2,'43a3bc8064ebd1bab859a6c3eff19db7','RhythmHolic','GLP Dubstep Intro','Oni','Nickelony','RhythmHolic - GLP Dubstep Intro (Nickelony) [Oni].osu','2014-11-11 20:45:19',36,158,0,0,0,1,139.00,2.00,10.00,6.00,6.00,3.107,NULL),('osu!',590845,258275,2,'6afe20fe4a4b85379e0ec1390a516b84','Go Ichinose','Encounter! Psychic','Hard','baraatje123','Go Ichinose - Encounter! Psychic (baraatje123) [Hard].osu','2015-04-19 08:26:08',32,211,0,0,0,0,141.00,4.00,7.50,6.00,5.00,3.420,NULL),('osu!',590847,258275,2,'52c73998e1872b23a0f430263979b0c2','Go Ichinose','Encounter! Psychic','Normal','baraatje123','Go Ichinose - Encounter! Psychic (baraatje123) [Normal].osu','2015-04-19 08:26:08',32,137,0,0,0,0,141.00,3.50,5.50,3.50,4.00,1.984,NULL),('osu!',590849,258275,2,'cc2f20e5bff66418272daef567cbf1fc','Go Ichinose','Encounter! Psychic','Insane','baraatje123','Go Ichinose - Encounter! Psychic (baraatje123) [Insane].osu','2015-04-19 08:26:08',32,293,0,0,0,0,141.00,4.00,9.00,7.00,7.00,4.322,NULL),('osu!',646428,258275,2,'ac8e3f394f4da518292357abe23b3ca9','Go Ichinose','Encounter! Psychic','Irre\'s Extra','baraatje123','Go Ichinose - Encounter! Psychic (baraatje123) [Irre\'s Extra].osu','2015-04-19 08:26:08',29,218,0,0,0,0,141.00,7.00,9.00,7.50,5.00,5.718,NULL),('osu!',659333,293039,2,'6708992a8c534c436886a2635052b062','Brad Breeck','Gravity Falls Main Title Theme','Hard','YellowManul','Brad Breeck - Gravity Falls Main Title Theme (YellowManul) [Hard].osu','2015-03-25 14:27:44',39,188,0,2,1,0,165.80,4.00,8.00,6.00,5.00,3.409,NULL),('osu!',659439,293039,2,'19610967109f7685f4c5509f656ef06b','Brad Breeck','Gravity Falls Main Title Theme','Shadren\'s Insane','YellowManul','Brad Breeck - Gravity Falls Main Title Theme (YellowManul) [Shadren\'s Insane].osu','2015-03-25 14:27:44',39,214,0,1,0,0,165.80,4.00,9.00,8.00,7.00,3.973,NULL),('osu!',659730,293039,2,'f453bb18ae9a6b3da32df34250668b49','Brad Breeck','Gravity Falls Main Title Theme','Easy','YellowManul','Brad Breeck - Gravity Falls Main Title Theme (YellowManul) [Easy].osu','2015-03-25 14:27:44',37,97,0,0,0,0,165.80,2.50,2.00,2.00,1.00,1.607,NULL),('osu!',659785,293039,2,'7fd181879e7d99caa24d89e3c182810f','Brad Breeck','Gravity Falls Main Title Theme','Seikatu\'s Normal','YellowManul','Brad Breeck - Gravity Falls Main Title Theme (YellowManul) [Seikatu\'s Normal].osu','2015-03-25 14:27:44',39,127,0,0,0,0,165.80,3.50,5.00,4.00,3.00,2.119,NULL),('osu!',682282,258275,2,'65d393436c16df8b9298640e0814d6cd','Go Ichinose','Encounter! Psychic','Easy','baraatje123','Go Ichinose - Encounter! Psychic (baraatje123) [Easy].osu','2015-04-19 08:26:08',32,76,0,0,0,0,141.00,3.00,2.00,1.00,1.00,1.514,NULL),('osu!',746533,337416,2,'9de08ab45ed90b331b1b8eff71294a5f','mimimemeMIMI','Sentimental Love','Insane','Kocari','mimimemeMIMI - Sentimental Love (Kocari) [Insane].osu','2015-12-30 02:58:01',88,437,0,0,0,0,138.00,4.00,8.30,6.50,6.00,3.836,NULL),('osu!',746545,337416,2,'6d150c664a47f49009a2ebd5859f32ee','mimimemeMIMI','Sentimental Love','Easy','Kocari','mimimemeMIMI - Sentimental Love (Kocari) [Easy].osu','2015-12-30 02:58:01',88,205,0,0,0,0,138.00,3.00,3.00,2.00,2.00,1.510,NULL),('osu!',748438,338293,2,'5db00f226b241ffa479913f5271e7cf8','Lia','Bravely You (TV Size)','Insane','Enon','Lia - Bravely You (TV Size) (Enon) [Insane].osu','2016-03-17 09:20:39',87,409,0,0,0,0,150.00,4.00,8.50,7.00,6.00,4.388,NULL),('osu!',751598,337416,2,'a3e5ebdb146326c68b479bd23fbd8721','mimimemeMIMI','Sentimental Love','Gaia\'s Hard','Kocari','mimimemeMIMI - Sentimental Love (Kocari) [Gaia\'s Hard].osu','2015-12-30 02:58:01',88,412,0,0,0,0,138.00,4.00,6.50,5.00,5.00,2.860,NULL),('osu!',751599,337416,2,'89b0fc819f5a9783eb4a915dcc429bf5','mimimemeMIMI','Sentimental Love','Normal','Kocari','mimimemeMIMI - Sentimental Love (Kocari) [Normal].osu','2015-12-30 02:58:01',88,235,0,0,0,0,138.00,3.50,4.50,3.50,3.50,1.779,NULL),('osu!',753444,338293,2,'3541b4677cad94cea27db16f65dfb003','Lia','Bravely You (TV Size)','Easy','Enon','Lia - Bravely You (TV Size) (Enon) [Easy].osu','2016-03-17 09:20:39',87,217,0,0,0,0,150.00,3.00,3.00,2.00,2.00,1.625,NULL),('osu!',753445,338293,2,'96fa68ddf378d1cbb30197d8b103ea9b','Lia','Bravely You (TV Size)','-Tochi\'s Insane','Enon','Lia - Bravely You (TV Size) (Enon) [-Tochi\'s Insane].osu','2016-03-17 09:20:39',89,439,0,0,0,0,150.00,4.00,8.80,7.50,6.00,4.671,NULL),('osu!',754751,338293,2,'258babc361eff7418a9cc601b1f3c471','Lia','Bravely You (TV Size)','Startrick\'s Hard','Enon','Lia - Bravely You (TV Size) (Enon) [Startrick\'s Hard].osu','2016-03-17 09:20:39',88,392,0,0,0,0,150.00,4.00,7.20,6.00,6.00,3.060,NULL),('osu!',755941,338293,2,'78665640c06d39395dcc07a7f0772c96','Lia','Bravely You (TV Size)','bbNormal','Enon','Lia - Bravely You (TV Size) (Enon) [bbNormal].osu','2016-03-17 09:20:39',89,278,0,0,0,0,150.00,3.50,5.00,4.00,4.00,2.119,NULL),('osu!',779200,353665,2,'778f62257c6994bd4bc8bff06383bf33','bradbreeck','Girl Be Sellin\' Sunshine','Sunshine','ezek','bradbreeck - Girl Be Sellin\' Sunshine (ezek) [Sunshine].osu','2016-02-16 04:50:31',36,131,0,0,0,0,60.00,4.00,7.00,6.00,6.00,2.647,NULL),('osu!',779512,353665,2,'aae0e3889afa25a72107267fc7234e75','bradbreeck','Girl Be Sellin\' Sunshine','Easy','ezek','bradbreeck - Girl Be Sellin\' Sunshine (ezek) [Easy].osu','2016-02-16 04:50:31',36,68,0,0,0,0,60.00,3.00,3.00,2.00,2.00,1.269,NULL),('osu!',779513,353665,2,'2c8ee8b3570fcc97fc18b618d84a12ee','bradbreeck','Girl Be Sellin\' Sunshine','Normal','ezek','bradbreeck - Girl Be Sellin\' Sunshine (ezek) [Normal].osu','2016-02-16 04:50:31',36,100,0,0,0,0,60.00,3.50,5.00,4.00,4.00,1.967,NULL),('osu!',800601,364741,2,'b1d0a1690e29bf84dafb35dc835d37d3','Hatsuki Yura','TRICK or TREAT','Easy','ByBy13','Hatsuki Yura - TRICK or TREAT (ByBy13) [Easy].osu','2015-11-01 09:55:01',32,63,0,0,0,0,106.00,3.00,2.00,2.00,2.00,1.161,NULL),('osu!',800706,364741,2,'966105ad985f9ee34944638405fcd28e','Hatsuki Yura','TRICK or TREAT','Normal','ByBy13','Hatsuki Yura - TRICK or TREAT (ByBy13) [Normal].osu','2015-11-01 09:55:01',32,83,0,0,0,0,106.00,3.50,4.00,4.00,4.00,1.800,NULL),('osu!',803137,364741,2,'4922b3823490d3e90871f36426700497','Hatsuki Yura','TRICK or TREAT','Beginner','ByBy13','Hatsuki Yura - TRICK or TREAT (ByBy13) [Beginner].osu','2015-11-01 09:55:01',32,61,0,0,0,0,106.00,2.50,1.00,1.00,2.00,0.879,NULL),('osu!',803138,364741,2,'431430c67a60dbed360e01b67526b381','Hatsuki Yura','TRICK or TREAT','Hard','ByBy13','Hatsuki Yura - TRICK or TREAT (ByBy13) [Hard].osu','2015-11-01 09:55:01',32,139,0,0,0,0,106.00,4.00,7.00,6.00,6.00,2.444,NULL),('osu!',803767,364741,2,'d73ed56593e562a66fb758460fa6d5d1','Hatsuki Yura','TRICK or TREAT','Insane','ByBy13','Hatsuki Yura - TRICK or TREAT (ByBy13) [Insane].osu','2015-11-01 09:55:01',32,168,0,0,0,0,106.00,4.20,8.00,7.00,7.00,3.358,NULL),('osu!',803783,364741,2,'3dec14429236d7e19dd000682a0c8dba','Hatsuki Yura','TRICK or TREAT','TRICK or TREAT?','ByBy13','Hatsuki Yura - TRICK or TREAT (ByBy13) [TRICK or TREAT].osu','2015-11-01 09:55:01',32,177,0,1,1,0,106.00,4.50,9.00,8.00,7.50,4.111,NULL),('osu!',882091,405859,2,'dd80e9b55e5d1efcd8b27b637b7f8b6d','Koji Kondo','MAP5(Mayoi no Mori)','Easy','MoodyRPG','Koji Kondo - MAP5(Mayoi no Mori) (MoodyRPG) [Easy].osu','2016-05-09 02:08:48',35,76,0,0,0,0,127.00,3.00,2.00,2.00,2.00,1.040,NULL),('osu!',882092,405859,2,'3873b9906975d89f1134d9772b1564bf','Koji Kondo','MAP5(Mayoi no Mori)','Gero\'s Maze','MoodyRPG','Koji Kondo - MAP5(Mayoi no Mori) (MoodyRPG) [Gero\'s Maze].osu','2016-05-09 02:08:48',35,158,0,0,0,0,127.00,4.00,8.00,7.00,7.00,2.641,NULL),('osu!',882093,405859,2,'a07504d5ebff66d842676d9cd7d829aa','Koji Kondo','MAP5(Mayoi no Mori)','Hard','MoodyRPG','Koji Kondo - MAP5(Mayoi no Mori) (MoodyRPG) [Hard].osu','2016-05-09 02:08:48',35,155,0,0,0,0,127.00,4.00,7.00,6.00,6.00,2.683,NULL),('osu!',882094,405859,2,'cdb9ea0826a59e35d8e488dc830ef731','Koji Kondo','MAP5(Mayoi no Mori)','Normal','MoodyRPG','Koji Kondo - MAP5(Mayoi no Mori) (MoodyRPG) [Normal].osu','2016-05-09 02:08:48',35,111,0,0,0,0,127.00,4.00,5.00,4.00,4.00,1.800,NULL),('osu!',910147,420765,2,'1024e790c91e38f45e9991d853e75288','Dendei','gabe power','Brain Dog?','HighTec','Dendei - gabe power (HighTec) [Brain Dog].osu','2016-08-29 16:12:09',31,243,0,2,1,0,173.00,4.00,9.30,8.70,5.00,6.102,NULL),('osu!',942001,420765,2,'6880fdf8852949a535c7f088de128d0c','Dendei','gabe power','Arphimigon\'s Normal','HighTec','Dendei - gabe power (HighTec) [Arphimigon\'s Normal].osu','2016-08-29 16:12:09',32,87,0,0,0,0,173.00,2.50,5.00,4.00,4.00,1.743,NULL),('osu!',943246,420765,2,'959deb0096f02bd17b96fc9dac929c01','Dendei','gabe power','Hikaru\'s Insane','HighTec','Dendei - gabe power (HighTec) [Hikaru\'s Insane].osu','2016-08-29 16:12:09',31,279,0,0,0,0,173.00,4.00,9.00,8.00,5.00,4.999,NULL),('osu!',943399,420765,2,'880402cf0c28f7dcf017d1f3680137e6','Dendei','gabe power','NiNo\'s Extra','HighTec','Dendei - gabe power (HighTec) [NiNo\'s Extra].osu','2016-08-29 16:12:09',31,289,0,0,0,0,173.00,4.00,9.20,8.20,6.00,5.706,NULL),('osu!',943403,420765,2,'c6f063849a5d669b1feebff20d514f24','Dendei','gabe power','Shizuku\'s Hard','HighTec','Dendei - gabe power (HighTec) [Shizuku\'s Hard].osu','2016-08-29 16:12:09',31,164,0,0,0,0,173.00,3.60,8.00,6.50,4.50,2.895,NULL),('osu!',945107,420765,2,'9ef7e2e61679d2dca1896161c9d55e42','Dendei','gabe power','Mazziv\'s Advanced','HighTec','Dendei - gabe power (HighTec) [Mazziv\'s Advanced].osu','2016-08-29 16:12:09',34,106,0,0,0,0,173.00,3.10,5.50,5.00,4.20,2.020,NULL),('osu!',951401,420765,2,'0e17ee6b5be6f71990bf88db57c2395b','Dendei','gabe power','Cheesecake\'s Easy','HighTec','Dendei - gabe power (HighTec) [Cheesecake\'s Easy].osu','2016-08-29 16:12:09',32,83,0,0,0,0,173.00,2.50,2.00,2.00,2.00,1.245,NULL),('osu!',961907,420765,2,'cd04dac53b8c1aa5e510cb8bafd6bad5','Dendei','gabe power','Bara\'s Hyper','HighTec','Dendei - gabe power (HighTec) [Bara\'s Hyper].osu','2016-08-29 16:12:09',31,202,0,0,0,0,173.00,4.50,8.70,7.00,4.70,3.949,NULL),('osu!',964063,442581,2,'3ef546033ed898a16d10aa6f90ca4074','Memme','Cherry Blossom','Cherry Blossom\'s Extra','Priti','Memme - Cherry Blossom (Priti) [Cherry Blossom\'s Extra].osu','2016-07-17 13:01:45',132,927,0,0,0,0,170.00,4.00,9.30,8.00,6.00,5.829,NULL),('osu!',964064,442581,2,'8253b0a540a117112d5acdac6f4a0347','Memme','Cherry Blossom','Easy','Priti','Memme - Cherry Blossom (Priti) [Easy].osu','2016-07-17 13:01:45',134,284,0,0,0,0,170.00,3.00,2.70,2.30,3.00,1.651,NULL),('osu!',964065,442581,2,'79f0fc11cffe5da06df2fb07062fec9f','Memme','Cherry Blossom','Karen\'s Insane','Priti','Memme - Cherry Blossom (Priti) [Karen\'s Insane].osu','2016-07-17 13:01:45',134,806,0,0,0,0,170.00,4.00,9.00,8.00,6.00,4.854,NULL),('osu!',964066,442581,2,'7e706efc9d45134c689c3c7c90ae799b','Memme','Cherry Blossom','Leader\'s Hard','Priti','Memme - Cherry Blossom (Priti) [Leader\'s Hard].osu','2016-07-17 13:01:45',134,620,0,0,0,0,170.00,4.00,8.00,7.00,6.00,3.689,NULL),('osu!',964133,442581,2,'9a940ab43ac21e1d2b80b3460201d11f','Memme','Cherry Blossom','Normal','Priti','Memme - Cherry Blossom (Priti) [Normal].osu','2016-07-17 13:01:45',134,376,0,0,0,0,170.00,3.50,5.00,5.00,5.00,2.231,NULL),('osu!',965369,442581,2,'be6daaf1ce99565cd2d75587fce4f173','Memme','Cherry Blossom','Bonzphyxia\'s Extra','Priti','Memme - Cherry Blossom (Priti) [Bonzphyxia\'s Extra].osu','2016-07-17 13:01:45',134,961,0,0,0,0,170.00,4.20,9.30,8.50,7.00,6.075,NULL),('osu!',984660,442581,2,'fd11ef7672b1602b59fec06505aee3cb','Memme','Cherry Blossom','tyui\'s Extra','Priti','Memme - Cherry Blossom (Priti) [tyui\'s Extra].osu','2016-07-17 13:01:45',134,961,0,0,0,0,170.00,4.10,9.30,9.00,6.00,5.964,NULL),('osu!',999566,420765,2,'81d6b7563c73ea9c9cd299c00609396a','Dendei','gabe power','Gero\'s Light Insane','HighTec','Dendei - gabe power (HighTec) [Gero\'s Light Insane].osu','2016-08-29 16:12:09',31,250,0,0,0,0,173.00,5.00,9.00,7.00,7.00,4.761,NULL),('osu!',1022746,478917,0,'ce59f9d7405ac4d8c19bf68ca87056f7','Various Artists','Corner Jump Training','Marathon','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Marathon].osu','2017-09-03 18:48:20',1,1,0,0,0,0,120.00,2.00,10.00,0.00,0.00,0.141,NULL),('osu!',1029719,442581,2,'4eca569889bc996f0aa7110c855b1b3b','Memme','Cherry Blossom','Ultra','Priti','Memme - Cherry Blossom (Priti) [Ultra].osu','2016-07-17 13:01:45',134,927,0,0,0,0,170.00,5.00,9.40,9.00,6.00,5.917,NULL),('osu!',1045214,478917,0,'224c7cbaee4f12e1ddbd146ed9403f69','Various Artists','Corner Jump Training','ESTi - HELIX (Edit ver.) AR10','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [ESTi - HELIX (Edit ver.) AR10].osu','2017-09-03 18:48:20',135,676,0,0,0,0,175.00,4.00,10.00,8.00,4.00,7.283,NULL),('osu!',1079029,507278,5,'81d744792f405623b5a818d89b381e0b','Rings of Saturn','Senseless Massacre (Cut Ver.)','Easy','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Easy].osu','2023-03-29 22:52:25',71,224,0,0,0,0,270.00,3.00,3.00,3.50,3.00,1.567,NULL),('osu!',1079031,507278,5,'d09435c12fe694682c878da41b59b8fb','Rings of Saturn','Senseless Massacre (Cut Ver.)','Hard','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Hard].osu','2023-03-29 22:52:25',71,296,0,0,0,0,270.00,3.50,8.00,7.00,5.50,3.565,NULL),('osu!',1079133,507278,5,'f71c331f65099fa01fdf8e7c1bd38b6f','Rings of Saturn','Senseless Massacre (Cut Ver.)','Omnipotent','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Omnipotent].osu','2023-03-29 22:52:25',71,893,0,0,0,0,270.00,4.00,10.00,10.00,6.00,10.167,NULL),('osu!',1080393,507278,5,'15ea0a7a4e31433b160f8935963d5928','Rings of Saturn','Senseless Massacre (Cut Ver.)','Fenza\'s Genocide','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Fenza\'s Genocide].osu','2023-03-29 22:52:25',71,867,0,0,0,0,270.00,3.00,10.00,9.20,6.00,7.628,NULL),('osu!',1081141,507278,5,'9d6e18e631c69f28767a1180e7f5801d','Rings of Saturn','Senseless Massacre (Cut Ver.)','Mapper\'s Normal','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Mapper\'s Normal].osu','2023-03-29 22:52:25',71,281,0,0,0,0,270.00,3.20,5.00,5.00,4.00,2.654,NULL),('osu!',1085412,507278,5,'780a8de4eb17ddcac2edabd582a6573e','Rings of Saturn','Senseless Massacre (Cut Ver.)','Insane','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Insane].osu','2023-03-29 22:52:25',71,651,0,0,0,0,270.00,4.00,9.00,7.50,6.50,4.403,NULL),('osu!',1086000,507278,5,'739d36c9d44da5b520feab8039a02a3e','Rings of Saturn','Senseless Massacre (Cut Ver.)','Extra','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Extra].osu','2023-03-29 22:52:25',71,770,0,0,0,0,270.00,4.00,9.70,9.00,7.00,6.435,NULL),('osu!',1106034,520617,5,'f5a43514f269864cca8515230020a041','Igorrr & Ruby My Dear','Barbecue','Barbevu','-PC','Igorrr & Ruby My Dear - Barbecue (-PC) [Barbevu].osu','2022-02-01 10:35:41',221,1647,0,0,0,0,200.00,4.00,9.40,8.00,7.50,6.811,NULL),('osu!',1119026,527431,2,'715b7551fb9da04810b687e28f458887','Brad Breeck','Gravity Falls Theme Song','Mystery','Alphabet','Brad Breeck - Gravity Falls Theme Song (Alphabet) [Mystery].osu','2016-12-23 16:59:29',39,212,0,1,1,0,165.80,4.00,8.80,8.00,6.00,4.493,NULL),('osu!',1119043,527431,2,'e6d70ce42acf65deae30f1e786656434','Brad Breeck','Gravity Falls Theme Song','Hard','Alphabet','Brad Breeck - Gravity Falls Theme Song (Alphabet) [Hard].osu','2016-12-23 16:59:29',39,190,0,0,0,0,165.80,4.00,7.60,6.00,5.40,3.161,NULL),('osu!',1119784,527431,2,'269976c837c242ea93320839fbd99b96','Brad Breeck','Gravity Falls Theme Song','Easy','Alphabet','Brad Breeck - Gravity Falls Theme Song (Alphabet) [Easy].osu','2016-12-23 16:59:29',37,100,0,0,0,0,165.80,3.00,2.00,2.50,2.50,1.454,NULL),('osu!',1119785,527431,2,'587478955a3f7ee0e4dddfdf8577d6af','Brad Breeck','Gravity Falls Theme Song','Normal','Alphabet','Brad Breeck - Gravity Falls Theme Song (Alphabet) [Normal].osu','2016-12-23 16:59:29',37,108,0,0,0,0,165.80,3.00,4.60,3.60,4.00,1.951,NULL),('osu!',1139717,527431,2,'a4248ae95e26110b5a929d007b060a72','Brad Breeck','Gravity Falls Theme Song','Bubblun\'s Insane','Alphabet','Brad Breeck - Gravity Falls Theme Song (Alphabet) [Bubblun\'s Insane].osu','2016-12-23 16:59:29',39,196,0,0,0,0,165.80,5.00,8.20,7.50,5.50,3.865,NULL),('osu!',1151834,478917,0,'55c8571c63b7b7d7cc3a091c2dbe3de7','Various Artists','Corner Jump Training','DM Ashura - deltaMAX','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [DM Ashura - deltaMAX].osu','2017-09-03 18:48:20',115,473,0,0,0,0,100.00,4.00,10.00,10.00,0.00,10.291,NULL),('osu!',1151882,478917,0,'22ec6b9f469f697ab16da0183e12ea37','Various Artists','Corner Jump Training','AWOLNATION - RUN AR10','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [AWOLNATION - RUN AR10].osu','2017-09-03 18:48:20',216,366,0,0,0,0,138.00,4.00,10.00,7.50,4.00,5.750,NULL),('osu!',1151888,478917,0,'8559c1b5dcb95e1b214ab542972752e2','Various Artists','Corner Jump Training','AWOLNATION - RUN','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [AWOLNATION - RUN].osu','2017-09-03 18:48:20',216,366,0,0,0,0,138.00,4.00,9.00,7.50,4.00,5.750,NULL),('osu!',1164360,478917,0,'27249d0fac7493187de5e416e487f949','Various Artists','Corner Jump Training','Wolfgun - Big Bonus Land AR10','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Wolfgun - Big Bonus Land AR10].osu','2017-09-03 18:48:20',92,518,0,0,0,0,179.00,4.00,10.00,8.00,4.00,7.153,NULL),('osu!',1164889,550010,2,'7385f65435cecc75b6a6c375c1ae356b','Rameses B','\'Sentient\' Chill Mix','Marathon','pishifat','Rameses B - \'Sentient\' Chill Mix (pishifat) [Marathon].osu','2017-10-02 07:57:37',904,2762,0,0,0,0,126.00,3.80,8.50,7.00,5.00,4.415,NULL),('osu!',1167554,478917,0,'c2744ad524d82ac5cfca236dedb27738','Various Artists','Corner Jump Training','Orange Heart & Neptune - Mousou Katharsis AR8','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Orange Heart & Neptune - Mousou Katharsis AR8].osu','2017-09-03 18:48:20',46,106,0,0,0,0,82.00,4.00,8.00,5.00,3.00,3.727,NULL),('osu!',1167555,478917,0,'ddf8ee4147bdccc44dd485b140538338','Various Artists','Corner Jump Training','Orange Heart & Neptune - Mousou Katharsis','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Orange Heart & Neptune - Mousou Katharsis].osu','2017-09-03 18:48:20',46,106,0,0,0,0,82.00,4.00,9.00,5.00,3.00,3.727,NULL),('osu!',1180037,557733,2,'ac6d388bd77c519a7dd205435f2573ad','Hanasaka Yui(CV: M.A.O)','Harumachi Clover','MoeMoe','Karen','Hanasaka Yui(CV M.A.O) - Harumachi Clover (Karen) [MoeMoe].osu','2017-01-21 16:45:34',29,148,0,4,0,0,142.00,4.00,8.00,7.00,7.00,4.375,NULL),('osu!',1180148,557733,2,'94b8a73448a9ed949824e7bc41b6bf90','Hanasaka Yui(CV: M.A.O)','Harumachi Clover','Easy','Karen','Hanasaka Yui(CV M.A.O) - Harumachi Clover (Karen) [Easy].osu','2017-01-21 16:45:34',29,72,0,0,0,0,142.00,3.00,3.00,2.00,3.00,1.360,NULL),('osu!',1180149,557733,2,'d861010aeb90a14911ff095be2b95df5','Hanasaka Yui(CV: M.A.O)','Harumachi Clover','Little\'s Hard','Karen','Hanasaka Yui(CV M.A.O) - Harumachi Clover (Karen) [Little\'s Hard].osu','2017-01-21 16:45:34',29,138,0,0,0,0,142.00,4.00,7.00,6.00,5.00,2.881,NULL),('osu!',1180150,557733,2,'d1a55555dcccfec0e7ae40cda6a8ded7','Hanasaka Yui(CV: M.A.O)','Harumachi Clover','Normal','Karen','Hanasaka Yui(CV M.A.O) - Harumachi Clover (Karen) [Normal].osu','2017-01-21 16:45:34',29,80,0,0,0,0,142.00,3.50,5.00,4.00,4.00,1.605,NULL),('osu!',1180151,557733,2,'9b2b3e98e1479ea05875e90b52380136','Hanasaka Yui(CV: M.A.O)','Harumachi Clover','wkyik\'s Insane','Karen','Hanasaka Yui(CV M.A.O) - Harumachi Clover (Karen) [wkyik\'s Insane].osu','2017-01-21 16:45:34',29,144,0,0,0,0,142.00,4.00,8.00,7.00,7.00,4.050,NULL),('osu!',1231479,478917,0,'f242970ef3ac0a0763bdc5a3ffc03315','Various Artists','Corner Jump Training','Eiko Shimamiya - Higurashi no Naku Koro ni (TV Size)','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Eiko Shimamiya - Higurashi no Naku Koro ni (TV Size)].osu','2017-09-03 18:48:20',88,533,0,0,0,0,105.00,4.00,10.00,9.00,0.00,8.428,NULL),('osu!',1241725,586306,2,'13069a19081b6473b9a84d588c7c983c','Veritas Unae','~DISK 1~','Advanced','100bit','Veritas Unae - ~DISK 1~ (100bit) [Advanced].osu','2017-03-22 17:09:53',25,69,0,0,0,0,80.00,3.80,6.00,5.00,4.50,2.004,NULL),('osu!',1241726,586306,2,'2e6fe13ea13ca32fe4f4bbe44c3b0ded','Veritas Unae','~DISK 1~','Easy','100bit','Veritas Unae - ~DISK 1~ (100bit) [Easy].osu','2017-03-22 17:09:53',26,43,0,0,0,0,80.00,3.00,3.00,2.00,2.00,1.017,NULL),('osu!',1241727,586306,2,'2c849864767028a4cadef5a352a88dbc','Veritas Unae','~DISK 1~','Hard','100bit','Veritas Unae - ~DISK 1~ (100bit) [Hard].osu','2017-03-22 17:09:53',25,75,0,0,0,0,80.00,4.00,7.00,6.50,5.00,2.686,NULL),('osu!',1241728,586306,2,'3116aa8ec964191df240edb6ab708c1b','Veritas Unae','~DISK 1~','Normal','100bit','Veritas Unae - ~DISK 1~ (100bit) [Normal].osu','2017-03-22 17:09:53',26,54,0,0,0,0,80.00,3.50,4.50,4.00,3.00,1.330,NULL),('osu!',1242427,507278,5,'ea80b298165b1a9dded209c07eee4688','Rings of Saturn','Senseless Massacre (Cut Ver.)','Omniscient','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Omniscient].osu','2023-03-29 22:52:25',71,844,0,0,0,0,270.00,3.50,10.00,10.00,6.00,9.043,NULL),('osu!',1260398,507278,5,'a1ae6aee86a7896b097d903a55edf285','Rings of Saturn','Senseless Massacre (Cut Ver.)','Omnipresent','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Omnipresent].osu','2023-03-29 22:52:25',71,825,0,0,0,0,270.00,4.30,10.00,10.00,7.00,8.063,NULL),('osu!',1282951,478917,0,'f94a0f7fcf67a57ad30755dc85dd2a1d','Various Artists','Corner Jump Training','Lia - Bravely You (TV Size) AR10','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Lia - Bravely You (TV Size) AR10].osu','2017-09-03 18:48:20',89,443,0,0,0,0,150.00,4.00,10.00,8.00,4.00,6.466,NULL),('osu!',1282952,478917,0,'bae1a35d472c12bb910598395e5f72b1','Various Artists','Corner Jump Training','Lia - Bravely You (TV Size) AR9.5','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Lia - Bravely You (TV Size) AR9.5].osu','2017-09-03 18:48:20',89,443,0,0,0,0,150.00,4.00,9.50,8.00,4.00,6.466,NULL),('osu!',1282953,478917,0,'4707c4d1f7c0527e3f7d03f861358195','Various Artists','Corner Jump Training','Lia - Bravely You (TV Size)','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Lia - Bravely You (TV Size)].osu','2017-09-03 18:48:20',89,443,0,0,0,0,150.00,4.00,9.00,8.00,4.00,6.466,NULL),('osu!',1287528,609700,2,'83b3cda10bf1a1a4031ccb3296aacbe7','KANA-BOON','Baton Road','-LIGHT INSANE-','Gero','KANA-BOON - Baton Road (Gero) [-LIGHT INSANE-].osu','2018-02-16 04:37:04',90,502,0,0,0,0,162.00,4.50,8.50,7.00,7.00,4.085,NULL),('osu!',1287590,609700,2,'ec53bb74dd212e4f5bc421f090e71317','KANA-BOON','Baton Road','-BOR\'S NORMAL-','Gero','KANA-BOON - Baton Road (Gero) [-BOR\'S NORMAL-].osu','2018-02-16 04:37:04',90,377,0,0,0,0,162.00,3.50,5.00,4.00,4.00,2.419,NULL),('osu!',1288293,609700,2,'e2ac095c0bba32f2439beba21c76a35f','KANA-BOON','Baton Road','-EASY-','Gero','KANA-BOON - Baton Road (Gero) [-EASY-].osu','2018-02-16 04:37:04',87,228,0,0,0,0,162.00,3.00,3.00,2.00,2.00,1.687,NULL),('osu!',1288449,609700,2,'6a739e63b851ac5246ac8da74c786b56','KANA-BOON','Baton Road','-YIYO\'S EASY-','Gero','KANA-BOON - Baton Road (Gero) [-YIYO\'S EASY-].osu','2018-02-16 04:37:04',87,192,0,0,0,0,162.00,3.00,3.00,2.00,2.00,1.548,NULL),('osu!',1288450,609700,2,'70c9b7c5aa8a56be2739519ea10d87d8','KANA-BOON','Baton Road','-YIYO\'S INSANE-','Gero','KANA-BOON - Baton Road (Gero) [-YIYO\'S INSANE-].osu','2018-02-16 04:37:04',90,508,0,0,0,0,162.00,4.00,9.00,8.00,8.00,4.537,NULL),('osu!',1288474,609700,2,'fda6c2ceafe2eef88a2a3f5db945ec30','KANA-BOON','Baton Road','-HAZU\'S ADVANCED-','Gero','KANA-BOON - Baton Road (Gero) [-HAZU\'S ADVANCED-].osu','2018-02-16 04:37:04',87,329,0,0,0,0,162.00,4.00,6.00,5.00,5.00,2.581,NULL),('osu!',1288520,609700,2,'310be2b7d63545a4880dca4ef22acc97','KANA-BOON','Baton Road','-POLKA\'S ADVANCED-','Gero','KANA-BOON - Baton Road (Gero) [-POLKA\'S ADVANCED-].osu','2018-02-16 04:37:04',87,361,0,0,0,0,162.00,4.00,6.00,5.00,5.00,2.786,NULL),('osu!',1288559,609700,2,'6e61ec5cbe5f5f8a98cf1bc78ad31601','KANA-BOON','Baton Road','-BOR\'S INSANE-','Gero','KANA-BOON - Baton Road (Gero) [-BOR\'S INSANE-].osu','2018-02-16 04:37:04',90,571,0,0,0,0,162.00,4.00,9.00,8.00,7.00,4.726,NULL),('osu!',1289982,609700,2,'54f798028e07d6d0f91232284056e7bc','KANA-BOON','Baton Road','-HARUTO\'S INSANE-','Gero','KANA-BOON - Baton Road (Gero) [-HARUTO\'S INSANE-].osu','2018-02-16 04:37:04',90,539,0,0,0,0,162.00,4.00,9.00,8.00,7.00,4.763,NULL),('osu!',1290628,609700,2,'c4ac9ca8e63dc9bad30258e029ece360','KANA-BOON','Baton Road','-MARIANNA\'S LIGHT INSANE-','Gero','KANA-BOON - Baton Road (Gero) [-MARIANNA\'S LIGHT INSANE-].osu','2018-02-16 04:37:04',90,429,0,0,0,0,162.00,4.50,8.00,7.00,7.00,3.893,NULL),('osu!',1292314,507278,5,'32d89811561b88e82845135e5dac9546','Rings of Saturn','Senseless Massacre (Cut Ver.)','Broly\'s Extra','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Broly\'s Extra].osu','2023-03-29 22:52:25',71,903,0,0,0,0,270.00,3.70,10.00,10.00,5.00,8.292,NULL),('osu!',1294204,609700,2,'3e8abc5c5f1e79d95023c95947c233d8','KANA-BOON','Baton Road','-IROHAS\' INSANE-','Gero','KANA-BOON - Baton Road (Gero) [-IROHAS\' INSANE-].osu','2018-02-16 04:37:04',90,493,0,0,0,0,162.00,4.00,9.00,7.00,7.00,4.303,NULL),('osu!',1295986,609700,2,'67c6afc191c42814ac9954532e7e83ff','KANA-BOON','Baton Road','-SH1N1\'S HARD-','Gero','KANA-BOON - Baton Road (Gero) [-SH1N1\'S HARD-].osu','2018-02-16 04:37:04',90,455,0,0,0,0,162.00,4.00,6.50,5.50,5.00,3.003,NULL),('osu!',1295987,609700,2,'52caf59ef0732e12856d2eceb2af251a','KANA-BOON','Baton Road','-VOLI\'S INSANE-','Gero','KANA-BOON - Baton Road (Gero) [-VOLI\'S INSANE-].osu','2018-02-16 04:37:04',90,530,0,0,0,0,162.00,4.00,9.00,8.20,7.00,5.026,NULL),('osu!',1296610,507278,5,'acc45f5088f87cc878c0c4d7cbcf4d3b','Rings of Saturn','Senseless Massacre (Cut Ver.)','Irate\'s Extraterrestrial','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Irate\'s Extraterrestrial].osu','2023-03-29 22:52:25',74,917,0,0,0,0,270.00,3.00,10.00,10.00,4.00,9.467,NULL),('osu!',1297325,507278,5,'844e3fe9916d29796e82d85e32af7dcf','Rings of Saturn','Senseless Massacre (Cut Ver.)','Flare\'s Massacre','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [Flare\'s Massacre].osu','2023-03-29 22:52:25',71,738,0,0,0,0,270.00,4.00,9.80,8.00,6.00,6.534,NULL),('osu!',1299360,609700,2,'4ff827a33d5cec19c5d3b418a096a3a4','KANA-BOON','Baton Road','-COSMO\'S NORMAL-','Gero','KANA-BOON - Baton Road (Gero) [-COSMO\'S NORMAL-].osu','2018-02-16 04:37:04',87,292,0,0,0,0,162.00,3.50,5.00,4.00,4.00,2.306,NULL),('osu!',1300780,478917,0,'cc982bff446112d6d9798ce318b3e0f3','Various Artists','Corner Jump Training','DJ Okawari - Flower Dance','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [DJ Okawari - Flower Dance].osu','2017-09-03 18:48:20',199,911,0,0,0,0,200.00,4.00,10.00,8.50,0.00,8.413,NULL),('osu!',1301230,507278,5,'53a35594f1cfd7c3a48dfe051480394e','Rings of Saturn','Senseless Massacre (Cut Ver.)','MrKOSIEJ\'s Sliderfest','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [MrKOSIEJ\'s Sliderfest].osu','2023-03-29 22:52:25',71,802,0,0,0,0,270.00,3.00,9.60,9.00,6.00,4.735,NULL),('osu!',1302608,507278,5,'bfaf6c3a4cd1e9f7b0c6397d2a419c31','Rings of Saturn','Senseless Massacre (Cut Ver.)','CN\'s Xenomorph','HML','Rings of Saturn - Senseless Massacre (Cut Ver.) (HML) [CN\'s Xenomorph].osu','2023-03-29 22:52:25',71,875,0,1,1,0,270.00,4.00,9.90,6.00,6.00,5.412,NULL),('osu!',1311613,609700,2,'a018bc2fbdc99cf7f31da3e07d3a6eef','KANA-BOON','Baton Road','-MONSTRATA\'S EXTRA-','Gero','KANA-BOON - Baton Road (Gero) [-MONSTRATA\'S EXTRA-].osu','2018-02-16 04:37:04',90,547,0,0,0,0,162.00,4.00,9.00,9.00,6.00,5.480,NULL),('osu!',1371182,478917,0,'e146fb31e02e8494b3571e1ab7c6307d','Various Artists','Corner Jump Training','Hatsune Miku - Kouon Chu Oniki Test AR10','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Hatsune Miku - Kouon Chu Oniki Test AR10].osu','2017-09-03 18:48:20',87,498,0,0,0,0,180.00,4.00,10.00,8.00,4.00,7.214,NULL),('osu!',1371183,478917,0,'62fe86777baf78807b95b499b04b598f','Various Artists','Corner Jump Training','Hatsune Miku - Kouon Chu Oniki Test AR9.5','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Hatsune Miku - Kouon Chu Oniki Test AR9.5].osu','2017-09-03 18:48:20',87,498,0,0,0,0,180.00,4.00,9.50,8.00,4.00,7.213,NULL),('osu!',1371184,478917,0,'5891b677659dd0e18c5caab5b86ccd70','Various Artists','Corner Jump Training','Hatsune Miku - Kouon Chu Oniki Test','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Hatsune Miku - Kouon Chu Oniki Test].osu','2017-09-03 18:48:20',87,498,0,0,0,0,180.00,4.00,9.00,8.00,4.00,7.213,NULL),('osu!',1371788,478917,0,'c5a25def3181f83c7558ef381c6e05bc','Various Artists','Corner Jump Training','ClariS - Anemone -TV MIX- AR10','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [ClariS - Anemone -TV MIX- AR10].osu','2017-09-03 18:48:20',84,383,0,0,0,0,140.00,4.00,10.00,8.00,4.00,6.107,NULL),('osu!',1371789,478917,0,'9ad332c0d8008f7138e95aeadc3b6af0','Various Artists','Corner Jump Training','ClariS - Anemone -TV MIX- AR9.5','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [ClariS - Anemone -TV MIX- AR9.5].osu','2017-09-03 18:48:20',84,383,0,0,0,0,140.00,4.00,9.50,8.00,4.00,6.107,NULL),('osu!',1371790,478917,0,'b171ecf3538339243d52a60c8dca051e','Various Artists','Corner Jump Training','ClariS - Anemone -TV MIX-','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [ClariS - Anemone -TV MIX-].osu','2017-09-03 18:48:20',84,383,0,0,0,0,140.00,4.00,9.00,8.00,4.00,6.107,NULL),('osu!',1371793,478917,0,'c8f544de5e12818f4b6098f2c27e243b','Various Artists','Corner Jump Training','Imai Asami - Asayake no Starmine (TV Size) AR10','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Imai Asami - Asayake no Starmine (TV Size) AR10].osu','2017-09-03 18:48:20',88,394,0,0,0,0,130.00,4.00,10.00,7.50,4.00,5.657,NULL),('osu!',1371794,478917,0,'771fb51bddcfc3e975575ea7fad81ec4','Various Artists','Corner Jump Training','Imai Asami - Asayake no Starmine (TV Size) AR9.5','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Imai Asami - Asayake no Starmine (TV Size) AR9.5].osu','2017-09-03 18:48:20',88,394,0,0,0,0,130.00,4.00,9.50,7.50,4.00,5.657,NULL),('osu!',1371795,478917,0,'8324d1c87fe4ada7fd39b1b8910fe948','Various Artists','Corner Jump Training','Imai Asami - Asayake no Starmine (TV Size)','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Imai Asami - Asayake no Starmine (TV Size)].osu','2017-09-03 18:48:20',88,394,0,0,0,0,130.00,4.00,9.00,7.50,4.00,5.657,NULL),('osu!',1371796,478917,0,'b130ed74b74345663a096ea047404c15','Various Artists','Corner Jump Training','Wolfgun - Big Bonus Land AR9.5','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Wolfgun - Big Bonus Land AR9.5].osu','2017-09-03 18:48:20',92,518,0,0,0,0,179.00,4.00,9.50,8.00,4.00,7.152,NULL),('osu!',1371797,478917,0,'3869ddb6b6b7222df0853bc7515628fe','Various Artists','Corner Jump Training','Wolfgun - Big Bonus Land','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Wolfgun - Big Bonus Land].osu','2017-09-03 18:48:20',92,518,0,0,0,0,179.00,4.00,9.00,8.00,4.00,7.152,NULL),('osu!',1372542,609700,2,'152d64cec0b0dafe5a1536b2d6af3c29','KANA-BOON','Baton Road','-VENIX\'S EXTRA-','Gero','KANA-BOON - Baton Road (Gero) [-VENIX\'S EXTRA-].osu','2018-02-16 04:37:04',90,544,0,0,0,0,162.00,4.20,9.10,8.40,6.00,5.561,NULL),('osu!',1378154,609700,2,'869fe9fbaad43c0e22997b8e2cd56622','KANA-BOON','Baton Road','-A R M I N\'S EXTRA-','Gero','KANA-BOON - Baton Road (Gero) [-A R M I N\'S EXTRA-].osu','2018-02-16 04:37:04',90,527,0,0,0,0,162.00,4.50,9.20,8.50,6.00,5.469,NULL),('osu!',1378155,609700,2,'945701017263da58f67d2738649fd0b0','KANA-BOON','Baton Road','-M A R V O L L O\'S EXTRA-','Gero','KANA-BOON - Baton Road (Gero) [-M A R V O L L O\'S EXTRA-].osu','2018-02-16 04:37:04',90,596,0,0,0,0,162.00,4.50,9.00,8.00,6.00,5.582,NULL),('osu!',1378156,609700,2,'0d7081d38a1b3810e692eb1bde5ad526','KANA-BOON','Baton Road','-MK\'S HARD-','Gero','KANA-BOON - Baton Road (Gero) [-MK\'S HARD-].osu','2018-02-16 04:37:04',90,460,0,0,0,0,162.00,4.00,8.00,6.50,6.00,3.565,NULL),('osu!',1378285,609700,2,'352b651c5acb131613fc3a442f5cb30e','KANA-BOON','Baton Road','-IRRE\'S NEXT GENERATION-','Gero','KANA-BOON - Baton Road (Gero) [-IRRE\'S NEXT GENERATION-].osu','2018-02-16 04:37:04',90,466,0,0,0,0,162.00,7.00,9.00,8.00,6.00,5.969,NULL),('osu!',1381988,651690,0,'0d4ac4b23d7f50fbedfc3792734b56bc','3mplify','DADADADADADADADA','DADADADADADADADADADA','qaplrenization','3mplify - DADADADADADADADA (qaplrenization) [DADADADADADADADADADA].osu','2017-09-10 07:05:43',18,72,0,0,0,0,155.67,4.00,10.00,10.00,7.00,6.210,NULL),('osu!',1385005,478917,0,'f3a38d8f8945c7c7353b77a5d2dd5be4','Various Artists','Corner Jump Training','Tokiwa Yuu - Shounen Ripples AR10','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Tokiwa Yuu - Shounen Ripples AR10].osu','2017-09-03 18:48:20',108,735,0,0,0,0,210.00,4.00,10.00,9.00,0.00,9.060,NULL),('osu!',1399064,659934,2,'69df8ef6fdbf212a4cdbaf43992acb4f','Veritas Unae','~DISK 1~','Terton\'s Simple','Gordon123','Veritas Unae - ~DISK 1~ (Gordon123) [Terton\'s Simple].osu','2017-10-01 19:59:39',26,43,0,0,0,0,80.00,3.00,3.00,2.00,2.00,1.099,NULL),('osu!',1402613,659934,2,'28d8c7c82c2445c68f36c93a3a236b2f','Veritas Unae','~DISK 1~','Spadon\'s Advanced','Gordon123','Veritas Unae - ~DISK 1~ (Gordon123) [Spadon\'s Advanced].osu','2017-10-01 19:59:39',25,78,0,0,0,0,80.00,4.00,6.00,6.00,5.00,2.092,NULL),('osu!',1402715,662679,2,'1c5934a4c180a9b3d473e44d0f5d0cab','Koji Kondo','MAP4(Native Star)','Dax\'s Cha Cha Cha','MoodyRPG','Koji Kondo - MAP4(Native Star) (MoodyRPG) [Dax\'s Cha Cha Cha].osu','2017-09-16 20:34:27',27,95,0,0,0,0,126.91,4.00,8.00,8.00,7.00,2.801,NULL),('osu!',1402716,662679,2,'7ab6d4c8206bf02be112701028a930e8','Koji Kondo','MAP4(Native Star)','Easy','MoodyRPG','Koji Kondo - MAP4(Native Star) (MoodyRPG) [Easy].osu','2017-09-16 20:34:27',27,84,0,0,0,0,126.91,3.00,3.00,3.00,3.00,1.232,NULL),('osu!',1402717,662679,2,'f4607006b8004b52548b08dda3a1b84e','Koji Kondo','MAP4(Native Star)','Hard','MoodyRPG','Koji Kondo - MAP4(Native Star) (MoodyRPG) [Hard].osu','2017-09-16 20:34:27',27,95,0,0,0,0,126.91,4.00,7.00,7.00,6.00,2.530,NULL),('osu!',1402718,662679,2,'41e9be95a4569c106e564296f1fbc0ca','Koji Kondo','MAP4(Native Star)','Normal','MoodyRPG','Koji Kondo - MAP4(Native Star) (MoodyRPG) [Normal].osu','2017-09-16 20:34:27',27,83,0,0,0,0,126.91,4.00,5.00,5.00,5.00,1.847,NULL),('osu!',1403923,659934,2,'fcaa15aef6f44b8098c8dd2ef152e4fc','Veritas Unae','~DISK 1~','Space\'s Crescendo','Gordon123','Veritas Unae - ~DISK 1~ (Gordon123) [Space\'s Crescendo].osu','2017-10-01 19:59:39',25,75,0,0,0,0,80.00,5.00,7.50,8.00,6.00,2.286,NULL),('osu!',1406018,478917,0,'2c50407eb4e497e5d803d22448d9e9a0','Various Artists','Corner Jump Training','Fl4ndre Scarlet\'s toby fox - Determination','QuadroKiller','Various Artists - Corner Jump Training (QuadroKiller) [Fl4ndre Scarlet\'s toby fox - Determination].osu','2017-09-03 18:48:20',49,155,0,0,0,0,115.00,2.70,7.70,7.60,0.00,4.066,NULL),('osu!',1421797,659934,2,'70b5211a32e7e7d05c1c0351620bc9d8','Veritas Unae','~DISK 1~','Average','Gordon123','Veritas Unae - ~DISK 1~ (Gordon123) [Average].osu','2017-10-01 19:59:39',25,54,0,0,0,0,80.00,3.50,4.00,4.00,3.00,1.480,NULL),('osu!',1425080,673361,2,'64a39155ce3d4127e497808457270eb3','Room97','Mata ne Bye Bye feat.Rika','Insane','timemon','Room97 - Mata ne Bye Bye feat.Rika (timemon) [Insane].osu','2017-10-21 14:15:14',271,1043,0,0,0,0,134.00,4.00,8.30,8.00,5.80,3.913,NULL),('osu!',1425199,673361,2,'6e68e3c49dd67b998c2f245f28323b7d','Room97','Mata ne Bye Bye feat.Rika','Hard','timemon','Room97 - Mata ne Bye Bye feat.Rika (timemon) [Hard].osu','2017-10-21 14:15:14',271,907,0,0,0,0,134.00,3.50,7.00,6.00,5.00,3.084,NULL),('osu!',1425385,673361,2,'c12aafd4ce604e790eed3f5d4e6333bd','Room97','Mata ne Bye Bye feat.Rika','Normal','timemon','Room97 - Mata ne Bye Bye feat.Rika (timemon) [Normal].osu','2017-10-21 14:15:14',271,676,0,0,0,0,134.00,3.00,5.00,4.00,4.00,1.795,NULL),('osu!',1455779,687879,2,'2c41c0d2d88e615658ebb05b4f041ed9','HoneyWorks feat. sana','Daisuki na Kototte Kuchi ni Dashite Iitai jan?','A r M i N\'s Extra','Tomadoi','HoneyWorks feat. sana - Daisuki na Kototte Kuchi ni Dashite Iitai jan (Tomadoi) [A r M i N\'s Extra].osu','2019-02-21 22:11:27',30,208,0,0,0,0,205.00,4.00,9.30,8.30,6.50,5.160,NULL),('osu!',1455781,687879,2,'4570e9f66b5d753de39e1c58f166230d','HoneyWorks feat. sana','Daisuki na Kototte Kuchi ni Dashite Iitai jan?','Insane','Tomadoi','HoneyWorks feat. sana - Daisuki na Kototte Kuchi ni Dashite Iitai jan (Tomadoi) [Insane].osu','2019-02-21 22:11:27',30,183,0,0,0,0,205.00,3.80,9.00,7.50,6.00,4.700,NULL),('osu!',1455782,687879,2,'3d68fac438d313a4285dad83d6f40936','HoneyWorks feat. sana','Daisuki na Kototte Kuchi ni Dashite Iitai jan?','Normal','Tomadoi','HoneyWorks feat. sana - Daisuki na Kototte Kuchi ni Dashite Iitai jan (Tomadoi) [Normal].osu','2019-02-21 22:11:27',30,132,0,0,0,0,205.00,3.00,5.00,4.00,3.00,2.240,NULL),('osu!',1455981,687879,2,'bd004f5fd3a99de1de81be662062b71f','HoneyWorks feat. sana','Daisuki na Kototte Kuchi ni Dashite Iitai jan?','byd\'s Easy','Tomadoi','HoneyWorks feat. sana - Daisuki na Kototte Kuchi ni Dashite Iitai jan (Tomadoi) [byd\'s Easy].osu','2019-02-21 22:11:27',30,114,0,0,0,0,205.00,2.50,3.50,2.00,2.50,1.707,NULL),('osu!',1456572,687879,2,'708ae8efdd8de022c377d7239d424941','HoneyWorks feat. sana','Daisuki na Kototte Kuchi ni Dashite Iitai jan?','Akitoshi\'s Hard','Tomadoi','HoneyWorks feat. sana - Daisuki na Kototte Kuchi ni Dashite Iitai jan (Tomadoi) [Akitoshi\'s Hard].osu','2019-02-21 22:11:27',30,177,0,0,0,0,205.00,3.50,8.00,6.00,5.00,3.481,NULL),('osu!',1462799,691220,2,'06d372e56f719376a70faf8460324914','DJ TOTTO','Crystalia','Pachiru\'s Normal','Hysteria','DJ TOTTO - Crystalia (Hysteria) [Pachiru\'s Normal].osu','2018-06-20 20:29:48',115,446,0,0,0,0,270.00,3.00,5.00,4.00,3.00,2.180,NULL),('osu!',1462801,691220,2,'23d003b8c9ba03d7f66bd61c67f20fd1','DJ TOTTO','Crystalia','Lazy\'s Extra','Hysteria','DJ TOTTO - Crystalia (Hysteria) [Lazy\'s Extra].osu','2018-06-20 20:29:48',115,806,0,0,0,0,270.00,4.70,9.30,8.70,6.00,5.900,NULL),('osu!',1466706,609700,2,'4b328a710413006023d86982e80ab1a1','KANA-BOON','Baton Road','-PKHG\'S HARD-','Gero','KANA-BOON - Baton Road (Gero) [-PKHG\'S HARD-].osu','2018-02-16 04:37:04',90,470,0,0,0,0,162.00,3.50,7.50,6.00,6.00,3.269,NULL),('osu!',1469284,694490,2,'67e09fa248a7b93a459a67ad65866b44','R3 Music Box','Happy Birthday to You','Happy Birthday!','Joe Castle','R3 Music Box - Happy Birthday to You (Joe Castle) [Happy Birthday!].osu','2017-11-22 20:42:49',34,61,0,0,0,0,88.00,4.00,3.00,3.00,3.00,1.305,NULL),('osu!',1469338,691220,2,'7de52d5508728f7caf45d7669b69c761','DJ TOTTO','Crystalia','den0saur\'s Insane','Hysteria','DJ TOTTO - Crystalia (Hysteria) [den0saur\'s Insane].osu','2018-06-20 20:29:48',114,615,0,0,0,0,270.00,4.00,9.00,8.00,6.00,5.060,NULL),('osu!',1469339,691220,2,'d32cac413f501dd11cc9b3bb1b04efe9','DJ TOTTO','Crystalia','tokiko\'s Hard','Hysteria','DJ TOTTO - Crystalia (Hysteria) [tokiko\'s Hard].osu','2018-06-20 20:29:48',115,591,0,0,0,0,270.00,4.00,8.00,6.00,5.00,4.062,NULL),('osu!',1469353,694490,2,'b9fb795b9511a1ceb871516c51effb7f','R3 Music Box','Happy Birthday to You','Gordon\'s Easy','Joe Castle','R3 Music Box - Happy Birthday to You (Joe Castle) [Gordon\'s Easy].osu','2017-11-22 20:42:49',34,46,0,0,0,0,88.00,2.50,2.00,2.00,2.00,0.877,NULL),('osu!',1475722,691220,2,'b7e7cb749bb6eb5b9f9e7380670f6d0b','DJ TOTTO','Crystalia','Meal\'s Ultra','Hysteria','DJ TOTTO - Crystalia (Hysteria) [Meal\'s Ultra].osu','2018-06-20 20:29:48',117,882,0,0,0,0,270.00,3.30,9.80,9.30,6.00,7.295,NULL),('osu!',1500846,691220,2,'b21adf105bd4a72ebf969adb393c4ec3','DJ TOTTO','Crystalia','Owens\' Another','Hysteria','DJ TOTTO - Crystalia (Hysteria) [Owens\' Another].osu','2018-06-20 20:29:48',115,808,0,0,0,0,270.00,3.30,9.20,9.00,5.40,5.560,NULL),('osu!',1514842,609700,2,'01177fc367541545bec257926c88a4c9','KANA-BOON','Baton Road','-EXTRA-','Gero','KANA-BOON - Baton Road (Gero) [-EXTRA-].osu','2018-02-16 04:37:04',90,591,0,0,0,0,162.00,4.50,9.00,8.00,7.00,5.562,NULL),('osu!',1515407,189095,2,'f986f41df77ebece4eadf5bb86e60c0b','Miyuki Hashimoto','Glossy:MMM','Saki','Neta','Miyuki Hashimoto - GlossyMMM (Neta) [Saki].osu','2018-03-22 05:22:41',88,487,0,0,0,0,175.00,4.00,9.00,8.00,7.00,5.192,NULL),('osu!',1517987,691220,2,'10853b9d8d07da2ea9ea8262032a95a9','DJ TOTTO','Crystalia','CXu\'s Advanced','Hysteria','DJ TOTTO - Crystalia (Hysteria) [CXu\'s Advanced].osu','2018-06-20 20:29:48',114,502,0,0,0,0,270.00,3.50,6.00,5.00,4.00,2.710,NULL),('osu!',1519160,691220,2,'b4668c1535846b0b94c9831b8b9f09c0','DJ TOTTO','Crystalia','Luminosity','Hysteria','DJ TOTTO - Crystalia (Hysteria) [Luminosity].osu','2018-06-20 20:29:48',117,886,0,0,0,0,270.00,4.00,10.00,10.00,4.50,7.563,NULL),('osu!',1520281,720051,2,'e9f6fb8e8e4c0c48aac719e7b144acbc','tomppabeats','Goodmorningme','insane','2zz','tomppabeats - Goodmorningme (2zz) [insane].osu','2018-05-03 19:22:20',39,118,0,0,0,0,74.00,4.20,7.30,5.20,6.10,2.895,NULL),('osu!',1522115,720051,2,'4be99a5fa24340bc74de60447c775157','tomppabeats','Goodmorningme','normal','2zz','tomppabeats - Goodmorningme (2zz) [normal].osu','2018-05-03 19:22:20',38,88,0,0,0,0,74.00,3.50,4.50,4.20,3.10,1.566,NULL),('osu!',1522576,720051,2,'fa123c1a3629d96207b542d2bfa5c298','tomppabeats','Goodmorningme','easy','2zz','tomppabeats - Goodmorningme (2zz) [easy].osu','2018-05-03 19:22:20',38,66,0,0,0,0,74.00,3.10,3.70,2.90,2.60,1.325,NULL),('osu!',1522926,720051,2,'ff002dfc5295ef460d8b6feb08e6b91c','tomppabeats','Goodmorningme','hard','2zz','tomppabeats - Goodmorningme (2zz) [hard].osu','2018-05-03 19:22:20',39,111,0,0,0,0,74.00,3.10,6.10,4.70,3.90,2.453,NULL),('osu!',1523016,720051,2,'3d86d4d621fc48d143728ccc4d0fbc39','tomppabeats','Goodmorningme','gordon\'s beginner','2zz','tomppabeats - Goodmorningme (2zz) [gordon\'s beginner].osu','2018-05-03 19:22:20',38,44,0,0,0,0,74.00,2.50,2.00,1.80,2.00,0.903,NULL),('osu!',1528225,609700,2,'1e93b8c7b5bb0e270748ff692ef2534a','KANA-BOON','Baton Road','-LANTURN\'S BEGINNER-','Gero','KANA-BOON - Baton Road (Gero) [-LANTURN\'S BEGINNER-].osu','2018-02-16 04:37:04',87,179,0,0,0,0,162.00,2.50,2.00,1.00,1.00,1.189,NULL),('osu!',1545751,732639,2,'2a2a5e57a366fd784e0f133d11078a3e','Jay Chou (with Gary Yang)','Waiting for you','Hard','bossandy','Jay Chou (with Gary Yang) - Waiting for you (bossandy) [Hard].osu','2018-03-23 08:04:48',247,628,0,0,0,0,74.00,3.80,7.50,7.00,6.00,2.811,NULL),('osu!',1549739,691220,2,'12ea43d65787c2949bd2e3bcb5351db6','DJ TOTTO','Crystalia','Xenok Sakaki\'s Extreme','Hysteria','DJ TOTTO - Crystalia (Hysteria) [Xenok Sakaki\'s Extreme].osu','2018-06-20 20:29:48',115,854,0,0,0,0,270.00,4.20,9.60,8.40,6.00,6.799,NULL),('osu!',1565966,732639,2,'0721f861b1195522796b5409b0007da8','Jay Chou (with Gary Yang)','Waiting for you','Normal','bossandy','Jay Chou (with Gary Yang) - Waiting for you (bossandy) [Normal].osu','2018-03-23 08:04:48',247,530,0,0,0,0,74.00,3.00,5.00,4.00,4.00,1.579,NULL),('osu!',1596064,754300,2,'444dd77f0c3bbc42cc066f0ca052c819','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya)','Girigiri Saikyou Ai Mai Mii!','Insane','ACOMG','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya) - Girigiri Saikyou Ai Mai Mii! (ACOMG) [Insane].osu','2018-05-04 11:19:56',29,175,0,0,0,0,185.00,3.80,9.00,7.00,7.00,4.749,NULL),('osu!',1599095,754300,2,'c06832c582b1d91c0979c4098c943037','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya)','Girigiri Saikyou Ai Mai Mii!','ArThasCD\'s Normal','ACOMG','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya) - Girigiri Saikyou Ai Mai Mii! (ACOMG) [ArThasCD\'s Normal].osu','2018-05-04 11:19:56',29,93,0,0,0,0,185.00,3.00,4.50,4.00,3.00,2.002,NULL),('osu!',1600390,754300,2,'60202ec216f8ff7d0121a6bbbfdd0ede','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya)','Girigiri Saikyou Ai Mai Mii!','bigfrog\'s Advanced','ACOMG','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya) - Girigiri Saikyou Ai Mai Mii! (ACOMG) [bigfrog\'s Advanced].osu','2018-05-04 11:19:56',29,107,0,0,0,0,185.00,3.20,6.00,4.00,4.00,2.517,NULL),('osu!',1603082,754300,2,'1769b198e2f59830afdee727129c89a3','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya)','Girigiri Saikyou Ai Mai Mii!','Hyper','ACOMG','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya) - Girigiri Saikyou Ai Mai Mii! (ACOMG) [Hyper].osu','2018-05-04 11:19:56',29,163,0,0,0,0,185.00,3.60,8.00,6.00,6.00,3.667,NULL),('osu!',1610450,754300,2,'04522964bdcb85dc2dd0c43dcabfa84a','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya)','Girigiri Saikyou Ai Mai Mii!','ArThasCD\'s Easy','ACOMG','Ai (C.V.Ootsubo Yuka) Mai (C.V.Uchida Aya) Mii (C.V.Uchida Maaya) - Girigiri Saikyou Ai Mai Mii! (ACOMG) [ArThasCD\'s Easy].osu','2018-05-04 11:19:56',29,77,0,0,0,0,185.00,2.50,3.50,3.00,2.00,1.512,NULL),('osu!',1635590,778770,0,'910973de7a8937503efe91d08729e338','89ers','Go Go Go (Nightcore Mix)','Jump paradise','Morilli','89ers - Go Go Go (Nightcore Mix) (Morilli) [Jump paradise].osu','2018-06-06 11:27:43',40,200,0,0,0,0,187.00,4.00,9.80,9.50,4.00,6.009,NULL),('osu!',1653032,787603,0,'8e6740a40ce28e6be87cc2e1c17a74ba','89ers','Go Go Go','187 amk','Zonsa','89ers - Go Go Go (Zonsa) [187 amk].osu','2018-05-28 15:00:31',157,929,0,0,0,0,187.04,4.00,9.30,7.00,7.00,6.007,NULL),('osu!',1653065,787603,0,'2a80777ea4ff5c0e098a94b50812133f','89ers','Go Go Go','Fool 187','Zonsa','89ers - Go Go Go (Zonsa) [Fool 187].osu','2018-05-28 15:00:31',34,162,0,0,0,0,187.04,4.00,9.00,7.00,7.00,6.324,NULL),('osu!',1736663,828908,5,'1b1b99a01a1e512111f8e1527881d538','SELEN','DADADADADADADADADA','Jump Practice!','ResidentSIeeper','SELEN - DADADADADADADADADA (ResidentSIeeper) [Jump Practice!].osu','2018-08-09 02:01:54',22,121,1,2,0,0,312.00,4.00,9.80,5.00,3.00,6.925,'Turu'),('osu!',1783725,853469,2,'75e16da1d447a074e89d5e3b6c52666b','A Zhong Bu Dai Xi','Gu Niang De Jiu Wo','Chicken Hair','Hey lululu','A Zhong Bu Dai Xi - Gu Niang De Jiu Wo (Hey lululu) [Chicken Hair].osu','2018-11-12 13:48:26',36,148,0,1,0,0,137.50,3.50,8.50,8.00,6.00,4.602,NULL),('osu!',1783726,853469,2,'6d04e751104aaa704fbde16f44767b7b','A Zhong Bu Dai Xi','Gu Niang De Jiu Wo','deyo\'s Insane','Hey lululu','A Zhong Bu Dai Xi - Gu Niang De Jiu Wo (Hey lululu) [deyo\'s Insane].osu','2018-11-12 13:48:26',37,140,0,0,0,0,137.50,4.00,8.00,8.00,6.00,4.177,NULL),('osu!',1783727,853469,2,'f44c4391701b85276f4c92bdbf43d543','A Zhong Bu Dai Xi','Gu Niang De Jiu Wo','Normal','Hey lululu','A Zhong Bu Dai Xi - Gu Niang De Jiu Wo (Hey lululu) [Normal].osu','2018-11-12 13:48:26',37,107,0,0,0,0,137.50,3.50,5.00,4.00,4.00,1.802,NULL),('osu!',1783728,853469,2,'7bd8c8f17431118521cf5d4e3ed14cd3','A Zhong Bu Dai Xi','Gu Niang De Jiu Wo','Tomoka\'s Muzukashii','Hey lululu','A Zhong Bu Dai Xi - Gu Niang De Jiu Wo (Hey lululu) [Tomoka\'s Muzukashii].osu','2018-11-12 13:48:26',37,99,0,0,0,1,137.50,4.00,5.00,5.00,7.00,2.234,NULL),('osu!',1783729,853469,2,'1acb9988e7fc2eb4b93791e476f45583','A Zhong Bu Dai Xi','Gu Niang De Jiu Wo','Tomoka\'s Oni','Hey lululu','A Zhong Bu Dai Xi - Gu Niang De Jiu Wo (Hey lululu) [Tomoka\'s Oni].osu','2018-11-12 13:48:26',37,128,0,0,0,1,137.50,2.00,5.00,6.00,6.00,2.768,NULL),('osu!',1785887,853469,2,'0a70107657087ab7b2a17ad105ab0e6d','A Zhong Bu Dai Xi','Gu Niang De Jiu Wo','leo16834\'s Hard','Hey lululu','A Zhong Bu Dai Xi - Gu Niang De Jiu Wo (Hey lululu) [leo16834\'s Hard].osu','2018-11-12 13:48:26',37,132,0,0,0,0,137.50,3.00,7.00,6.00,6.00,3.007,NULL),('osu!',1785888,853469,2,'965c60bc982ecdf850729d5d6e42dc60','A Zhong Bu Dai Xi','Gu Niang De Jiu Wo','Light Insane','Hey lululu','A Zhong Bu Dai Xi - Gu Niang De Jiu Wo (Hey lululu) [Light Insane].osu','2018-11-12 13:48:26',36,151,0,0,0,0,137.50,3.80,8.00,7.50,6.00,3.378,NULL),('osu!',1786610,853469,2,'d5f4ff70e6ff8817240cb68df1c7b372','A Zhong Bu Dai Xi','Gu Niang De Jiu Wo','Expert','Hey lululu','A Zhong Bu Dai Xi - Gu Niang De Jiu Wo (Hey lululu) [Expert].osu','2018-11-12 13:48:26',36,151,0,0,0,0,137.50,4.00,8.30,8.00,6.00,4.376,NULL),('osu!',1786703,853469,2,'7a2486c350491990e2786f33972a8356','A Zhong Bu Dai Xi','Gu Niang De Jiu Wo','TNTlealu\'s Insane','Hey lululu','A Zhong Bu Dai Xi - Gu Niang De Jiu Wo (Hey lululu) [TNTlealu\'s Insane].osu','2018-11-12 13:48:26',36,137,0,0,0,0,137.50,3.80,8.00,8.00,6.00,3.894,NULL),('osu!',1811190,866275,2,'959c9bb5f6112ceb230e4c257dd09d4a','R3 Music Box','Manten','Despair','Rolniczy','R3 Music Box - Manten (Rolniczy) [Despair].osu','2018-11-24 11:24:09',39,152,0,0,0,0,146.00,4.30,8.00,7.00,5.50,2.998,NULL),('osu!',1811192,866275,2,'93c35334dea153c7787f10396076507f','R3 Music Box','Manten','Normal','Rolniczy','R3 Music Box - Manten (Rolniczy) [Normal].osu','2018-11-24 11:24:09',39,106,0,0,0,0,146.00,3.70,5.50,5.00,4.50,2.144,NULL),('osu!',1811193,866275,2,'70214a9704316f876c69b0ac792845bb','R3 Music Box','Manten','Hard','Rolniczy','R3 Music Box - Manten (Rolniczy) [Hard].osu','2018-11-24 11:24:09',39,123,0,0,0,0,146.00,4.00,7.00,6.40,5.00,2.538,NULL),('osu!',1811194,866275,2,'af6d4feb263bf37294e0eecdf7d468aa','R3 Music Box','Manten','Easy','Rolniczy','R3 Music Box - Manten (Rolniczy) [Easy].osu','2018-11-24 11:24:09',39,106,0,0,0,0,146.00,3.40,4.40,4.40,4.00,1.647,NULL),('osu!',1826966,874091,2,'8948607f0c66e5044b7f68ba7a689a1d','Toby Fox','Beginning','An Enjoyable Ride To School','MashaSG','Toby Fox - Beginning (MashaSG) [An Enjoyable Ride To School].osu','2018-11-11 15:02:56',53,216,0,0,0,0,138.00,4.00,9.00,8.00,6.00,4.051,NULL),('osu!',1827061,874091,2,'7030e8c1866217f2b914e79adad23952','Toby Fox','Beginning','Normal','MashaSG','Toby Fox - Beginning (MashaSG) [Normal].osu','2018-11-11 15:02:56',53,153,0,0,0,0,138.00,3.50,5.00,4.00,3.00,2.071,NULL),('osu!',1827525,874091,2,'df6fd36d4d857fbc47b6934dfef8395c','Toby Fox','Beginning','Ayyri\'s Hard','MashaSG','Toby Fox - Beginning (MashaSG) [Ayyri\'s Hard].osu','2018-11-11 15:02:56',53,191,0,0,0,0,138.00,3.70,7.50,6.00,5.00,2.836,NULL),('osu!',1831062,874091,2,'a611c390642fb0d457860ed7fcea20c5','Toby Fox','Beginning','Easy','MashaSG','Toby Fox - Beginning (MashaSG) [Easy].osu','2018-11-11 15:02:56',53,117,0,0,0,0,138.00,3.00,2.50,2.00,2.00,1.424,NULL),('osu!',1833738,874091,2,'ccb6e5e757ccaf978534925ca5299cd6','Toby Fox','Beginning','Hyper','MashaSG','Toby Fox - Beginning (MashaSG) [Hyper].osu','2018-11-11 15:02:56',53,197,0,0,0,0,138.00,4.00,8.00,7.00,5.50,3.143,NULL),('osu!',1838599,856260,0,'cb95f379c2b9c4f37a14e94b5192b30f','Ricardo Milos','GOLOSOVANIE','Beginner','atix174','Ricardo Milos - GOLOSOVANIE (atix174) [Beginner].osu','2018-11-14 12:39:55',17,33,0,0,0,0,129.00,2.00,0.50,1.00,1.00,0.571,NULL),('osu!',1838600,856260,0,'7288b37d1c7eb78276e39b698df5604e','Ricardo Milos','GOLOSOVANIE','Karanos\' Hi-Speed Extreme','atix174','Ricardo Milos - GOLOSOVANIE (atix174) [Karanos\' Hi-Speed Extreme].osu','2018-11-14 12:39:55',18,138,0,0,0,0,129.00,3.20,9.60,9.40,6.30,6.865,NULL),('osu!',1838601,856260,0,'cf0375010f7927e242633d799f1b1c45','Ricardo Milos','GOLOSOVANIE','-LS\' Hard','atix174','Ricardo Milos - GOLOSOVANIE (atix174) [-LS\' Hard].osu','2018-11-14 12:39:55',18,73,0,0,0,0,129.00,3.50,7.50,6.00,4.00,3.008,NULL),('osu!',1838602,856260,0,'9107175a3d9a9714828fa9de2593ae0c','Ricardo Milos','GOLOSOVANIE','Normal','atix174','Ricardo Milos - GOLOSOVANIE (atix174) [Normal].osu','2018-11-14 12:39:55',18,64,0,0,0,0,129.00,2.50,3.00,3.00,3.00,2.353,NULL),('osu!',1838603,856260,0,'fe5a5ca3e5599918cd65a870190511c0','Ricardo Milos','GOLOSOVANIE','smozit\'s insane','atix174','Ricardo Milos - GOLOSOVANIE (atix174) [smozit\'s insane].osu','2018-11-14 12:39:55',18,99,0,0,0,0,129.00,4.50,9.00,7.50,6.00,3.897,NULL),('osu!',1838604,856260,0,'e3582498501df2b7d73cc6f26671186b','Ricardo Milos','GOLOSOVANIE','Snack\'s Extra','atix174','Ricardo Milos - GOLOSOVANIE (atix174) [Snack\'s Extra].osu','2018-11-14 12:39:55',18,132,0,0,0,0,129.00,4.00,9.00,6.00,5.00,7.081,NULL),('osu!',1838609,856260,0,'f8ef8bdda56d269aa28ee93003f81d8f','Ricardo Milos','GOLOSOVANIE','Easy','atix174','Ricardo Milos - GOLOSOVANIE (atix174) [Easy].osu','2018-11-14 12:39:55',18,33,0,0,0,0,129.00,2.00,2.00,2.00,2.00,1.433,NULL),('osu!',1897392,909233,2,'0f977d82a883967b47c18c9665ab19ea','Rib','Sentiment Reverse','Hard','arronchu1207','Rib - Sentiment Reverse (arronchu1207) [Hard].osu','2019-04-28 12:58:30',223,1164,0,0,0,0,152.00,4.00,7.50,6.00,5.00,3.675,NULL),('osu!',1897393,909233,2,'59bbd1a258416a0faeaf84d858ed4fe4','Rib','Sentiment Reverse','Insane','arronchu1207','Rib - Sentiment Reverse (arronchu1207) [Insane].osu','2019-04-28 12:58:30',223,1247,0,0,0,0,152.00,4.00,8.30,8.00,6.00,4.691,NULL),('osu!',1897394,909233,2,'72149ea2a5afd90c55fcad93192182eb','Rib','Sentiment Reverse','Normal','arronchu1207','Rib - Sentiment Reverse (arronchu1207) [Normal].osu','2019-04-28 12:58:30',223,623,0,0,0,0,152.00,3.50,5.00,3.00,3.00,2.119,NULL),('osu!',1899951,687879,2,'4f18dbb027d7055d9c60386da33e34e8','HoneyWorks feat. sana','Daisuki na Kototte Kuchi ni Dashite Iitai jan?','Sekai\'s Insane','Tomadoi','HoneyWorks feat. sana - Daisuki na Kototte Kuchi ni Dashite Iitai jan (Tomadoi) [Sekai\'s Insane].osu','2019-02-21 22:11:27',30,185,0,0,0,0,205.00,4.50,9.00,7.00,6.00,4.319,NULL),('osu!',1910549,914756,2,'a06a7978c77cb8e6fbe89e0d558cb737','halca','Sentimental Crisis (TV Size)','Confession','Nao Tomori','halca - Sentimental Crisis (TV Size) (Nao Tomori) [Confession].osu','2019-01-30 04:02:45',89,473,0,0,0,0,167.00,4.20,9.00,8.00,6.00,5.483,NULL),('osu!',1912293,914756,2,'03241752c1c30740600793b2e2cd0cf1','halca','Sentimental Crisis (TV Size)','Light Insane','Nao Tomori','halca - Sentimental Crisis (TV Size) (Nao Tomori) [Light Insane].osu','2019-01-30 04:02:45',89,426,0,0,0,0,167.00,3.80,7.50,6.50,4.80,3.614,NULL),('osu!',1912338,914756,2,'258ba8c6dc6ac86437e13d87ccba83d0','halca','Sentimental Crisis (TV Size)','Normal','Nao Tomori','halca - Sentimental Crisis (TV Size) (Nao Tomori) [Normal].osu','2019-01-30 04:02:45',88,267,0,0,0,0,167.00,3.50,5.80,3.50,3.50,2.345,NULL),('osu!',1912651,915808,2,'3c17a414f7f70b93e11a726b90d28f06','halca','Sentimental Crisis (TV Size)','Insane','kunka','halca - Sentimental Crisis (TV Size) (kunka) [Insane].osu','2019-04-28 03:47:55',88,462,0,0,0,0,167.00,4.00,9.00,7.00,6.00,4.897,NULL),('osu!',1913970,914756,2,'77c305194fb6fed9e265462672b073d4','halca','Sentimental Crisis (TV Size)','Hailie\'s Insane','Nao Tomori','halca - Sentimental Crisis (TV Size) (Nao Tomori) [Hailie\'s Insane].osu','2019-01-30 04:02:45',89,441,0,0,0,0,167.00,4.00,8.50,7.50,5.50,4.263,NULL),('osu!',1915753,915808,2,'7115a59e5313de685aa64b390e3fcb1f','halca','Sentimental Crisis (TV Size)','Hard','kunka','halca - Sentimental Crisis (TV Size) (kunka) [Hard].osu','2019-04-28 03:47:55',88,422,0,0,0,0,167.00,4.00,7.50,6.00,5.00,3.434,NULL),('osu!',1917480,915808,2,'fd849de7a17587f477cfed358d40809b','halca','Sentimental Crisis (TV Size)','Normal','kunka','halca - Sentimental Crisis (TV Size) (kunka) [Normal].osu','2019-04-28 03:47:55',88,320,0,0,0,0,167.00,3.50,5.00,4.00,4.00,2.267,NULL),('osu!',1917542,915808,2,'115f6cfb99655292e3a9cd64ba62a225','halca','Sentimental Crisis (TV Size)','Easy','kunka','halca - Sentimental Crisis (TV Size) (kunka) [Easy].osu','2019-04-28 03:47:55',88,222,0,0,0,0,167.00,3.00,3.00,2.00,2.00,1.891,NULL),('osu!',1918028,914756,2,'ae186a100ca7be737ce725670b7ffea9','halca','Sentimental Crisis (TV Size)','Hard','Nao Tomori','halca - Sentimental Crisis (TV Size) (Nao Tomori) [Hard].osu','2019-01-30 04:02:45',88,396,0,0,0,0,167.00,3.70,7.00,5.00,4.50,3.185,NULL),('osu!',1960286,938426,2,'364366bc51f4f4f49ff950ade3c96152','Camellia','Newspapers for Magicians','Harmonious','Mir','Camellia - Newspapers for Magicians (Mir) [Harmonious].osu','2019-05-17 19:47:42',267,1956,0,0,0,0,150.00,4.00,9.60,8.70,5.00,6.980,NULL),('osu!',1970128,938426,2,'9e27dbb0f7b1168903d26e825d584bbf','Camellia','Newspapers for Magicians','Reform\'s Insane','Mir','Camellia - Newspapers for Magicians (Mir) [Reform\'s Insane].osu','2019-05-17 19:47:42',267,1898,0,0,0,0,150.00,4.00,9.00,8.00,5.00,4.983,NULL),('osu!',1984687,950320,2,'9986c5bc43f9103e6c653514f41fde6d','GWEEK BEETS','GGX GANG','Hard','Nikakis','GWEEK BEETS - GGX GANG (Nikakis) [Hard].osu','2019-04-07 22:59:51',28,93,0,0,0,0,160.00,3.80,7.50,6.00,5.00,2.911,NULL),('osu!',1984688,950320,2,'8fdd00777a23b2688a183b1cfde24c11','GWEEK BEETS','GGX GANG','Normal','Nikakis','GWEEK BEETS - GGX GANG (Nikakis) [Normal].osu','2019-04-07 22:59:51',28,88,0,0,0,0,160.00,3.50,5.00,4.00,4.00,2.025,NULL),('osu!',1984689,950320,2,'dddebb5f842edd9b09bfba087bd532de','GWEEK BEETS','GGX GANG','Reform\'s Insane','Nikakis','GWEEK BEETS - GGX GANG (Nikakis) [Reform\'s Insane].osu','2019-04-07 22:59:51',28,98,0,0,0,0,160.00,3.50,8.50,8.00,5.00,3.627,NULL),('osu!',1984690,950320,2,'e0161893e03ae23c5e45cdea54e6aa67','GWEEK BEETS','GGX GANG','TriHard 7','Nikakis','GWEEK BEETS - GGX GANG (Nikakis) [TriHard 7].osu','2019-04-07 22:59:51',28,118,0,0,0,0,160.00,3.80,9.00,8.50,5.50,3.752,NULL),('osu!',1989857,953015,2,'5e148185865d4b9d317e7c67c037df49','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi','Gokujo. no Jouken (TV Size)','Overflowing Emotions','Hanasaka Yui','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi - Gokujo. no Jouken (TV Size) (Hanasaka Yui) [Overflowing Emotions].osu','2019-05-01 17:42:48',30,175,0,0,0,0,180.20,4.40,9.20,9.40,5.00,5.734,NULL),('osu!',1990541,953015,2,'fc0b66f1f443bf760b8905451940d321','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi','Gokujo. no Jouken (TV Size)','Himekawa\'s Extra','Hanasaka Yui','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi - Gokujo. no Jouken (TV Size) (Hanasaka Yui) [Himekawa\'s Extra].osu','2019-05-01 17:42:48',30,186,0,0,0,0,180.20,3.80,9.30,9.00,5.00,5.586,NULL),('osu!',1991725,953015,2,'9debdcaa7b8d998699ae4ca847226e1d','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi','Gokujo. no Jouken (TV Size)','Normal','Hanasaka Yui','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi - Gokujo. no Jouken (TV Size) (Hanasaka Yui) [Normal].osu','2019-05-01 17:42:48',30,128,0,0,0,0,180.20,3.30,5.50,4.00,4.00,2.233,NULL),('osu!',1992558,953015,2,'e2d76ef6988c206848182fc5c39aeb34','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi','Gokujo. no Jouken (TV Size)','Hard','Hanasaka Yui','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi - Gokujo. no Jouken (TV Size) (Hanasaka Yui) [Hard].osu','2019-05-01 17:42:48',30,158,0,0,0,0,180.20,3.60,8.00,6.00,5.00,3.394,NULL),('osu!',1992682,953015,2,'75e9885374f4280a855089b388ccec44','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi','Gokujo. no Jouken (TV Size)','Insane','Hanasaka Yui','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi - Gokujo. no Jouken (TV Size) (Hanasaka Yui) [Insane].osu','2019-05-01 17:42:48',30,170,0,0,0,0,180.20,3.80,8.70,8.00,5.00,4.176,NULL),('osu!',1992711,953015,2,'baa5eccc682937356fb0a93fcbe937e9','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi','Gokujo. no Jouken (TV Size)','Extreme','Hanasaka Yui','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi - Gokujo. no Jouken (TV Size) (Hanasaka Yui) [Extreme].osu','2019-05-01 17:42:48',30,173,0,0,0,0,180.20,4.20,9.20,9.20,5.00,5.699,NULL),('osu!',1992745,953015,2,'a7c37c34c5a0547e0297da57235755ff','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi','Gokujo. no Jouken (TV Size)','Impure\'s Expert','Hanasaka Yui','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi - Gokujo. no Jouken (TV Size) (Hanasaka Yui) [Impure\'s Expert].osu','2019-05-01 17:42:48',30,184,0,0,0,0,180.20,4.00,9.00,8.50,5.00,5.372,NULL),('osu!',1993380,953015,2,'312980ad538d40a6fa6ecaf020bc3b61','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi','Gokujo. no Jouken (TV Size)','Azunyan\'s Extra','Hanasaka Yui','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi - Gokujo. no Jouken (TV Size) (Hanasaka Yui) [Azunyan\'s Extra].osu','2019-05-01 17:42:48',30,169,0,0,0,0,180.20,3.60,9.20,9.20,5.00,5.506,NULL),('osu!',2020258,953015,2,'bafdacc90cb394505ff0204cffe49c0a','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi','Gokujo. no Jouken (TV Size)','Extra','Hanasaka Yui','Hikasa Youko, Uchida Maaya, Taketatsu Ayana, Akesaka Satomi - Gokujo. no Jouken (TV Size) (Hanasaka Yui) [Extra].osu','2019-05-01 17:42:48',30,171,0,0,0,0,180.20,4.00,9.00,8.80,5.00,5.273,NULL),('osu!',2022378,938426,2,'c0ff16f2031ccb3aea9ceeada0579b2a','Camellia','Newspapers for Magicians','Flezlin\'s Extra','Mir','Camellia - Newspapers for Magicians (Mir) [Flezlin\'s Extra].osu','2019-05-17 19:47:42',267,1999,0,0,0,0,150.00,4.00,9.40,8.10,5.00,6.087,NULL),('osu!',2102287,1004468,2,'8d311033447d108ae4848d3bdd1cb60d','Parry Gripp','Guinea Pig Bridge','Guinea Pig Technology','Sotarks','Parry Gripp - Guinea Pig Bridge (Sotarks) [Guinea Pig Technology].osu','2019-07-27 01:35:14',38,213,0,2,1,0,180.00,3.80,9.20,9.10,6.20,5.628,NULL),('osu!',2102288,1004468,2,'3f3f54eacbde74d1fe4bd5edacc00d35','Parry Gripp','Guinea Pig Bridge','Hard','Sotarks','Parry Gripp - Guinea Pig Bridge (Sotarks) [Hard].osu','2019-07-27 01:35:14',38,172,0,0,0,0,180.00,3.50,7.50,6.00,4.50,3.323,NULL),('osu!',2102289,1004468,2,'5a830914435cafc754e8c1c6daaf41ed','Parry Gripp','Guinea Pig Bridge','Insane','Sotarks','Parry Gripp - Guinea Pig Bridge (Sotarks) [Insane].osu','2019-07-27 01:35:14',38,207,0,0,0,0,180.00,3.80,9.00,8.50,5.50,4.661,NULL),('osu!',2102290,1004468,2,'32c4a3de370e7cb0047c495c913f96d7','Parry Gripp','Guinea Pig Bridge','Light Insane','Sotarks','Parry Gripp - Guinea Pig Bridge (Sotarks) [Light Insane].osu','2019-07-27 01:35:14',38,193,0,0,0,0,180.00,3.70,8.20,8.00,5.00,4.092,NULL),('osu!',2102291,1004468,2,'ffd4771e7e5899834f26c7f1bda1d2ce','Parry Gripp','Guinea Pig Bridge','Normal','Sotarks','Parry Gripp - Guinea Pig Bridge (Sotarks) [Normal].osu','2019-07-27 01:35:14',38,112,0,0,0,0,180.00,3.00,5.00,4.00,3.00,2.280,NULL),('osu!',2102292,1004468,2,'885dc758e44fe9416bdfa08682b2e671','Parry Gripp','Guinea Pig Bridge','Reform\'s Expert','Sotarks','Parry Gripp - Guinea Pig Bridge (Sotarks) [Reform\'s Expert].osu','2019-07-27 01:35:14',38,212,0,1,1,0,180.00,3.50,9.00,8.70,5.70,5.137,NULL),('osu!',2134593,1020146,2,'f615662509285dd8f7f72b890d1dbbb4','UNDEAD CORPORATION','Yume','Deep Sleep','Fixxis','UNDEAD CORPORATION - Yume (Fixxis) [Deep Sleep].osu','2019-08-15 19:07:21',40,91,0,0,0,0,87.75,3.80,7.00,5.50,4.50,2.626,NULL),('osu!',2134594,1020146,2,'9dcce50b73d4613b07bc8fc952a0c112','UNDEAD CORPORATION','Yume','Drowsy','Fixxis','UNDEAD CORPORATION - Yume (Fixxis) [Drowsy].osu','2019-08-15 19:07:21',40,62,0,0,0,0,89.00,3.50,5.00,3.50,2.50,1.419,NULL),('osu!',2270749,1085894,2,'2d2fc60c5ecf4bc9daa86a134dbacab0','Halozy','Crystal Snow','Heat Death','Hollow Wings','Halozy - Crystal Snow (Hollow Wings) [Heat Death].osu','2022-01-13 06:33:33',302,1428,0,0,0,0,128.00,4.00,9.00,8.00,6.00,6.292,NULL),('osu!',2381623,1140226,2,'4039f187040cdae5a1d3ccad8c689c91','VINXIS','Sent from my ipod recorder (VINXIS Edit)','Kirito x Asuna','wafer','VINXIS - Sent from my ipod recorder (VINXIS Edit) (wafer) [Kirito x Asuna].osu','2020-04-13 01:25:11',81,550,0,0,0,0,190.00,4.50,9.20,8.90,5.00,5.933,NULL),('osu!',2383043,1140226,2,'c0d446c61a815814d6dd4551a5ef371c','VINXIS','Sent from my ipod recorder (VINXIS Edit)','Normal Klein','wafer','VINXIS - Sent from my ipod recorder (VINXIS Edit) (wafer) [Normal Klein].osu','2020-04-13 01:25:11',81,299,0,0,0,0,190.00,3.00,5.30,4.00,3.00,2.574,NULL),('osu!',2383096,1140226,2,'42d0ada3079ff17a3d1533c20c02ea58','VINXIS','Sent from my ipod recorder (VINXIS Edit)','Osu\'s Another Yui','wafer','VINXIS - Sent from my ipod recorder (VINXIS Edit) (wafer) [Osu\'s Another Yui].osu','2020-04-13 01:25:11',81,552,0,0,0,0,190.00,4.30,9.20,9.00,5.00,5.246,NULL),('osu!',2383115,1140226,2,'3367c2dad2ba6c06d82544a598ad749f','VINXIS','Sent from my ipod recorder (VINXIS Edit)','Osu\'s Insane Agil','wafer','VINXIS - Sent from my ipod recorder (VINXIS Edit) (wafer) [Osu\'s Insane Agil].osu','2020-04-13 01:25:11',81,462,0,0,0,0,190.00,4.00,9.00,8.30,4.80,4.498,NULL),('osu!',2393032,1140226,2,'6889a91279707da916abd4b5e96963cc','VINXIS','Sent from my ipod recorder (VINXIS Edit)','jasontime\'s Hard Liz','wafer','VINXIS - Sent from my ipod recorder (VINXIS Edit) (wafer) [jasontime\'s Hard Liz].osu','2020-04-13 01:25:11',81,360,0,0,0,0,190.00,3.50,7.70,6.00,4.00,3.311,NULL),('osu!',2556247,1171966,2,'1b96fcf20458e99aef78ebe79362bf65','halca','Sentimental Crisis','Shady\'s Insane','Hitsukuya','halca - Sentimental Crisis (Hitsukuya) [Shady\'s Insane].osu','2020-10-27 10:20:31',231,1423,0,0,0,0,167.00,3.80,9.00,7.80,5.00,4.725,NULL),('osu!',2560878,1171966,2,'e22ab3679e96ba8426450d5e72e8cdeb','halca','Sentimental Crisis','I love you','Hitsukuya','halca - Sentimental Crisis (Hitsukuya) [I love you].osu','2020-10-27 10:20:31',231,1466,0,0,0,0,167.00,4.20,9.00,8.40,5.00,5.678,NULL),('osu!',2565209,1171966,2,'76855c984f91a4836bac876e6ac82f0f','halca','Sentimental Crisis','Iceluin\'s Hard','Hitsukuya','halca - Sentimental Crisis (Hitsukuya) [Iceluin\'s Hard].osu','2020-10-27 10:20:31',233,1257,0,0,0,0,167.00,3.50,7.50,6.00,4.00,3.683,NULL),('osu!',2632326,1266582,2,'84b6e440b475f9e5669cc0f7f7cdebe5','Ariabl\'eyeS','Arcadia','Kalibe & Yusomi\'s Efflorescence','Kalibe','Ariabl\'eyeS - Arcadia (Kalibe) [Kalibe & Yusomi\'s Efflorescence].osu','2020-09-29 15:21:00',318,1995,0,0,0,0,200.00,4.00,9.50,8.50,6.00,6.229,NULL),('osu!',2642933,1271839,2,'cb6638182ed49e24b9a91314b2abf3b2','Abe Mao','Believe in yourself','Hard','arronchu1207','Abe Mao - Believe in yourself (arronchu1207) [Hard].osu','2021-10-08 09:51:22',227,1104,0,0,0,0,171.00,4.00,8.00,6.00,4.00,3.703,NULL),('osu!',2642934,1271839,2,'fa8b1f5ab038a68f418730ddd7e6ed78','Abe Mao','Believe in yourself','Extra','arronchu1207','Abe Mao - Believe in yourself (arronchu1207) [Extra].osu','2021-10-08 09:51:22',227,1193,0,0,0,0,171.00,4.20,9.30,8.60,6.00,5.601,NULL),('osu!',2672999,1287429,0,'f872475f1ee582280a6518c7e61cbba9','Various Artists','CS-0 Jump Training','Empty diff to avoid upload limit','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Empty diff to avoid upload limit].osu','2021-04-17 07:52:31',4268,2,0,0,0,0,15.00,0.00,0.00,0.00,0.00,0.141,NULL),('osu!',2673059,1287429,0,'69f06573d1b7a9e75876d08fcc4bf32f','Various Artists','CS-0 Jump Training','A Fool Moon Night [emilia]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [A Fool Moon Night [emilia]].osu','2021-04-17 07:52:31',235,1539,0,0,0,0,138.00,0.00,10.00,10.00,5.00,7.908,NULL),('osu!',2673060,1287429,0,'b1423f25b00c91b1b57a7fa9c4bb5637','Various Artists','CS-0 Jump Training','AaAaAaAAaAaAAa [aAaAaaAaAaaA] Ar10','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [AaAaAaAAaAaAAa [aAaAaaAaAaaA] Ar10].osu','2021-04-17 07:52:31',105,624,0,0,0,0,192.00,0.00,10.00,9.40,5.20,5.250,NULL),('osu!',2673061,1287429,0,'b101127baf7d28d01aa4eea0cef82317','Various Artists','CS-0 Jump Training','AaAaAaAAaAaAAa [aAaAaaAaAaaA] Ar9','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [AaAaAaAAaAaAAa [aAaAaaAaAaaA] Ar9].osu','2021-04-17 07:52:31',105,624,0,0,0,0,192.00,0.00,9.00,9.40,5.20,5.250,NULL),('osu!',2673062,1287429,0,'fb999e18db0494446dce4a0ed41ebb0f','Various Artists','CS-0 Jump Training','Altar [I\'m Poppy]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Altar [I\'m Poppy]].osu','2021-04-17 07:52:31',159,1138,0,0,0,0,132.00,0.00,10.00,10.00,2.50,8.011,NULL),('osu!',2673063,1287429,0,'dd2e6f1ad3072f8b9ac225030d78c190','Various Artists','CS-0 Jump Training','Atlantis [Waterlogged City]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Atlantis [Waterlogged City]].osu','2021-04-17 07:52:31',55,279,0,0,0,0,226.40,0.00,10.00,9.80,3.00,6.227,NULL),('osu!',2673064,1287429,0,'97b140b7faa3f6a9632f2f813c9ea8a0','Various Artists','CS-0 Jump Training','bedroom community [optimistic]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [bedroom community [optimistic]].osu','2021-04-17 07:52:31',102,551,0,0,0,0,136.35,0.00,10.00,9.80,6.00,7.922,NULL),('osu!',2673071,1287429,0,'af68bbc54cf62770d4adee936e15c37a','Various Artists','CS-0 Jump Training','Busta Rhymes Goes To The Wii Shop Channel [oof]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Busta Rhymes Goes To The Wii Shop Channel [oof]].osu','2021-04-17 07:52:31',59,504,0,0,0,0,150.00,0.00,10.00,10.00,6.00,7.281,NULL),('osu!',2673072,1287429,0,'c4b53be7239356d36507cbcb8ede07b3','Various Artists','CS-0 Jump Training','Chikatto Chika Chika [Sotarks\' 1+2 IQ] Ar10','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Chikatto Chika Chika [Sotarks\' 1+2 IQ] Ar10].osu','2021-04-17 07:52:31',88,411,0,0,0,0,178.00,0.00,10.00,9.50,5.20,5.027,NULL),('osu!',2673073,1287429,0,'f1c0757e8095017d403ae8fa39628b7f','Various Artists','CS-0 Jump Training','Chikatto Chika Chika [Sotarks\' 1+2 IQ] Ar9','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Chikatto Chika Chika [Sotarks\' 1+2 IQ] Ar9].osu','2021-04-17 07:52:31',88,411,0,0,0,0,178.00,0.00,9.00,9.50,5.20,5.027,NULL),('osu!',2673074,1287429,0,'ee7452bea8061012ec4da611f025c57b','Various Artists','CS-0 Jump Training','Chronoxia [Pog Tissue]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Chronoxia [Pog Tissue]].osu','2021-04-17 07:52:31',65,91,0,0,0,0,180.00,0.00,10.00,8.40,7.00,6.767,NULL),('osu!',2673075,1287429,0,'6ad9decb45cd4b73e0dc1a1f10b2b7e6','Various Artists','CS-0 Jump Training','Chronoxia [Moist Tissue]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Chronoxia [Moist Tissue]].osu','2021-04-17 07:52:31',113,690,0,0,0,0,180.00,0.00,10.00,8.40,7.00,6.982,NULL),('osu!',2673080,1287429,0,'3273fae39832b541124f8cf7defef674','Various Artists','CS-0 Jump Training','Euphoria [Ultimate Power (Pog)]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Euphoria [Ultimate Power (Pog)]].osu','2021-04-17 07:52:31',220,447,0,0,0,0,190.00,0.00,10.00,9.30,4.00,6.799,NULL),('osu!',2673081,1287429,0,'db1d255500f5cf8b528070d498e78f46','Various Artists','CS-0 Jump Training','Eyes Half Closed [Remap] Ar10','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Eyes Half Closed [Remap] Ar10].osu','2021-04-17 07:52:31',149,531,0,0,0,0,135.00,0.00,10.00,8.00,6.00,4.638,NULL),('osu!',2673082,1287429,0,'d7d6ad72eb868ddd8756dc4ac0670d41','Various Artists','CS-0 Jump Training','Eyes Half Closed [Remap] Ar9','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Eyes Half Closed [Remap] Ar9].osu','2021-04-17 07:52:31',149,531,0,0,0,0,135.00,0.00,9.00,8.00,6.00,4.638,NULL),('osu!',2673083,1287429,0,'defc563905c6d5f815b57fa3e6e83c90','Various Artists','CS-0 Jump Training','Flower Dance [Relax]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Flower Dance [Relax]].osu','2021-04-17 07:52:31',199,1009,0,0,0,0,200.00,0.00,10.00,8.00,6.00,6.032,NULL),('osu!',2673088,1287429,0,'5d40627f8c715b74e6be1ce2a3004368','Various Artists','CS-0 Jump Training','Glorious Morning [Beginner]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Glorious Morning [Beginner]].osu','2021-04-17 07:52:31',102,605,0,0,0,0,152.00,0.00,10.00,8.30,0.00,6.383,NULL),('osu!',2673089,1287429,0,'55681c52ba9acd85f1ae4685558e49bb','Various Artists','CS-0 Jump Training','Goodbye Moonmen Remix [Pog]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Goodbye Moonmen Remix [Pog]].osu','2021-04-17 07:52:31',91,141,0,0,0,0,128.00,0.00,10.00,10.00,3.00,8.079,NULL),('osu!',2673090,1287429,0,'06a76fba652d39fd5c0ef3097b328838','Various Artists','CS-0 Jump Training','Hardware Store [POG Moment]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Hardware Store [POG Moment]].osu','2021-04-17 07:52:31',174,247,0,0,0,0,126.33,0.00,10.00,10.00,5.00,7.341,NULL),('osu!',2673091,1287429,0,'cd526a46a3a7573fe27c47e863af663e','Various Artists','CS-0 Jump Training','Harumachi Clover (Swing Arrangement) [Oh No!] Ar10','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Harumachi Clover (Swing Arrangement) [Oh No!] Ar10].osu','2021-04-17 07:52:31',30,151,0,0,0,0,170.00,0.00,10.00,9.00,5.20,4.593,NULL),('osu!',2673092,1287429,0,'cd151bd941093d5f8bf6f108355387ae','Various Artists','CS-0 Jump Training','Harumachi Clover (Swing Arrangement) [Oh No!] Ar9','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Harumachi Clover (Swing Arrangement) [Oh No!] Ar9].osu','2021-04-17 07:52:31',30,151,0,0,0,0,170.00,0.00,9.00,9.00,5.20,4.594,NULL),('osu!',2673093,1287429,0,'dd1698563b6b9571492fa3470e7b109d','Various Artists','CS-0 Jump Training','Highscore [Game Over]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Highscore [Game Over]].osu','2021-04-17 07:52:31',257,1337,0,0,0,0,110.00,0.00,10.00,8.50,4.00,6.021,NULL),('osu!',2673101,1287429,0,'6c6a81d6dffac9ed13eb2ad88fc18553','Various Artists','CS-0 Jump Training','Insight [pog]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Insight [pog]].osu','2021-04-17 07:52:31',98,360,0,0,0,0,140.00,0.00,10.00,10.00,3.00,6.893,NULL),('osu!',2673102,1287429,0,'c5e6af59eadcf7c6574cc33ebbb58e3c','Various Artists','CS-0 Jump Training','Kanye West likes big Fingers in his ass [Massive Fingers]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Kanye West likes big Fingers in his ass [Massive Fingers]].osu','2021-04-17 07:52:31',58,323,0,0,0,0,230.00,0.00,10.00,8.00,6.00,7.284,NULL),('osu!',2673108,1287429,0,'9fa406bca4dc4a08ade08a2d4544ebe4','Various Artists','CS-0 Jump Training','Last Goodbye [Determination]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Last Goodbye [Determination]].osu','2021-04-17 07:52:31',111,484,0,0,0,0,180.00,0.00,10.00,9.50,6.00,5.347,NULL),('osu!',2673109,1287429,0,'a80bffba08325502b28c9a5a8e99b8e7','Various Artists','CS-0 Jump Training','Lemon Tree [Watermelon]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Lemon Tree [Watermelon]].osu','2021-04-17 07:52:31',230,2154,0,0,0,0,142.58,0.00,10.00,9.80,3.00,8.625,NULL),('osu!',2673110,1287429,0,'472809b72c2a4697ad51cb74fbe6dc8f','Various Artists','CS-0 Jump Training','Lonely Go! [I will haunt you until you die]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Lonely Go! [I will haunt you until you die]].osu','2021-04-17 07:52:31',73,507,0,0,0,0,204.00,0.00,10.00,8.50,5.00,5.364,NULL),('osu!',2673111,1287429,0,'2926e9d11dfbd6ff223a808080edbc1d','Various Artists','CS-0 Jump Training','Lonely Go! [Jougan]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Lonely Go! [Jougan]].osu','2021-04-17 07:52:31',89,575,0,0,0,0,204.00,0.00,10.00,9.50,5.00,5.740,NULL),('osu!',2673113,1287429,0,'7cd6ea6c94f7e1b376f75f157b1613fe','Various Artists','CS-0 Jump Training','Ping Pong Phase [People Can Fly]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [Ping Pong Phase [People Can Fly]].osu','2021-04-17 07:52:31',33,224,0,0,0,0,244.00,0.00,10.00,9.60,4.00,7.289,NULL),('osu!',2678913,1290517,2,'4eee56fa46b40175d54f1e2954e4149d','Maeda Jun x yanaginagi','Before I Rise','Special','Gaia','Maeda Jun x yanaginagi - Before I Rise (Gaia) [Special].osu','2020-12-05 05:12:31',179,899,0,0,0,0,140.00,4.00,9.00,8.50,6.00,4.490,NULL),('osu!',2679809,1290517,2,'8ba4b5b9a366160b9e76a8b9f0357316','Maeda Jun x yanaginagi','Before I Rise','Hard','Gaia','Maeda Jun x yanaginagi - Before I Rise (Gaia) [Hard].osu','2020-12-05 05:12:31',179,694,0,0,0,0,140.00,4.00,8.00,6.00,5.00,2.842,NULL),('osu!',2679947,1290517,2,'76ee9dde9f7092b99da71faf8e9f32c4','Maeda Jun x yanaginagi','Before I Rise','Easy','Gaia','Maeda Jun x yanaginagi - Before I Rise (Gaia) [Easy].osu','2020-12-05 05:12:31',179,355,0,0,0,0,140.00,3.00,3.00,2.00,2.00,1.712,NULL),('osu!',2679948,1290517,2,'95b1c9d64e9296125c32db41a0dca95e','Maeda Jun x yanaginagi','Before I Rise','Normal','Gaia','Maeda Jun x yanaginagi - Before I Rise (Gaia) [Normal].osu','2020-12-05 05:12:31',179,428,0,0,0,0,140.00,3.50,5.50,4.00,4.00,1.887,NULL),('osu!',2688115,1287429,0,'08c60a45d308a7b0d851e693e02933e8','Various Artists','CS-0 Jump Training','DADADADADADADADADADA (Long Version) [ULTRA BEZERK]','Julaaaan','Various Artists - CS-0 Jump Training (Julaaaan) [DADADADADADADADADADA (Long Version) [ULTRA BEZERK]].osu','2021-04-17 07:52:31',214,1511,0,0,0,0,156.00,0.00,10.00,8.00,2.50,8.571,NULL),('osu!',2709933,1290517,2,'732ed6069705647552901e1daca65367','Maeda Jun x yanaginagi','Before I Rise','Insane','Gaia','Maeda Jun x yanaginagi - Before I Rise (Gaia) [Insane].osu','2020-12-05 05:12:31',179,769,0,0,0,0,140.00,4.00,8.50,8.00,5.50,4.068,NULL),('osu!',2769601,1336953,0,'a4e5bd69a5df8921c9abd33aa6c7086b','Various Artists','Julaaaan\'s Triangle Jump Training','Anone','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Anone].osu','2021-01-01 02:24:42',16,123,0,0,0,0,126.00,3.80,10.00,9.00,5.00,7.572,NULL),('osu!',2769602,1336953,0,'d627f699d257d4872e9f059845931ecc','Various Artists','Julaaaan\'s Triangle Jump Training','Chronoxia','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Chronoxia].osu','2021-01-01 02:24:42',14,92,0,0,0,0,180.00,3.80,10.00,9.00,4.00,8.572,NULL),('osu!',2769603,1336953,0,'60ae4a6a745fd7c6b505880e6b45d671','Various Artists','Julaaaan\'s Triangle Jump Training','DADADADADADADADADADA','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [DADADADADADADADADADA].osu','2021-01-01 02:24:42',31,197,0,0,0,0,156.00,3.80,10.00,8.00,2.50,7.552,NULL),('osu!',2769604,1336953,0,'5cbf2205a4985b8525bdf575a6f9485a','Various Artists','Julaaaan\'s Triangle Jump Training','Euphoria','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Euphoria].osu','2021-01-01 02:24:42',41,370,0,0,0,0,190.00,3.80,10.00,9.00,4.00,8.497,NULL),('osu!',2769605,1336953,0,'37b6fc13c7f2359d83d7b0d60d2886f6','Various Artists','Julaaaan\'s Triangle Jump Training','Eyes Half Closed','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Eyes Half Closed].osu','2021-01-01 02:24:42',59,203,0,0,0,0,135.00,3.80,10.00,8.00,4.00,6.242,NULL),('osu!',2769606,1336953,0,'9add4e97badc4a7a9f60f59eefd43978','Various Artists','Julaaaan\'s Triangle Jump Training','Fingerbang [Fingerdash]','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Fingerbang [Fingerdash]].osu','2021-01-01 02:24:42',86,591,0,0,0,0,112.00,3.80,10.00,8.00,4.00,6.966,NULL),('osu!',2769607,1336953,0,'6ddf3ca229f1a770ff8636cb4d798cd7','Various Artists','Julaaaan\'s Triangle Jump Training','Glorious Morning','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Glorious Morning].osu','2021-01-01 02:24:42',16,97,0,0,0,0,152.00,3.80,10.00,10.00,0.00,7.363,NULL),('osu!',2769608,1336953,0,'3f1bc2fce4d5ec9b8c40053c11910a9a','Various Artists','Julaaaan\'s Triangle Jump Training','Go Go Go [Hey, Hey, It\'s Alright]','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Go Go Go [Hey, Hey, It\'s Alright]].osu','2021-01-01 02:24:42',183,1184,0,0,0,0,168.80,3.80,10.00,8.00,3.00,8.675,NULL),('osu!',2769609,1336953,0,'fc13a4e8777c3932f0998a53b36b19dd','Various Artists','Julaaaan\'s Triangle Jump Training','Living For The Moment [First Pog Moment]','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Living For The Moment [First Pog Moment]].osu','2021-01-01 02:24:42',31,179,0,0,0,0,150.00,3.00,9.80,6.40,7.00,6.701,NULL),('osu!',2769610,1336953,0,'03f75c15ead5ee3fdd226e43db38576f','Various Artists','Julaaaan\'s Triangle Jump Training','Monsters','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Monsters].osu','2021-01-01 02:24:42',38,283,0,0,0,0,84.00,3.80,10.00,9.00,3.00,7.837,NULL),('osu!',2769611,1336953,0,'718fd51800bbd8d1bd52a209ce4d7b89','Various Artists','Julaaaan\'s Triangle Jump Training','Nico Nico Nii [Nico Nico Nii~]','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Nico Nico Nii [Nico Nico Nii~]].osu','2021-01-01 02:24:42',80,380,0,0,0,0,124.00,3.80,9.20,8.00,5.00,5.582,NULL),('osu!',2769612,1336953,0,'078b81098501a0ef573999883f7ca38c','Various Artists','Julaaaan\'s Triangle Jump Training','Que Tire Pa\' \'Lante','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Que Tire Pa\' \'Lante].osu','2021-01-01 02:24:42',79,618,0,0,0,0,188.00,3.50,10.00,10.00,1.00,8.728,NULL),('osu!',2769613,1336953,0,'e4c1771364f7890f2cf4a2f147c72a48','Various Artists','Julaaaan\'s Triangle Jump Training','Summer Night Hiking','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Summer Night Hiking].osu','2021-01-01 02:24:42',34,203,0,0,0,0,170.00,3.80,10.00,8.00,4.00,6.877,NULL),('osu!',2769614,1336953,0,'c65ae202d3ad63f5e7a64cefce22bb76','Various Artists','Julaaaan\'s Triangle Jump Training','Yakko\'s World [The Nations Of The World]','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Yakko\'s World [The Nations Of The World]].osu','2021-01-01 02:24:42',106,624,0,0,0,0,135.25,3.60,10.00,7.00,3.80,7.763,NULL),('osu!',2769615,1336953,0,'3058aa7c4785a0a5bf12f329bd9fe8e7','Various Artists','Julaaaan\'s Triangle Jump Training','Ahh Yes I Did A Jump Training Again','Julaaaan','Various Artists - Julaaaan\'s Triangle Jump Training (Julaaaan) [Ahh Yes I Did A Jump Training Again].osu','2021-01-01 02:24:42',4268,2,0,0,0,0,15.00,0.00,10.00,0.00,0.00,0.141,NULL),('osu!',2822668,1364392,2,'48c36ed0be97bec3aa757408ed6ce0eb','Pisse','Fahrradsattel','Extra','Astrolis','Pisse - Fahrradsattel (Astrolis) [Extra].osu','2021-03-13 16:27:25',108,672,0,0,0,0,119.00,4.80,9.20,8.60,6.00,5.231,NULL),('osu!',2824165,1364392,2,'5b2e3dd68dceb3778a0f9fd6c573dc4e','Pisse','Fahrradsattel','Myah\'s Light Insane','Astrolis','Pisse - Fahrradsattel (Astrolis) [Myah\'s Light Insane].osu','2021-03-13 16:27:25',108,482,0,0,0,0,119.00,4.00,8.00,7.00,4.00,3.868,NULL),('osu!',2826373,1364392,2,'1f626bc4fb66c262830b7b1d055317ac','Pisse','Fahrradsattel','Collab Normal','Astrolis','Pisse - Fahrradsattel (Astrolis) [Collab Normal].osu','2021-03-13 16:27:25',108,330,0,0,0,0,119.00,3.00,5.00,4.00,3.00,1.972,NULL),('osu!',2842797,1375253,2,'0f85dbf2da7c12ec14d5e99626f72bab','halca','Sentimental Crisis (TV Size)','Adoration','Wanpachi','halca - Sentimental Crisis (TV Size) (Wanpachi) [Adoration].osu','2021-03-28 21:32:16',88,457,0,0,0,0,167.00,4.20,9.00,8.60,6.00,5.511,NULL),('osu!',2843109,1375253,2,'6fe5d3ec4297e20f4a7f5ddff0347935','halca','Sentimental Crisis (TV Size)','Hard','Wanpachi','halca - Sentimental Crisis (TV Size) (Wanpachi) [Hard].osu','2021-03-28 21:32:16',88,384,0,0,0,0,167.00,3.60,7.80,6.00,5.00,3.219,NULL),('osu!',2844372,1375253,2,'e20409db7cc7be412ec21f3e8abdb4bc','halca','Sentimental Crisis (TV Size)','Normal','Wanpachi','halca - Sentimental Crisis (TV Size) (Wanpachi) [Normal].osu','2021-03-28 21:32:16',88,273,0,0,0,0,167.00,3.20,5.00,4.00,3.60,2.198,NULL),('osu!',2846394,1375253,2,'d23441cb06c1a8ac8929fd4d9f5ff3ed','halca','Sentimental Crisis (TV Size)','Easy','Wanpachi','halca - Sentimental Crisis (TV Size) (Wanpachi) [Easy].osu','2021-03-28 21:32:16',88,169,0,0,0,0,167.00,2.20,3.20,2.00,2.00,1.551,NULL),('osu!',2847457,1375253,2,'0a5d95060535d96863428d9922613c97','halca','Sentimental Crisis (TV Size)','sanairrt\'s Insane','Wanpachi','halca - Sentimental Crisis (TV Size) (Wanpachi) [sanairrt\'s Insane].osu','2021-03-28 21:32:16',88,466,0,0,0,0,167.00,3.80,8.80,7.50,5.50,4.648,NULL),('osu!',2865466,1364392,2,'f6eecbab3ab990dae98132c3f1b357b7','Pisse','Fahrradsattel','Hard','Astrolis','Pisse - Fahrradsattel (Astrolis) [Hard].osu','2021-03-13 16:27:25',108,492,0,0,0,0,119.00,3.50,7.00,6.00,4.00,2.981,NULL),('osu!',2873277,1383276,2,'313529c84d63229b672b61e4be392945','Stan Smith (CV: Seth MacFarlane)','Good Morning, U.S.A. (TV Size)','Normal','Iraq','Stan Smith (CV Seth MacFarlane) - Good Morning, U.S.A. (TV Size) (Iraq) [Normal].osu','2022-11-24 19:08:35',30,103,0,0,0,0,150.00,3.80,5.00,4.50,3.00,2.225,NULL),('osu!',2874173,1364392,2,'d1caf2675c3a801d21457ab9c5ffb9cc','Pisse','Fahrradsattel','Chizu\'s Insane','Astrolis','Pisse - Fahrradsattel (Astrolis) [Chizu\'s Insane].osu','2021-03-13 16:27:25',108,624,0,0,0,0,119.00,4.50,8.00,8.00,5.00,4.808,NULL),('osu!',2924872,1419842,2,'080561291397c3a89ff63eee390299b6','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio','Chowder Theme Song (TV Size)','You Take The Moon','wafer','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio - Chowder Theme Song (TV Size) (wafer) [You Take The Moon].osu','2022-12-22 01:04:32',26,132,0,0,0,0,170.00,4.10,9.00,8.80,5.00,4.721,NULL),('osu!',2924887,1419842,2,'cef123ee3af4fc7c01450d2af33f87ad','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio','Chowder Theme Song (TV Size)','Keitaro\'s Another','wafer','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio - Chowder Theme Song (TV Size) (wafer) [Keitaro\'s Another].osu','2022-12-22 01:04:32',25,134,0,0,0,0,170.00,4.00,9.00,8.80,5.00,4.665,NULL),('osu!',2925728,1419842,2,'6b5e920c987134b12bb470d8ff620d5f','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio','Chowder Theme Song (TV Size)','You Take The Sun','wafer','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio - Chowder Theme Song (TV Size) (wafer) [You Take The Sun].osu','2022-12-22 01:04:32',26,135,0,1,1,0,170.00,4.40,9.20,9.00,5.00,4.958,NULL),('osu!',2925823,1419842,2,'2ccdbc6815a6dc5a3e678da3949101c5','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio','Chowder Theme Song (TV Size)','Insane','wafer','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio - Chowder Theme Song (TV Size) (wafer) [Insane].osu','2022-12-22 01:04:32',26,135,0,0,0,0,170.00,3.80,8.60,8.30,4.60,4.119,NULL),('osu!',2925889,1419842,2,'84dfc1306e55bfcd4699805d58eefd89','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio','Chowder Theme Song (TV Size)','Keitaro\'s Hard','wafer','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio - Chowder Theme Song (TV Size) (wafer) [Keitaro\'s Hard].osu','2022-12-22 01:04:32',26,122,0,0,0,0,170.00,3.50,7.50,6.00,4.00,2.917,NULL),('osu!',2925890,1419842,2,'709117b41767effcb28439b6b02c4902','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio','Chowder Theme Song (TV Size)','Keitaro\'s Normal','wafer','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio - Chowder Theme Song (TV Size) (wafer) [Keitaro\'s Normal].osu','2022-12-22 01:04:32',26,100,0,0,0,0,170.00,3.50,5.50,5.00,4.00,2.135,NULL),('osu!',2942250,1429170,2,'453be1546c99f4a4049ab2797be3a647','M2U','Happy birthday to You (M2U Version)','Happy Birthday!','[Karcher]','M2U - Happy birthday to You (M2U Version) ([Karcher]) [Happy Birthday!].osu','2021-06-21 02:47:12',29,169,0,0,0,0,110.00,4.00,9.00,8.00,5.00,4.410,NULL),('osu!',2942251,1429170,2,'87bb8f9361cabe0b739c8292eb72f57e','M2U','Happy birthday to You (M2U Version)','Hard','[Karcher]','M2U - Happy birthday to You (M2U Version) ([Karcher]) [Hard].osu','2021-06-21 02:47:12',29,139,0,0,0,0,110.00,3.50,7.80,6.00,4.00,3.176,NULL),('osu!',2942252,1429170,2,'9e15a40fa84497eb2470b5ca988058d1','M2U','Happy birthday to You (M2U Version)','Normal','[Karcher]','M2U - Happy birthday to You (M2U Version) ([Karcher]) [Normal].osu','2021-06-21 02:47:12',29,94,0,0,0,0,110.00,3.00,5.00,4.00,3.00,2.232,NULL),('osu!',2964137,1271839,2,'da75340cf75e5a8de5d2b12ba0602a7b','Abe Mao','Believe in yourself','Zer0-G\'s Insane','arronchu1207','Abe Mao - Believe in yourself (arronchu1207) [Zer0-G\'s Insane].osu','2021-10-08 09:51:22',228,1171,0,0,0,0,171.00,4.00,9.00,7.40,5.00,4.843,NULL),('osu!',2968020,1271839,2,'1cccc562ff9d37df36079f2d4e88e73d','Abe Mao','Believe in yourself','Normal','arronchu1207','Abe Mao - Believe in yourself (arronchu1207) [Normal].osu','2021-10-08 09:51:22',227,845,0,0,0,0,171.00,3.50,5.30,4.00,3.00,2.374,NULL),('osu!',2985865,1383276,2,'fea8149bc6564a7e809a4e695f6afdd6','Stan Smith (CV: Seth MacFarlane)','Good Morning, U.S.A. (TV Size)','Prime','Iraq','Stan Smith (CV Seth MacFarlane) - Good Morning, U.S.A. (TV Size) (Iraq) [Prime].osu','2022-11-24 19:08:35',30,197,0,0,0,0,150.00,5.00,9.00,8.50,6.00,4.710,NULL),('osu!',2990987,1455022,2,'cfe1dd7697a05264c9b3e19804fa8b3d','LiSA','Believe in ourselves (Cut Ver.)','Hope','Surac','LiSA - Believe in ourselves (Cut Ver.) (Surac) [Hope].osu','2022-03-08 09:01:56',111,656,0,0,0,0,178.00,3.80,9.20,9.00,6.00,5.606,NULL),('osu!',2998025,1455022,2,'676161a8f51fca14511254d3403fbb1a','LiSA','Believe in ourselves (Cut Ver.)','Saggin\'s Insane','Surac','LiSA - Believe in ourselves (Cut Ver.) (Surac) [Saggin\'s Insane].osu','2022-03-08 09:01:56',111,606,0,0,0,0,178.00,4.00,9.00,8.00,5.00,4.918,NULL),('osu!',3023082,1455022,2,'0fe14a48dba167a0cee603621ea4e85f','LiSA','Believe in ourselves (Cut Ver.)','Mathew\'s Hard','Surac','LiSA - Believe in ourselves (Cut Ver.) (Surac) [Mathew\'s Hard].osu','2022-03-08 09:01:56',111,528,0,0,0,0,178.00,4.00,7.70,6.00,5.00,3.464,NULL),('osu!',3268863,1455022,2,'a9159ea02614cdc2b874745e544fed7e','LiSA','Believe in ourselves (Cut Ver.)','never FC\'s Normal','Surac','LiSA - Believe in ourselves (Cut Ver.) (Surac) [never FC\'s Normal].osu','2022-03-08 09:01:56',111,448,0,0,0,0,178.00,3.20,5.00,4.00,4.00,2.351,NULL),('osu!',3393400,1662256,2,'41b87725d3ae903e2a09a5975334b3d4','KOCHO','Hanyamaru Manten, Zenitendou. (TV Size)','Insane','Xahlt','KOCHO - Hanyamaru Manten, Zenitendou. (TV Size) (Xahlt) [Insane].osu','2022-01-10 20:11:29',32,208,0,0,0,0,139.50,4.30,9.20,8.50,5.30,4.926,NULL),('osu!',3393469,1662256,2,'8f8d0c9d2093742ccc007b9d49d5b773','KOCHO','Hanyamaru Manten, Zenitendou. (TV Size)','Hard','Xahlt','KOCHO - Hanyamaru Manten, Zenitendou. (TV Size) (Xahlt) [Hard].osu','2022-01-10 20:11:29',32,155,0,0,0,0,139.50,3.80,8.00,6.00,4.70,3.572,NULL),('osu!',3393470,1662256,2,'4c57490d03d53836dc55e129abb21e10','KOCHO','Hanyamaru Manten, Zenitendou. (TV Size)','Normal','Xahlt','KOCHO - Hanyamaru Manten, Zenitendou. (TV Size) (Xahlt) [Normal].osu','2022-01-10 20:11:29',32,111,0,0,0,0,139.50,3.50,5.00,4.00,4.00,2.355,NULL),('osu!',3393626,1662375,0,'75e62c65bbb173866aaf351df2f74bcf','bag103','Guinea Pig Bonga','Bonga 0.94x (160bpm) AR9 OD8.5','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [Bonga 0.94x (160bpm) AR9 OD8.5].osu','2021-12-30 09:06:29',43,190,0,0,0,0,160.00,4.00,9.00,8.50,5.00,5.153,NULL),('osu!',3393627,1662375,0,'e2a094807275765354393cd6fb40b544','bag103','Guinea Pig Bonga','Bonga 1.1x (187bpm)','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [Bonga 1.1x (187bpm)].osu','2021-12-30 09:06:29',37,190,0,0,0,0,187.00,4.00,9.50,9.10,5.00,5.866,NULL),('osu!',3393628,1662375,0,'d18087ef3b44d3e5fde7c539355306bc','bag103','Guinea Pig Bonga','Bonga 1.2x (204bpm)','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [Bonga 1.2x (204bpm)].osu','2021-12-30 09:06:29',34,190,0,0,0,0,204.00,4.00,9.70,9.50,5.00,6.297,NULL),('osu!',3393629,1662375,0,'6c67e9c2be622e82627413a03cd6a0b1','bag103','Guinea Pig Bonga','Bonga 1.3x (221bpm)','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [Bonga 1.3x (221bpm)].osu','2021-12-30 09:06:29',31,190,0,0,0,0,221.00,4.00,10.00,9.80,5.00,6.724,NULL),('osu!',3393630,1662375,0,'9a52c763b7ec96bcb060749c7514c5a9','bag103','Guinea Pig Bonga','Bonga','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [Bonga].osu','2021-12-30 09:06:29',40,190,0,0,0,0,170.00,4.00,9.10,8.70,5.00,5.411,NULL),('osu!',3393757,1662375,0,'96248931069da73fb173eae2dcd58bc8','bag103','Guinea Pig Bonga','Suis horizontal jump practice','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [Suis horizontal jump practice].osu','2021-12-30 09:06:29',37,92,0,0,0,0,187.00,4.00,9.50,9.10,5.00,6.162,NULL),('osu!',3393894,1662375,0,'c614acb179216cf870a97aed923f8b31','bag103','Guinea Pig Bonga','asdas','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [asdas].osu','2021-12-30 09:06:29',40,190,0,0,0,0,170.00,4.00,9.10,8.70,5.00,5.411,NULL),('osu!',3393895,1662375,0,'1574f224de47c0ab274471c63b885141','bag103','Guinea Pig Bonga','Extre,e','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [Extre,e].osu','2021-12-30 09:06:29',40,189,0,0,0,0,170.00,4.00,9.10,8.70,5.00,5.430,NULL),('osu!',3393904,1662375,0,'ce3f41632f795d425bdeb1726a51fdb2','bag103','Guinea Pig Bonga','Fiery','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [Fiery].osu','2021-12-30 09:06:29',40,189,0,0,0,0,170.00,4.00,9.10,8.70,5.00,5.415,NULL),('osu!',3393916,1662375,0,'864a0313ca2e442a40ca020296815bcb','bag103','Guinea Pig Bonga','tacere fiery','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [tacere fiery].osu','2021-12-30 09:06:29',40,189,0,0,0,0,170.00,4.00,9.10,8.70,5.00,5.415,NULL),('osu!',3393958,1662375,0,'0eb97326f781dc1e1761d0da47e90f04','bag103','Guinea Pig Bonga','TAcere 2','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [TAcere 2].osu','2021-12-30 09:06:29',40,189,0,0,0,0,170.00,4.00,9.10,8.70,5.00,5.436,NULL),('osu!',3393962,1662375,0,'2334a43cf30893d1cd8dbba17a6b85b2','bag103','Guinea Pig Bonga','Tacere 3','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [Tacere 3].osu','2021-12-30 09:06:29',40,189,0,0,0,0,170.00,3.80,9.10,8.70,5.00,5.382,NULL),('osu!',3393985,1662375,0,'a94c820c467ab46bd74be7bc46017430','bag103','Guinea Pig Bonga','IT\'s the final countdown Nanana na','BadMapMaker','bag103 - Guinea Pig Bonga (BadMapMaker) [IT\'s the final countdown Nanana na].osu','2021-12-30 09:06:29',40,192,0,0,0,0,170.00,3.80,9.10,8.70,5.00,8.047,NULL),('osu!',3452317,1689372,2,'7ef7c76a9a10f8d7d8f92481cec11a37','NIWASHI','Y','Extra','Down','NIWASHI - Y (Down) [Extra].osu','2022-02-23 16:49:25',121,963,0,0,0,0,170.00,4.00,9.40,9.00,5.00,6.065,NULL),('osu!',3453684,1689372,2,'63255ef67f7c8243e0ae39918a823f24','NIWASHI','Y','Easy','Down','NIWASHI - Y (Down) [Easy].osu','2022-02-23 16:49:25',119,240,0,0,0,0,170.00,3.00,3.00,2.00,2.00,1.612,NULL),('osu!',3453685,1689372,2,'4ff981f47309e568ab8400722683bb1d','NIWASHI','Y','Hard','Down','NIWASHI - Y (Down) [Hard].osu','2022-02-23 16:49:25',121,586,0,0,0,0,170.00,4.00,8.00,6.00,5.00,3.542,NULL),('osu!',3453686,1689372,2,'ba9faecd4c3c4efec80e4d7494de283d','NIWASHI','Y','Insane','Down','NIWASHI - Y (Down) [Insane].osu','2022-02-23 16:49:25',121,796,0,0,0,0,170.00,4.00,9.00,8.00,5.00,4.675,NULL),('osu!',3453687,1689372,2,'02d6d908e372e8cb4c8495f4707faa1b','NIWASHI','Y','Normal','Down','NIWASHI - Y (Down) [Normal].osu','2022-02-23 16:49:25',121,367,0,0,0,0,170.00,3.60,5.00,4.00,4.00,2.102,NULL),('osu!',3455084,1689372,2,'cea9db8783f57414fce07817c7943031','NIWASHI','Y','PaRaDogi\'s Extra','Down','NIWASHI - Y (Down) [PaRaDogi\'s Extra].osu','2022-02-23 16:49:25',121,862,0,0,0,0,170.00,4.00,9.20,9.00,5.00,5.859,NULL),('osu!',3471316,1698859,2,'e2c95557933080e80aaef2c441af6211','halca','Sentimental Crisis (TV Size)','<3','ItsCactus','halca - Sentimental Crisis (TV Size) (ItsCactus) [3].osu','2022-02-28 14:30:57',88,450,0,0,0,0,167.00,4.00,9.10,8.50,5.00,5.306,NULL),('osu!',3473036,1698859,2,'a663c5796590b70174bbefe0c3ee7dfa','halca','Sentimental Crisis (TV Size)','Rad\'s Insane','ItsCactus','halca - Sentimental Crisis (TV Size) (ItsCactus) [Rad\'s Insane].osu','2022-02-28 14:30:57',88,437,0,0,0,0,167.00,3.60,8.70,7.90,5.20,4.372,NULL),('osu!',3474707,1698859,2,'a96a9e5f3eec96478ee0c670b2356d97','halca','Sentimental Crisis (TV Size)','Hard','ItsCactus','halca - Sentimental Crisis (TV Size) (ItsCactus) [Hard].osu','2022-02-28 14:30:57',88,389,0,0,0,0,167.00,3.60,7.50,6.50,4.00,3.571,NULL),('osu!',3474708,1698859,2,'5f9d0653d40932af7531c8125605885f','halca','Sentimental Crisis (TV Size)','Normal','ItsCactus','halca - Sentimental Crisis (TV Size) (ItsCactus) [Normal].osu','2022-02-28 14:30:57',88,266,0,0,0,0,167.00,3.20,5.00,4.00,3.00,2.054,NULL),('osu!',3671921,1791812,2,'08f62c797aad3d800fd350c9f8eccc2d','Shikiura.','Garandou no Nou ni Ai o Choudai','Expert','Ryuusei Aika','Shikiura. - Garandou no Nou ni Ai o Choudai (Ryuusei Aika) [Expert].osu','2022-07-06 00:53:46',33,288,0,0,0,0,186.50,4.00,9.00,8.30,6.00,5.467,NULL),('osu!',3672118,1791812,2,'80ddfd2495750ca5ec778fcae475b28f','Shikiura.','Garandou no Nou ni Ai o Choudai','Muz\'s Insane','Ryuusei Aika','Shikiura. - Garandou no Nou ni Ai o Choudai (Ryuusei Aika) [Muz\'s Insane].osu','2022-07-06 00:53:46',32,261,0,0,0,0,186.50,3.80,9.00,7.50,6.00,4.736,NULL),('osu!',3672420,1791812,2,'552c4b8e47c46588dce583ae1d9a745a','Shikiura.','Garandou no Nou ni Ai o Choudai','Kyouren\'s Normal','Ryuusei Aika','Shikiura. - Garandou no Nou ni Ai o Choudai (Ryuusei Aika) [Kyouren\'s Normal].osu','2022-07-06 00:53:46',33,148,0,0,0,0,186.50,3.00,5.00,4.00,4.00,2.267,NULL),('osu!',3673260,1791812,2,'7d1593505e31363a92d9e438eae59224','Shikiura.','Garandou no Nou ni Ai o Choudai','Astrolis\' Hard','Ryuusei Aika','Shikiura. - Garandou no Nou ni Ai o Choudai (Ryuusei Aika) [Astrolis\' Hard].osu','2022-07-06 00:53:46',33,243,0,0,0,0,186.50,3.60,8.00,7.00,5.00,3.649,NULL),('osu!',3703178,1805771,2,'b515a62616205c84e1582ab5e0a41d1a','Niina Mako','Sensen no Realism','Cruelty','iRedi','Niina Mako - Sensen no Realism (iRedi) [Cruelty].osu','2022-12-20 09:07:42',260,1231,0,0,0,0,69.33,4.30,9.30,9.20,5.00,5.927,NULL),('osu!',3703441,1805771,2,'160faf49ec28d362ba0460db38cc2023','Niina Mako','Sensen no Realism','KennethBBG\'s Hyper','iRedi','Niina Mako - Sensen no Realism (iRedi) [KennethBBG\'s Hyper].osu','2022-12-20 09:07:42',260,1061,0,0,0,0,69.33,3.50,8.00,7.00,4.00,4.069,NULL),('osu!',3708196,1805771,2,'4f3d74fcb6d0b8a65da4d34ae3182c85','Niina Mako','Sensen no Realism','Collab Insane','iRedi','Niina Mako - Sensen no Realism (iRedi) [Collab Insane].osu','2022-12-20 09:07:42',260,1072,0,0,0,0,69.33,4.00,9.00,8.00,4.50,4.944,NULL),('osu!',3802067,1383276,2,'7543c33065a9e2192554cc47409f9e27','Stan Smith (CV: Seth MacFarlane)','Good Morning, U.S.A. (TV Size)','Aku\'s Hard','Iraq','Stan Smith (CV Seth MacFarlane) - Good Morning, U.S.A. (TV Size) (Iraq) [Aku\'s Hard].osu','2022-11-24 19:08:35',30,146,0,0,0,0,150.00,4.00,7.80,6.00,4.00,3.230,NULL),('osu!',3815218,1383276,2,'118507cca758e9cf5770253fdb9a370d','Stan Smith (CV: Seth MacFarlane)','Good Morning, U.S.A. (TV Size)','terrence48\'s Hyper','Iraq','Stan Smith (CV Seth MacFarlane) - Good Morning, U.S.A. (TV Size) (Iraq) [terrence48\'s Hyper].osu','2022-11-24 19:08:35',30,172,0,0,0,0,150.00,4.50,8.50,8.00,5.00,3.998,NULL),('osu!',3817574,1383276,2,'df89a8718decf3df092f18661126b2a4','Stan Smith (CV: Seth MacFarlane)','Good Morning, U.S.A. (TV Size)','Easy','Iraq','Stan Smith (CV Seth MacFarlane) - Good Morning, U.S.A. (TV Size) (Iraq) [Easy].osu','2022-11-24 19:08:35',30,73,0,0,0,0,150.00,3.50,3.50,2.50,2.00,1.513,NULL),('osu!',3910965,1897570,0,'56d0f150d5b2cf23d836fce1c0fe7a87','Ludicin','Gothic Hardcore-ish Mix','Ludicin-Fallen Symphony(stamina)','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [Ludicin-Fallen Symphony(stamina)].osu','2023-01-18 19:18:01',554,10041,0,0,0,3,250.00,4.00,5.00,9.00,8.00,6.509,NULL),('osu!',3929359,1419842,2,'01aea52847f3980ca00447177a35b78a','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio','Chowder Theme Song (TV Size)','Fiery\'s Easy','wafer','Nicky Jones, Dwight Schultz, Tara Strong, John DiMaggio - Chowder Theme Song (TV Size) (wafer) [Fiery\'s Easy].osu','2022-12-22 01:04:32',26,77,0,0,0,0,170.00,2.00,4.00,3.00,3.00,1.503,NULL),('osu!',3937945,1897570,0,'f798737a6462ba3dd473b459bbd63341','Ludicin','Gothic Hardcore-ish Mix','Usao and Yuta Imai-BULK UP (DJ Edit)','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [Usao and Yuta Imai-BULK UP (DJ Edit)].osu','2023-01-18 19:18:01',0,0,0,0,0,3,0.00,4.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937946,1897570,0,'a7bf0d021f07093b1cfe5f0d92ec2db9','Ludicin','Gothic Hardcore-ish Mix','DJ Myosuke-MEGATON KICK','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [DJ Myosuke-MEGATON KICK].osu','2023-01-18 19:18:01',0,0,0,0,0,0,0.00,5.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937947,1897570,0,'a44979b190265619c4aeb5da83d7a2c0','Ludicin','Gothic Hardcore-ish Mix','Garbagecan vs. CS4W-Asmodeus ~Be Loyal to your Desires~','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [Garbagecan vs. CS4W-Asmodeus ~Be Loyal to your Desires~].osu','2023-01-18 19:18:01',0,0,0,0,0,3,0.00,4.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937948,1897570,0,'fdd15aa12bd73fc1b64c65109c913003','Ludicin','Gothic Hardcore-ish Mix','Kanaryo-Leraie','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [Kanaryo-Leraie].osu','2023-01-18 19:18:01',0,0,0,0,0,0,0.00,5.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937949,1897570,0,'4ca78eeb44b597ce56eeeacf511f22b4','Ludicin','Gothic Hardcore-ish Mix','Kara and Kurokotei-Valley of Voices','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [Kara and Kurokotei-Valley of Voices].osu','2023-01-18 19:18:01',0,0,0,0,0,0,0.00,5.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937950,1897570,0,'882b3f1197edba27710a455f2f228215','Ludicin','Gothic Hardcore-ish Mix','KuroGaNE-KlieMe[;st','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [KuroGaNE-KlieMe[;st].osu','2023-01-18 19:18:01',0,0,0,0,0,3,0.00,5.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937951,1897570,0,'48ce2beba926186913f0bde2a6380a8a','Ludicin','Gothic Hardcore-ish Mix','Laur-Animosity (Extended) (tech,ln,vibro)','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [Laur-Animosity (Extended) (tech,ln,vibro)].osu','2023-01-18 19:18:01',235,5298,0,0,0,3,210.00,4.00,5.00,0.00,0.00,8.483,NULL),('osu!',3937952,1897570,0,'3f1b1bd5de65e6ead4ea07eba1017423','Ludicin','Gothic Hardcore-ish Mix','Laur-Consecrate','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [Laur-Consecrate].osu','2023-01-18 19:18:01',0,0,0,0,0,0,0.00,5.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937953,1897570,0,'9e343351f4deb39313b27f493e1c8dcc','Ludicin','Gothic Hardcore-ish Mix','N_Dog-Li,desiver','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [N_Dog-Li,desiver].osu','2023-01-18 19:18:01',0,0,0,0,0,3,0.00,4.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937954,1897570,0,'22566e5de734b8d270f4023bbc03dc0c','Ludicin','Gothic Hardcore-ish Mix','pashalka','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [pashalka].osu','2023-01-18 19:18:01',0,0,0,0,0,3,0.00,4.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937955,1897570,0,'d1d324a0ad07deabb8dc516ffd59cc16','Ludicin','Gothic Hardcore-ish Mix','ReeK-Possessed By The Blood Moon ( stream,tech)','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [ReeK-Possessed By The Blood Moon ( stream,tech)].osu','2023-01-18 19:18:01',252,3955,0,0,0,3,210.00,4.00,5.00,5.00,5.00,7.086,NULL),('osu!',3937956,1897570,0,'bdbe45d2f90a571102bd77c0239afa28','Ludicin','Gothic Hardcore-ish Mix','Siro-Fateful Conflict','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [Siro-Fateful Conflict].osu','2023-01-18 19:18:01',0,0,0,0,0,3,324.00,4.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937957,1897570,0,'22245752cef475a252ada9f003ef560c','Ludicin','Gothic Hardcore-ish Mix','tohi-Klarissa','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [tohi-Klarissa].osu','2023-01-18 19:18:01',0,0,0,0,0,3,0.00,4.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937958,1897570,0,'78c8d6bcd571a61e717c1f1edc0dfb11','Ludicin','Gothic Hardcore-ish Mix','BUCK WILD-t-pazolite(stamina,vibro)','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [BUCK WILD-t-pazolite(stamina,vibro)].osu','2023-01-18 19:18:01',252,6089,0,0,0,3,270.00,4.00,5.00,0.00,0.00,8.788,NULL),('osu!',3937959,1897570,0,'2e41d2c897951c0bc9fb06ade2d8195b','Ludicin','Gothic Hardcore-ish Mix','USAO-BACK COVER','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [USAO-BACK COVER].osu','2023-01-18 19:18:01',0,0,0,0,0,0,0.00,5.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937960,1897570,0,'27b97b7c23b3c89a00ca0115569299d9','Ludicin','Gothic Hardcore-ish Mix','USAO-Phalanx','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [USAO-Phalanx].osu','2023-01-18 19:18:01',0,0,0,0,0,0,0.00,5.00,5.00,5.00,5.00,0.000,NULL),('osu!',3937961,1897570,0,'50058c25ba805687532e033c030de618','Ludicin','Gothic Hardcore-ish Mix','Laur-Viyella\'s Nightmare (hyprid, ln, stream, tech,)','pashalka','Ludicin - Gothic Hardcore-ish Mix (pashalka) [Laur-Viyella\'s Nightmare (hyprid, ln, stream, tech,)].osu','2023-01-18 19:18:01',285,5843,0,0,0,3,220.00,4.00,5.00,5.00,5.00,6.469,NULL);
+/*!40000 ALTER TABLE `maps` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mapsets`
+--
+
+DROP TABLE IF EXISTS `mapsets`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mapsets` (
+  `server` enum('osu!','private') NOT NULL DEFAULT 'osu!',
+  `id` int NOT NULL,
+  `last_osuapi_check` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`server`,`id`),
+  UNIQUE KEY `nmapsets_id_uindex` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mapsets`
+--
+
+LOCK TABLES `mapsets` WRITE;
+/*!40000 ALTER TABLE `mapsets` DISABLE KEYS */;
+INSERT INTO `mapsets` VALUES ('osu!',300,'2023-11-15 21:55:37'),('osu!',3080,'2023-11-15 21:55:38'),('osu!',4131,'2023-11-15 21:55:37'),('osu!',5865,'2023-11-15 21:37:33'),('osu!',8596,'2023-11-15 21:21:53'),('osu!',9984,'2023-11-15 21:55:37'),('osu!',10279,'2023-11-15 21:56:48'),('osu!',10362,'2023-11-15 21:56:49'),('osu!',10654,'2023-11-15 21:49:09'),('osu!',15311,'2023-11-15 21:55:40'),('osu!',16349,'2023-11-15 21:37:46'),('osu!',34465,'2023-11-15 21:56:47'),('osu!',34992,'2023-11-15 21:37:40'),('osu!',45843,'2023-11-15 21:55:37'),('osu!',56309,'2023-11-15 21:37:44'),('osu!',56401,'2023-11-15 21:37:41'),('osu!',90777,'2023-11-15 21:37:34'),('osu!',92235,'2023-11-15 21:37:38'),('osu!',99832,'2023-11-15 21:37:42'),('osu!',100348,'2023-11-15 21:55:41'),('osu!',120328,'2023-11-15 21:37:39'),('osu!',122327,'2023-11-15 21:55:37'),('osu!',123956,'2023-11-15 21:56:43'),('osu!',130725,'2023-11-15 21:51:05'),('osu!',181917,'2023-11-15 21:37:32'),('osu!',189095,'2023-11-15 21:55:37'),('osu!',207443,'2023-11-15 21:55:37'),('osu!',213835,'2023-11-15 21:49:08'),('osu!',258275,'2023-11-15 21:55:37'),('osu!',293039,'2023-11-15 21:53:21'),('osu!',337416,'2023-11-15 21:56:42'),('osu!',338293,'2023-11-15 21:44:58'),('osu!',353665,'2023-11-15 21:55:37'),('osu!',364741,'2023-11-15 21:21:58'),('osu!',405859,'2023-11-15 21:45:04'),('osu!',420765,'2023-11-15 21:51:09'),('osu!',442581,'2023-11-15 21:55:37'),('osu!',478917,'2023-11-15 21:03:53'),('osu!',507278,'2023-11-15 21:56:50'),('osu!',520617,'2023-11-15 21:37:45'),('osu!',527431,'2023-11-15 21:53:20'),('osu!',550010,'2023-11-15 21:56:47'),('osu!',557733,'2023-11-15 21:52:16'),('osu!',586306,'2023-11-15 21:45:02'),('osu!',609700,'2023-11-15 21:37:44'),('osu!',651690,'2023-11-15 21:45:48'),('osu!',659934,'2023-11-15 21:45:01'),('osu!',662679,'2023-11-15 21:45:06'),('osu!',673361,'2023-11-15 21:55:38'),('osu!',687879,'2023-11-15 21:37:54'),('osu!',691220,'2023-11-15 21:03:46'),('osu!',694490,'2023-11-15 21:53:15'),('osu!',720051,'2023-11-15 21:51:02'),('osu!',732639,'2023-11-15 21:55:37'),('osu!',754300,'2023-11-15 21:51:06'),('osu!',778770,'2023-11-15 21:51:04'),('osu!',787603,'2023-11-15 21:55:37'),('osu!',828908,'2023-11-15 21:37:55'),('osu!',853469,'2023-11-15 21:45:07'),('osu!',856260,'2023-11-15 21:51:03'),('osu!',866275,'2023-11-15 21:45:07'),('osu!',874091,'2023-11-15 21:37:37'),('osu!',909233,'2023-11-15 21:56:46'),('osu!',914756,'2023-11-15 21:56:44'),('osu!',915808,'2023-11-15 21:56:43'),('osu!',938426,'2023-11-15 21:55:40'),('osu!',950320,'2023-11-15 21:51:07'),('osu!',953015,'2023-11-15 21:51:04'),('osu!',1004468,'2023-11-15 21:49:09'),('osu!',1020146,'2023-11-15 21:49:07'),('osu!',1085894,'2023-11-15 21:03:47'),('osu!',1140226,'2023-11-15 21:56:47'),('osu!',1171966,'2023-11-15 21:56:45'),('osu!',1266582,'2023-11-15 21:55:38'),('osu!',1271839,'2023-11-15 21:37:27'),('osu!',1287429,'2023-11-15 21:03:44'),('osu!',1290517,'2023-11-15 21:37:37'),('osu!',1336953,'2023-11-15 21:45:44'),('osu!',1364392,'2023-11-15 21:55:37'),('osu!',1375253,'2023-11-15 21:56:45'),('osu!',1383276,'2023-11-15 21:52:13'),('osu!',1419842,'2023-11-15 21:03:54'),('osu!',1429170,'2023-11-15 21:53:14'),('osu!',1455022,'2023-11-15 21:37:31'),('osu!',1662256,'2023-11-15 21:53:16'),('osu!',1662375,'2023-11-15 21:53:18'),('osu!',1689372,'2023-11-15 21:55:37'),('osu!',1698859,'2023-11-15 21:56:44'),('osu!',1791812,'2023-11-15 21:51:07'),('osu!',1805771,'2023-11-15 21:56:50'),('osu!',1897570,'2023-11-15 21:51:01');
+/*!40000 ALTER TABLE `mapsets` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `performance_reports`
+--
+
+DROP TABLE IF EXISTS `performance_reports`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `performance_reports` (
+  `scoreid` bigint unsigned NOT NULL,
+  `mod_mode` enum('vanilla','relax','autopilot') NOT NULL DEFAULT 'vanilla',
+  `os` varchar(64) NOT NULL,
+  `fullscreen` tinyint(1) NOT NULL,
+  `fps_cap` varchar(16) NOT NULL,
+  `compatibility` tinyint(1) NOT NULL,
+  `version` varchar(16) NOT NULL,
+  `start_time` int NOT NULL,
+  `end_time` int NOT NULL,
+  `frame_count` int NOT NULL,
+  `spike_frames` int NOT NULL,
+  `aim_rate` int NOT NULL,
+  `completion` tinyint(1) NOT NULL,
+  `identifier` varchar(128) DEFAULT NULL COMMENT 'really don''t know much about this yet',
+  `average_frametime` int NOT NULL,
+  PRIMARY KEY (`scoreid`,`mod_mode`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `performance_reports`
+--
+
+LOCK TABLES `performance_reports` WRITE;
+/*!40000 ALTER TABLE `performance_reports` DISABLE KEYS */;
+/*!40000 ALTER TABLE `performance_reports` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ratings`
+--
+
+DROP TABLE IF EXISTS `ratings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ratings` (
+  `userid` int NOT NULL,
+  `map_md5` char(32) NOT NULL,
+  `rating` tinyint NOT NULL,
+  PRIMARY KEY (`userid`,`map_md5`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ratings`
+--
+
+LOCK TABLES `ratings` WRITE;
+/*!40000 ALTER TABLE `ratings` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ratings` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `relationships`
+--
+
+DROP TABLE IF EXISTS `relationships`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `relationships` (
+  `user1` int NOT NULL,
+  `user2` int NOT NULL,
+  `type` enum('friend','block') NOT NULL,
+  PRIMARY KEY (`user1`,`user2`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `relationships`
+--
+
+LOCK TABLES `relationships` WRITE;
+/*!40000 ALTER TABLE `relationships` DISABLE KEYS */;
+/*!40000 ALTER TABLE `relationships` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `scores`
+--
+
+DROP TABLE IF EXISTS `scores`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `scores` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `map_md5` char(32) NOT NULL,
+  `score` int NOT NULL,
+  `pp` float(7,3) NOT NULL,
+  `acc` float(6,3) NOT NULL,
+  `max_combo` int NOT NULL,
+  `mods` int NOT NULL,
+  `n300` int NOT NULL,
+  `n100` int NOT NULL,
+  `n50` int NOT NULL,
+  `nmiss` int NOT NULL,
+  `ngeki` int NOT NULL,
+  `nkatu` int NOT NULL,
+  `grade` varchar(2) NOT NULL DEFAULT 'N',
+  `status` tinyint NOT NULL,
+  `mode` tinyint NOT NULL,
+  `play_time` datetime NOT NULL,
+  `time_elapsed` int NOT NULL,
+  `client_flags` int NOT NULL,
+  `userid` int NOT NULL,
+  `perfect` tinyint(1) NOT NULL,
+  `online_checksum` char(32) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `scores`
+--
+
+LOCK TABLES `scores` WRITE;
+/*!40000 ALTER TABLE `scores` DISABLE KEYS */;
+INSERT INTO `scores` VALUES (1,'6b5e920c987134b12bb470d8ff620d5f',280630,95.848,89.731,111,0,86,8,1,4,19,6,'B',2,0,'2023-11-15 21:04:32',34546,0,3,0,'960afbe141f60e1f0f9a30e994e8c599'),(2,'3dec14429236d7e19dd000682a0c8dba',661820,97.692,97.658,177,0,117,3,1,0,21,2,'S',2,0,'2023-11-15 21:22:42',37618,0,3,1,'2be8b81a4562e9c9923a204bc53f9765'),(3,'75e16da1d447a074e89d5e3b6c52666b',29591,23.793,61.404,19,64,39,20,6,11,9,11,'F',0,0,'2023-11-15 21:45:39',23130,0,3,0,'d1733715c96a64bfefd485cc6f157a8c'),(4,'1b1b99a01a1e512111f8e1527881d538',17608,17.752,63.158,14,0,34,6,0,17,4,1,'F',0,0,'2023-11-15 21:48:51',13756,0,3,0,'4bc63a530d27483becf551c0c3a6285d'),(5,'1b1b99a01a1e512111f8e1527881d538',19160,33.345,65.873,22,0,27,2,0,13,4,2,'F',0,0,'2023-11-15 21:49:03',11304,0,3,0,'708ee7510496e8f35fccd100d3d3b281'),(6,'885dc758e44fe9416bdfa08682b2e671',656600,146.292,84.722,212,0,111,33,0,0,14,10,'B',2,0,'2023-11-15 21:49:58',44043,0,3,1,'28b5a0ece74eaeadd8fae7df7878ac70'),(7,'8d311033447d108ae4848d3bdd1cb60d',41400,39.368,85.859,38,0,28,1,0,4,2,1,'F',0,0,'2023-11-15 21:50:13',8795,0,3,0,'fc468f095e1adfbf4e5ed79b6a6b6fbb'),(8,'8d311033447d108ae4848d3bdd1cb60d',672680,123.961,80.802,181,0,115,38,0,5,13,17,'C',2,0,'2023-11-15 21:50:56',42581,0,3,0,'0626689edcbbf04d863a4d4ff4b74531'),(9,'1024e790c91e38f45e9991d853e75288',79114,47.952,72.515,68,0,38,9,2,8,5,2,'F',0,0,'2023-11-15 21:51:28',11243,0,3,0,'baef9f1dc210f6f60f0988aed588998a'),(10,'1024e790c91e38f45e9991d853e75288',485162,80.315,76.260,157,0,138,54,2,11,17,16,'C',2,0,'2023-11-15 21:52:07',38943,0,3,0,'b4ed94d35b45504a92de4ed1b6ee75cf'),(11,'ac6d388bd77c519a7dd205435f2573ad',57518,27.468,74.848,52,0,36,15,1,3,3,7,'F',0,0,'2023-11-15 21:52:33',11202,0,3,0,'84f0324d0258ca9a4201739167197186'),(12,'ac6d388bd77c519a7dd205435f2573ad',49656,36.344,67.886,31,64,48,20,6,8,4,7,'F',0,0,'2023-11-15 21:52:54',15204,0,3,0,'7b55df04c568652b660def70682d0036'),(13,'ac6d388bd77c519a7dd205435f2573ad',16620,18.086,63.194,16,64,27,9,2,10,2,4,'F',0,0,'2023-11-15 21:53:03',8866,0,3,0,'c0d79101a3cf713b265ef94761d1e34e'),(14,'ac6d388bd77c519a7dd205435f2573ad',20550,18.011,62.424,16,64,29,16,0,10,3,5,'F',0,0,'2023-11-15 21:53:12',10134,0,3,0,'580c88a4904497c0253d76742b38375b'),(15,'715b7551fb9da04810b687e28f458887',272431,94.690,76.035,95,72,102,40,6,5,10,16,'C',2,0,'2023-11-15 21:53:56',30589,0,3,0,'a218308949f2fd18815f013aa62fa5ac'),(16,'19610967109f7685f4c5509f656ef06b',215340,45.653,74.501,75,64,80,13,17,7,9,3,'F',0,0,'2023-11-15 21:54:32',32223,0,3,0,'fbd480b2ec084e8ee53432d200d5b45c'),(17,'6708992a8c534c436886a2635052b062',23801,27.425,88.000,31,64,21,3,0,1,3,2,'F',0,0,'2023-11-15 21:54:44',8022,0,3,0,'5e1e867ca85a113778bbe3050a972e03'),(18,'6708992a8c534c436886a2635052b062',452552,118.817,97.290,150,64,118,5,0,0,23,4,'S',2,0,'2023-11-15 21:55:14',30653,0,3,0,'52a1a986718171dd98faae8591bc7c3a'),(19,'5fa4a5de6f19dc2d04779cbb37307e9f',949310,42.880,78.482,228,0,202,78,7,5,13,15,'F',0,0,'2023-11-15 21:56:39',70610,0,3,0,'104630f0ff8094cb23bef476af0673fd'),(20,'bfaf6c3a4cd1e9f7b0c6397d2a419c31',1138112,53.267,87.088,263,0,297,58,4,5,60,35,'B',2,0,'2023-11-15 21:58:12',78104,0,3,0,'17d77dc223d2f4bbdfbe96e815b16ca8');
+/*!40000 ALTER TABLE `scores` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `startups`
+--
+
+DROP TABLE IF EXISTS `startups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `startups` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ver_major` tinyint NOT NULL,
+  `ver_minor` tinyint NOT NULL,
+  `ver_micro` tinyint NOT NULL,
+  `datetime` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `startups`
+--
+
+LOCK TABLES `startups` WRITE;
+/*!40000 ALTER TABLE `startups` DISABLE KEYS */;
+/*!40000 ALTER TABLE `startups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `stats`
+--
+
+DROP TABLE IF EXISTS `stats`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `stats` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `mode` tinyint(1) NOT NULL,
+  `tscore` bigint unsigned NOT NULL DEFAULT '0',
+  `rscore` bigint unsigned NOT NULL DEFAULT '0',
+  `pp` int unsigned NOT NULL DEFAULT '0',
+  `plays` int unsigned NOT NULL DEFAULT '0',
+  `playtime` int unsigned NOT NULL DEFAULT '0',
+  `acc` float(6,3) NOT NULL DEFAULT '0.000',
+  `max_combo` int unsigned NOT NULL DEFAULT '0',
+  `total_hits` int unsigned NOT NULL DEFAULT '0',
+  `replay_views` int unsigned NOT NULL DEFAULT '0',
+  `xh_count` int unsigned NOT NULL DEFAULT '0',
+  `x_count` int unsigned NOT NULL DEFAULT '0',
+  `sh_count` int unsigned NOT NULL DEFAULT '0',
+  `s_count` int unsigned NOT NULL DEFAULT '0',
+  `a_count` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`,`mode`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `stats`
+--
+
+LOCK TABLES `stats` WRITE;
+/*!40000 ALTER TABLE `stats` DISABLE KEYS */;
+INSERT INTO `stats` VALUES (1,0,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(1,1,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(1,2,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(1,3,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(1,4,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(1,5,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(1,6,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(1,8,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(3,0,6139655,3481875,667,20,553,86.354,263,2179,0,0,0,0,2,0),(3,1,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(3,2,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(3,3,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(3,4,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(3,5,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(3,6,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0),(3,8,0,0,0,0,0,0.000,0,0,0,0,0,0,0,0);
+/*!40000 ALTER TABLE `stats` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tourney_pool_maps`
+--
+
+DROP TABLE IF EXISTS `tourney_pool_maps`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tourney_pool_maps` (
+  `map_id` int NOT NULL,
+  `pool_id` int NOT NULL,
+  `mods` int NOT NULL,
+  `slot` tinyint NOT NULL,
+  PRIMARY KEY (`map_id`,`pool_id`),
+  KEY `tourney_pool_maps_tourney_pools_id_fk` (`pool_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tourney_pool_maps`
+--
+
+LOCK TABLES `tourney_pool_maps` WRITE;
+/*!40000 ALTER TABLE `tourney_pool_maps` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tourney_pool_maps` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tourney_pools`
+--
+
+DROP TABLE IF EXISTS `tourney_pools`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tourney_pools` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(16) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `tourney_pools_users_id_fk` (`created_by`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tourney_pools`
+--
+
+LOCK TABLES `tourney_pools` WRITE;
+/*!40000 ALTER TABLE `tourney_pools` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tourney_pools` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_achievements`
+--
+
+DROP TABLE IF EXISTS `user_achievements`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_achievements` (
+  `userid` int NOT NULL,
+  `achid` int NOT NULL,
+  PRIMARY KEY (`userid`,`achid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_achievements`
+--
+
+LOCK TABLES `user_achievements` WRITE;
+/*!40000 ALTER TABLE `user_achievements` DISABLE KEYS */;
+INSERT INTO `user_achievements` VALUES (3,4),(3,5),(3,6),(3,14),(3,15);
+/*!40000 ALTER TABLE `user_achievements` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_playstyle`
+--
+
+DROP TABLE IF EXISTS `user_playstyle`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_playstyle` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `uid` int NOT NULL,
+  `playstyle` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_playstyle`
+--
+
+LOCK TABLES `user_playstyle` WRITE;
+/*!40000 ALTER TABLE `user_playstyle` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_playstyle` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `safe_name` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `email` varchar(254) NOT NULL,
+  `priv` int NOT NULL DEFAULT '1',
+  `pw_bcrypt` char(60) NOT NULL,
+  `country` char(2) NOT NULL DEFAULT 'xx',
+  `silence_end` int NOT NULL DEFAULT '0',
+  `donor_end` bigint DEFAULT NULL,
+  `creation_time` int NOT NULL DEFAULT '0',
+  `latest_activity` int NOT NULL DEFAULT '0',
+  `clan_id` int NOT NULL DEFAULT '0',
+  `clan_priv` tinyint(1) NOT NULL DEFAULT '0',
+  `preferred_mode` int NOT NULL DEFAULT '0',
+  `play_style` int NOT NULL DEFAULT '0',
+  `custom_badge_name` varchar(16) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `custom_badge_icon` varchar(64) DEFAULT NULL,
+  `userpage_content` varchar(2048) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `api_key` char(36) DEFAULT NULL,
+  `username_aka` varchar(32) DEFAULT NULL,
+  `old_name` varchar(32) DEFAULT NULL,
+  `user_playstyle` varchar(32) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_email_uindex` (`email`),
+  UNIQUE KEY `users_name_uindex` (`name`),
+  UNIQUE KEY `users_safe_name_uindex` (`safe_name`),
+  UNIQUE KEY `users_api_key_uindex` (`api_key`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'TuruBot','turubot','bot@turuturuone.xyz',1,'_______________________my_cool_bcrypt_______________________','ca',0,0,1700069275,1700069275,0,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL),(3,'Turu','turu','dimosikrus@gmail.com',261271,'$2b$12$IhGIVFPEe5t05Fx/fI.LDOsWdA3VPfLzWLFH8gzhVCSD1wxP/GMaG','ru',0,3536851094,1700071250,1700074692,0,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2023-11-15 22:04:32

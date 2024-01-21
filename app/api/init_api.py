@@ -155,10 +155,10 @@ def init_events(asgi_app: BanchoAPI) -> None:
 
         log("Startup process complete.", Ansi.LGREEN)
         elapsed = app.logging.magnitude_fmt_time(clock_ns() - start_time)
-        webhook = SyncWebhook.from_url(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        webhook.send(
-            f":white_check_mark: **bancho.py** runned successfully. Elapsed: **{ elapsed }**",
-        )
+        #webhook = SyncWebhook.from_url(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
+        #webhook.send(
+        #    f":white_check_mark: **bancho.py** runned successfully. Elapsed: **{ elapsed }**",
+        #)
         log(f"Listening @ {app.settings.SERVER_ADDR}", Ansi.LMAGENTA)
 
     @asgi_app.on_event("shutdown")

@@ -434,8 +434,8 @@ DIRECT_SET_INFO_FMTSTR = (
 )
 
 DIRECT_MAP_INFO_FMTSTR = (
-    "[{DifficultyRating:.2f}⭐] {DiffName} "
-    "{{cs: {CS} / od: {OD} / ar: {AR} / hp: {HP}}}@{Mode}"
+    "{DifficultyRating:.2f}⭐ [{DiffName}] "
+    "{cs: {CS} | od: {OD} | ar: {AR} | hp: {HP}}@{Mode}"
 )
 
 

@@ -11,6 +11,7 @@ OSU_VERSION = re.compile(
 )
 
 USERNAME = re.compile(r"^[\w \[\]-]{2,15}$")
+#USERNAME = re.compile("^[а-яА-ЯёЁ⚀⚁⚂⚃⚄⚅❤⛟\w \[\]\-]{}$")
 EMAIL = re.compile(r"^[^@\s]{1,200}@[^@\s\.]{1,30}(?:\.[^@\.\s]{2,24})+$")
 
 TOURNEY_MATCHNAME = re.compile(

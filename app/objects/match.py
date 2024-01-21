@@ -134,7 +134,6 @@ class MapPool:
                 # pool and log this incident to console.
                 # NOTE: it's intentional that this removes
                 # it from not only this pool, but all pools.
-                # TODO: perhaps discord webhook?
                 log(f"Removing {map_id} from pool {self.name} (not found).", Ansi.LRED)
 
                 await db_conn.execute(

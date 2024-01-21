@@ -116,7 +116,22 @@ AUTOMATICALLY_REPORT_PROBLEMS: bool = config(
 ## WARNING: only touch this once you've
 ##          read through what it enables.
 ##          you could put your server at risk.
+
 DEVELOPER_MODE: bool = config("DEVELOPER_MODE", cast=bool, default=False)
+
+
+DS_TOKEN: str = config("DS_TOKEN", default="none")
+SERVERID: int = config("SERVERID", default=0)
+
+RANK_SSH: str = config("RANK_SSH", default="none")
+RANK_SS: str = config("RANK_SS", default="none")
+RANK_SH: str = config("RANK_SH", default="none")
+RANK_S: str = config("RANK_S", default="none")
+RANK_A: str = config("RANK_A", default="none")
+RANK_B: str = config("RANK_B", default="none")
+RANK_C: str = config("RANK_C", default="none")
+RANK_D: str = config("RANK_D", default="none")
+RANK_F: str = config("RANK_F", default="none")
 
 ## WARNING: only touch this if you know how
 ##          the migrations system works.

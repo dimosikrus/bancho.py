@@ -25,7 +25,7 @@ async def get_favicon() -> Response:
 @router.get("/{user_id}.{extension}")
 async def get_avatar(
     user_id: int,
-    extension: Literal["jpg", "jpeg", "png"],
+    extension: Literal["jpg", "jpeg", "png", "gif"],
 ) -> Response:
     avatar_path = AVATARS_PATH / f"{user_id}.{extension}"
 

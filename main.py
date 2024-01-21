@@ -34,7 +34,6 @@ import app.settings
 from app.logging import Ansi
 from app.logging import log
 
-
 def main(argv: Sequence[str]) -> int:
     """Ensure runtime environment is ready, and start the server."""
     app.utils.setup_runtime_environment()
@@ -114,6 +113,7 @@ def main(argv: Sequence[str]) -> int:
         ) from None
 
     # run the server indefinitely
+    
     uvicorn.run(
         "app.api.init_api:asgi_app",
         reload=app.settings.DEBUG,
@@ -126,6 +126,7 @@ def main(argv: Sequence[str]) -> int:
         headers=(("bancho-version", app.settings.VERSION),),
         **server_arguments,
     )
+
 
     return 0
 

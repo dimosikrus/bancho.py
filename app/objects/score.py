@@ -301,6 +301,35 @@ class Score:
         s.client_time = datetime.strptime(data[14], "%y%m%d%H%M%S")
         s.client_flags = ClientFlags(data[15].count(" ") & ~4)
 
+        # if s.mods == Mods.RELAX:
+        #     s.score = ((s.score * s.max_combo))
+
+        # # IF RXDT + other mods
+        # if s.mods == Mods.RELAX and (s.mods == Mods.DOUBLETIME or s.mods == Mods.NIGHTCORE):
+        #     s.score = ((s.score * s.max_combo) * 1.12) * 2
+        # if s.mods == Mods.RELAX and (s.mods == Mods.DOUBLETIME or s.mods == Mods.NIGHTCORE) and (s.mods == Mods.HIDDEN or s.mods == Mods.HARDROCK):
+        #     s.score = ((s.score * s.max_combo) * 1.19) * 2
+        # if s.mods == Mods.RELAX and (s.mods == Mods.DOUBLETIME or s.mods == Mods.NIGHTCORE) and s.mods == Mods.HIDDEN and s.mods == Mods.HARDROCK:
+        #     s.score = (s.score * s.max_combo) * 1.26 * 2
+        # if s.mods == Mods.RELAX and (s.mods == Mods.DOUBLETIME or s.mods == Mods.NIGHTCORE) and s.mods == Mods.FLASHLIGHT:
+        #     s.score = (s.score * s.max_combo) * 1.25 * 2
+        # if s.mods == Mods.RELAX and (s.mods == Mods.DOUBLETIME or s.mods == Mods.NIGHTCORE) and s.mods == Mods.FLASHLIGHT and (s.mods == Mods.HIDDEN or s.mods == Mods.HARDROCK):
+        #     s.score = (s.score * s.max_combo) * 1.33 * 2
+        # if s.mods == Mods.RELAX and (s.mods == Mods.DOUBLETIME or s.mods == Mods.NIGHTCORE) and s.mods == Mods.FLASHLIGHT and s.mods == Mods.HIDDEN:
+        #     s.score = (s.score * s.max_combo) * 1.33 * 2
+
+        # # if RX + other mods
+        # if s.mods == Mods.RELAX and (s.mods == Mods.HIDDEN or s.mods == Mods.HARDROCK) and Mods.FLASHLIGHT:
+        #     s.score = ((s.score * s.max_combo) * 1.19) * 2
+        # if s.mods == Mods.RELAX and s.mods == Mods.HIDDEN and s.mods == Mods.HARDROCK:
+        #     s.score = ((s.score * s.max_combo) * 1.12) * 2
+        # if s.mods == Mods.RELAX and s.mods == Mods.FLASHLIGHT:
+        #     s.score = ((s.score * s.max_combo) * 1.25) * 2
+        # if s.mods == Mods.RELAX and s.mods == (s.mods == Mods.HIDDEN or s.mods == Mods.HARDROCK):
+        #     s.score = ((s.score * s.max_combo) * 1.06) * 2
+        # if s.mods == Mods.RELAX and s.mods == Mods.HALFTIME:
+        #     s.score = ((s.score * s.max_combo) * 0.3) * 2
+
         s.server_time = datetime.now()
 
         return s

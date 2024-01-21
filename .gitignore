@@ -2,6 +2,7 @@
 __pycache__/
 /config.py
 /.data
+.data
 _testing/
 *.lprof
 ext/GeoLite2-City.mmdb
