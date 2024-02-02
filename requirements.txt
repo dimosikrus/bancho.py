@@ -146,7 +146,6 @@ SQLAlchemy==1.4.50
 ssh-import-id==5.11
 starkbank-ecdsa==2.2.0
 starlette==0.25.0
-systemd-python==234
 taskgroup==0.0.0a4
 timeago==1.0.15
 timestamp==0.0.1
