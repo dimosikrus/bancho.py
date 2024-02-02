@@ -105,7 +105,7 @@ pyasn1-modules==0.2.1
 pycord==0.1.1
 pycparser==2.21
 pydantic==1.10.4
-PyGObject==3.42.1
+#PyGObject==3.42.1
 PyHamcrest==2.0.2
 PyICU==2.8.1
 PyJWT==2.4.0
