@@ -36,7 +36,6 @@ discord==2.3.2
 discord-webhook==1.3.0
 discord.py==2.3.2
 distro==1.7.0
-distro-info==1.1+ubuntu0.1
 exceptiongroup==1.1.3
 fastapi==0.92.0
 ffmpeg-python==0.2.0
