@@ -23,7 +23,6 @@ circleguard==5.4.1
 click==8.0.3
 cmyui==1.9.3
 colorama==0.4.4
-command-not-found==0.3
 ConfigArgParse==1.5.3
 configobj==5.0.6
 constantly==15.1.0
