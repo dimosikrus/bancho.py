@@ -174,8 +174,8 @@ websocket==0.2.1
 websocket-client==1.4.2
 Werkzeug==2.2.2
 wsproto==1.2.0
-wtc==1.2.1
-xkit==0.0.0
+#wtc==1.2.1
+#xkit==0.0.0
 xtyping==0.6.1
 yarl==1.7.2
 zipp==3.11.0
